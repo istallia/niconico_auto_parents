@@ -27,7 +27,13 @@ let auto_switch_mode = () => {
 };
 
 /* --- 入力されたIDをテキストボックスに流し込む --- */
-let auto_type_ids = () => {};
+let auto_type_ids = () => {
+	let ids = window.prompt('IDのリストを入力(最大10件)', '');
+	document.getElementById('candidate_input').value = ids;
+};
 
 /* --- 候補に追加 --- */
-let auto_search = () => {};
+let auto_search = () => {
+	let button = document.querySelector('a[title="候補に追加する"]');
+	button.dispatchEvent(new Event('click', {bubbles: true, composed: true}));
+};
