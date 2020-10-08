@@ -6,22 +6,24 @@
 document.addEventListener('DOMContentLoaded', () => {
 	if( location.href.slice(0,37) === 'http://commons.nicovideo.jp/tree/edit' ) {
 		/* 実行のためのボタンを追加 */
-		let button = document.createElement('button');
+		let button       = document.createElement('button');
+		button.innerText = '自動入力';
+		let parent = document.getElementsByClassName('search-parent')[0];
+		let head   = parent.firstElementChild;
+		parent.insertBefore(button, head.nextSibling);
 		button.addEventListener('click', () => {
 			auto_switch_mode();
 			auto_type_ids();
 			auto_search();
 		});
-		let parent = document.getElementsByClassName('search-parent')[0];
-		let head   = parent.firstElementChild;
-		head.parentNode.insertBefore(button, head.nextSibling);
 	}
 });
 
 /* --- 「IDから指定」に切り替え --- */
 let auto_switch_mode = () => {
 	let select = document.getElementById('site_selector');
-	select.options[select.options.length-1].selected = true;
+	select.selectedIndex = select.options.length - 1;
+	select.dispatchEvent(new Event('change', {bubbles: true, composed: true}));
 };
 
 /* --- 入力されたIDをテキストボックスに流し込む --- */
