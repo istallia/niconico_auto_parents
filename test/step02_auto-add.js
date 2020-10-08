@@ -47,7 +47,7 @@ let auto_move = () => {
 	let candidates   = document.getElementById('candidate');
 	let parent_works = document.getElementById('parents');
 	let items        = [... candidates.children];
-	if( items.length < 1 ) setTimeout(auto_move, 100);
+	if( items.length < 1 ) setTimeout(auto_move, 200);
 	items.forEach(item => {
 		parents.appendChild(item);
 	});
