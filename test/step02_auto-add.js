@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			auto_switch_mode();
 			auto_type_ids();
 			auto_search();
+			setTimeout(auto_move, 100);
 		});
 	}
 });
@@ -39,4 +40,15 @@ let auto_search = () => {
 	setTimeout(() => {
 		document.getElementById('candidate_input').value = '';
 	}, 100);
+};
+
+/* --- 候補を右のエリアに追加 --- */
+let auto_move = () => {
+	let candidates   = document.getElementById('candidate');
+	let parent_works = document.getElementById('parents');
+	let items        = [... candidates.children];
+	if( items.length < 1 ) setTimeout(auto_move, 100);
+	items.forEach(item => {
+		parents.appendChild(item);
+	});
 };
