@@ -36,4 +36,7 @@ let auto_type_ids = () => {
 let auto_search = () => {
 	let button = document.querySelector('a[title="候補に追加する"]');
 	button.dispatchEvent(new Event('click', {bubbles: true, composed: true}));
+	setTimeout(() => {
+		document.getElementById('candidate_input').value = '';
+	}, 100);
 };
