@@ -67,7 +67,7 @@ let add_materials = () => {
 		document.getElementById('ista-auto-modal').style.display    = 'none';
 		document.getElementById('ista-auto-modal-bg').style.display = 'none';
 		document.getElementById('ista-auto-list').value             = '';
-});
+	});
 };
 
 /* --- ページに要素を追加する --- */
