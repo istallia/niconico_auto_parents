@@ -52,6 +52,7 @@ let create_promise_candidates = id10 => {
 
 /* --- IDリストを読み取り、すべてのIDを追加する --- */
 let add_materials = () => {
+	ista_processing  = true;
 	let id_list      = document.getElementById('ista-auto-list').value;
 	id_list          = id_list.split('\n');
 	// let promise_list = [];
@@ -67,6 +68,9 @@ let add_materials = () => {
 		document.getElementById('ista-auto-modal').style.display    = 'none';
 		document.getElementById('ista-auto-modal-bg').style.display = 'none';
 		document.getElementById('ista-auto-list').value             = '';
+		document.getElementById('checkbox').style.display           = 'none';
+		document.getElementById('parents').style.backgroundImage    = 'url("")';
+		ista_processing                                             = false;
 	});
 };
 
