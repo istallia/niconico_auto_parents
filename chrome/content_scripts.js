@@ -3,6 +3,9 @@
  * ボタンやモーダルウィンドウの追加、および動作の記述を行う
  */
 
+/* --- 状態を保存する --- */
+let ista_processing = false;
+
 /* --- ページに要素を追加する --- */
 /* ボタンの追加 */
 let button_open = document.createElement('a');
@@ -33,3 +36,9 @@ let modal_win_bg = document.createElement('div');
 modal_win_bg.id  = 'ista-auto-modal-bg';
 modal_win_bg.classList.add('ista-auto-modal-bg');
 parent_button.parentNode.insertBefore(modal_win_bg, parent_button);
+modal_win_bg.addEventListener('click', () => {
+	if( !ista_processing ) {
+		document.getElementById('ista-auto-modal').style.display    = 'none';
+		document.getElementById('ista-auto-modal-bg').style.display = 'none';
+	}
+});
