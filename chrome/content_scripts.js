@@ -10,8 +10,8 @@ let ista_processing = false;
 let optimize_list = id_list => {
 	/* IDを1つずつバラバラの配列にする */
 	let p_list = id_list.split('\n');
-	for (i in p_list) p_list[i] = p_list[i].split();
-	p_list.flat();
+	for (i in p_list) p_list[i] = p_list[i].split(' ');
+	p_list = p_list.flat();
 	/* IDの形式であり、かつ重複のないリストを作成する */
 	let ok_list = [];
 	for (i in p_list) {
@@ -84,8 +84,9 @@ let add_materials = () => {
 	ista_processing  = true;
 	let id_list      = document.getElementById('ista-auto-list').value;
 	id_list          = optimize_list(id_list);
+	document.getElementById('ista-auto-list').value = id_list.join('\n');
 	// let promise_list = [];
-	let a_promise    = Promise.resolve();
+	let a_promise = Promise.resolve();
 	for (const list of id_list) {
 		// promise_list.push(create_promise_candidates.bind(this, list));
 		if( list.length > 2 ) a_promise = a_promise.then(create_promise_candidates.bind(this, list));
@@ -126,7 +127,7 @@ modal_win.classList.add('ista-auto-modal');
 modal_win.innerHTML = `
 <p>
 	使用した素材のIDのリストを入力してください。<br>
-	[v0.1.1] IDのリストの整理は自動で行います。ユーザー側で10件ごとに改行する必要はありません。
+	[v0.1.1] IDのリストの整理は自動で行います。1行が10件未満、または超過でも10件ごとに整頓します。
 </p>
 <textarea id="ista-auto-list" rows="8"></textarea>
 <button id="ista-auto-button">自動登録</button>
