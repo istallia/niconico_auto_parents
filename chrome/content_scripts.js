@@ -6,6 +6,9 @@
 /* --- 状態を保存する --- */
 let ista_processing = false;
 
+/* --- IDリストを最高効率に変換する --- */
+let optimize_list = id_list => {};
+
 /* --- 入力→候補に追加→要素の移動 を行うPromiseを返す --- */
 let create_promise_candidates = id10 => {
 	return new Promise(resolve => {
