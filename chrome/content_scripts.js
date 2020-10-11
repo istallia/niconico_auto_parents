@@ -82,7 +82,7 @@ let create_promise_candidates = id10 => {
 let add_materials = () => {
 	ista_processing  = true;
 	let id_list      = document.getElementById('ista-auto-list').value;
-	id_list          = id_list.split('\n');
+	id_list          = optimize_list(id_list);
 	// let promise_list = [];
 	let a_promise    = Promise.resolve();
 	for (const list of id_list) {
@@ -124,8 +124,8 @@ modal_win.id = 'ista-auto-modal';
 modal_win.classList.add('ista-auto-modal');
 modal_win.innerHTML = `
 <p>
-	使用したモノのIDのリストを入力してください。<br>
-	なお、IDのリストは10件ごとに改行されている必要があります。<br>
+	使用した素材のIDのリストを入力してください。<br>
+	[v0.1.1] IDのリストの整理は自動で行います。ユーザー側で10件ごとに改行する必要はありません。
 </p>
 <textarea id="ista-auto-list" rows="8"></textarea>
 <button id="ista-auto-button">自動登録</button>
