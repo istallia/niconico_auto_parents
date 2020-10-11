@@ -11,7 +11,7 @@ let create_promise_candidates = id10 => {
 	return new Promise(resolve => {
 		/* 入力 */
 		return new Promise(() => {
-			console.log(id10);
+			// console.log(id10);
 			document.getElementById('candidate_input').value = id10;
 			resolve();
 		});
@@ -21,7 +21,7 @@ let create_promise_candidates = id10 => {
 		return new Promise(resolve => {
 			let button = document.querySelector('a[title="候補に追加する"]');
 			button.dispatchEvent(new Event('click', {bubbles: true, composed: true}));
-			console.log('[拡張機能]候補に追加');
+			// console.log('[拡張機能]候補に追加');
 			setTimeout(() => {
 				document.getElementById('candidate_input').value = '';
 			}, 200);
@@ -31,21 +31,21 @@ let create_promise_candidates = id10 => {
 	.then(() => {
 		/* 要素の移動 */
 		return new Promise(resolve => {
-			let add_candidates = () => {
+			let add_candidates = count => {
 				let candidates   = document.getElementById('candidate');
 				let parent_works = document.getElementById('parents');
 				let items        = [... candidates.children];
-				if( items.length < 1 ) {
-					setTimeout(add_candidates, 200);
+				if( items.length < 1 && count < 10 ) {
+					setTimeout(add_candidates.bind(this, count+1), 200);
 					return;
 				}
 				items.forEach(item => {
 					parents.appendChild(item);
 				});
-				console.log('[拡張機能]要素の移動');
+				// console.log('[拡張機能]要素の移動');
 				resolve();
 			};
-			setTimeout(add_candidates, 300);
+			setTimeout(add_candidates.bind(this, 0), 300);
 		});
 	});
 };
@@ -59,7 +59,7 @@ let add_materials = () => {
 	let a_promise    = Promise.resolve();
 	for (const list of id_list) {
 		// promise_list.push(create_promise_candidates.bind(this, list));
-		a_promise = a_promise.then(create_promise_candidates.bind(this, list));
+		if( list.length > 2 ) a_promise = a_promise.then(create_promise_candidates.bind(this, list));
 	}
 	// let a_promise = promise_list.reduce((promise, task) => (
 	// 	promise.then(task)
