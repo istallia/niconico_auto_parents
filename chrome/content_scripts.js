@@ -31,6 +31,7 @@ let optimize_list = id_list => {
 			res_list[Math.floor(i/10)] += '\n';
 		}
 	}
+	res_list[res_list.length-1] = res_list[res_list.length-1].slice(0, -1);
 	return res_list;
 };
 
