@@ -31,7 +31,9 @@ let optimize_list = id_list => {
 			res_list[Math.floor(i/10)] += '\n';
 		}
 	}
-	res_list[res_list.length-1] = res_list[res_list.length-1].slice(0, -1);
+	for (i in res_list) {
+		res_list[i] = res_list[i].slice(0, -1);
+	}
 	return res_list;
 };
 
@@ -84,7 +86,7 @@ let add_materials = () => {
 	ista_processing  = true;
 	let id_list      = document.getElementById('ista-auto-list').value;
 	id_list          = optimize_list(id_list);
-	document.getElementById('ista-auto-list').value = id_list.join('');
+	document.getElementById('ista-auto-list').value = id_list.join('\n');
 	// let promise_list = [];
 	let a_promise = Promise.resolve();
 	for (const list of id_list) {
