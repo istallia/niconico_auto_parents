@@ -12,10 +12,14 @@ let optimize_list = id_list => {
 	let p_list = id_list.split('\n');
 	for (i in p_list) p_list[i] = p_list[i].split(' ');
 	p_list = p_list.flat();
+	/* 既に登録済みのリストを取得する */
+	let ng_list = [];
+	let items   = [... document.getElementById('parents').children];
+	for (item of items) ng_list.push(item.id);
 	/* IDの形式であり、かつ重複のないリストを作成する */
 	let ok_list = [];
 	for (i in p_list) {
-		if( /^[a-zA-Z]{1,3}\d{1,12}$/.test(p_list[i]) && ok_list.indexOf(p_list[i]) < 0 ) {
+		if( /^[a-zA-Z]{1,3}\d{1,12}$/.test(p_list[i]) && ok_list.indexOf(p_list[i]) < 0 && ng_list.indexOf(p_list[i]) < 0 ) {
 			ok_list.push(p_list[i]);
 		}
 	}
