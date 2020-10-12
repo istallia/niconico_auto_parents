@@ -84,7 +84,7 @@ let add_materials = () => {
 	ista_processing  = true;
 	let id_list      = document.getElementById('ista-auto-list').value;
 	id_list          = optimize_list(id_list);
-	document.getElementById('ista-auto-list').value = id_list.join('\n');
+	document.getElementById('ista-auto-list').value = id_list.join('');
 	// let promise_list = [];
 	let a_promise = Promise.resolve();
 	for (const list of id_list) {
