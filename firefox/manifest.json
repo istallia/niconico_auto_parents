@@ -1,0 +1,21 @@
+{
+	"manifest_version" : 2,
+	"name"             : "コンテンツツリー登録支援ツール",
+	"version"          : "0.1.1",
+	"description"      : "IDのリストをニコニコ動画のコンテンツツリーに登録する作業を自動化する拡張機能",
+	"author"           : "istallia",
+	"icons" : {
+		"32"  : "icon_32.png",
+		"48"  : "icon_48.png",
+		"128" : "icon_128.png"
+	},
+	"content_scripts" : [{
+		"matches" : ["http://commons.nicovideo.jp/tree/edit/*", "https://commons.nicovideo.jp/tree/edit/*"],
+		"js"      : ["content_scripts.js"],
+		"css"     : ["content_scripts.css"]
+	}],
+	"permissions" : [
+		"http://commons.nicovideo.jp/tree/edit/*",
+		"https://commons.nicovideo.jp/tree/edit/*"
+	]
+}
