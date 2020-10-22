@@ -42,4 +42,5 @@ button.ista-button-reg {
 	padding       : 0.05em 0.5em;
 	margin        : 0px;
 	margin-left   : 0.3em;
+	outline       : none;
 }

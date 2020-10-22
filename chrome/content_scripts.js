@@ -75,7 +75,7 @@ let create_promise_candidates = id10 => {
 					return;
 				}
 				items.forEach(item => {
-					parents.appendChild(item);
+					parent_works.appendChild(item);
 				});
 				// console.log('[拡張機能]要素の移動');
 				resolve();
@@ -107,6 +107,20 @@ let add_materials = () => {
 		document.getElementById('checkbox').style.display           = 'none';
 		document.getElementById('parents').style.backgroundImage    = 'url("")';
 		ista_processing                                             = false;
+	});
+};
+
+/* --- 現在の候補から一括登録を行う --- */
+let auto_reg_candidates = () => {
+	let candidates   = document.getElementById('candidate');
+	let parent_works = document.getElementById('parents');
+	let items        = [... candidates.children];
+	let p_items      = [... document.getElementById('parents').children];
+	items.forEach(item => {
+		for(p_item of p_items) {
+			if(p_item.id === item.id) return;
+		}
+		parent_works.appendChild(item);
 	});
 };
 
@@ -154,5 +168,6 @@ modal_win_bg.addEventListener('click', () => {
 let button_reg = document.createElement('button');
 button_reg.classList.add('ista-button-reg');
 button_reg.innerText = '[拡張機能]一括登録';
+button_reg.addEventListener('click', auto_reg_candidates);
 let parent_h3 = document.querySelector('div.search-parent h3')
 parent_h3.appendChild(button_reg);
