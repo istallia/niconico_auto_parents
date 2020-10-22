@@ -111,7 +111,7 @@ let add_materials = () => {
 };
 
 /* --- ページに要素を追加する --- */
-/* ボタンの追加 */
+/* 「IDリストから自動登録」ボタンの追加 */
 let button_open = document.createElement('a');
 button_open.classList.add('btn-01');
 button_open.innerText    = '[拡張機能]IDリストから自動登録';
@@ -150,3 +150,9 @@ modal_win_bg.addEventListener('click', () => {
 		document.getElementById('ista-auto-modal-bg').style.display = 'none';
 	}
 });
+/* 「一括登録」ボタンの追加 */
+let button_reg = document.createElement('button');
+button_reg.classList.add('ista-button-reg');
+button_reg.innerText = '[拡張機能]一括登録';
+let parent_h3 = document.querySelector('div.search-parent h3')
+parent_h3.appendChild(button_reg);
