@@ -168,6 +168,7 @@ modal_win_bg.addEventListener('click', () => {
 let button_reg = document.createElement('button');
 button_reg.classList.add('ista-button-reg');
 button_reg.innerText = '[拡張機能]一括登録';
+button_reg.title     = '親候補作品を一括で親作品に移動'
 button_reg.addEventListener('click', auto_reg_candidates);
 let parent_h3 = document.querySelector('div.search-parent h3')
 parent_h3.appendChild(button_reg);
