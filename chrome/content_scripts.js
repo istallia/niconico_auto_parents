@@ -149,7 +149,7 @@ modal_win.innerHTML = `
 	使用した素材のIDのリストを入力してください。<br>
 	[v0.1.1] IDのリストの整理は自動で行います。1行が10件未満、または超過でも10件ごとに整頓します。
 </p>
-<textarea id="ista-auto-list" rows="8"></textarea>
+<textarea id="ista-auto-list"></textarea>
 <button id="ista-auto-button">自動登録</button>
 `;
 parent_button.parentNode.insertBefore(modal_win, parent_button);
