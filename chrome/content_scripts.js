@@ -172,3 +172,23 @@ button_reg.title     = '親候補作品を一括で親作品に移動'
 button_reg.addEventListener('click', auto_reg_candidates);
 let parent_h3 = document.querySelector('div.search-parent h3')
 parent_h3.appendChild(button_reg);
+
+/* --- 候補作品をクリックで移動させるためのイベント --- */
+let click_to_reg = event => {
+	/* 親をチェック */
+	const parent = event.currentTarget.parentNode;
+	if( parent.id !== 'candidate' ) return;
+	/* 移動する */
+	const parent_works = document.getElementById('parents');
+	parent_works.appendChild(event.currentTarget);
+};
+let observer_candidates = () => {
+	let parent_items = [... document.getElementById('candidate').children];
+	parent_items.forEach(item => {
+		if( item.getAttribute('ev') !== 'yes' ) {
+			item.addEventListener('click', click_to_reg);
+			item.setAttribute('ev', 'yes');
+		}
+	});
+};
+setInterval(observer_candidates, 200);
