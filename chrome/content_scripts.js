@@ -4,6 +4,7 @@
  */
 
 /* --- 状態を保存する --- */
+const MAX_WORKS     = 300;
 let ista_processing = false;
 
 /* --- IDリストを最高効率に変換する --- */
@@ -70,6 +71,18 @@ let create_promise_candidates = id10 => {
 				let candidates   = document.getElementById('candidate');
 				let parent_works = document.getElementById('parents');
 				let items        = [... candidates.children];
+				let p_items      = [... parent_works.children];
+				if( items.length + p_items.length > MAX_WORKS ) {
+					alert('合計親作品数が300件を超えるため、候補を自動登録することができません。');
+					document.getElementById('ista-auto-modal').style.display    = 'none';
+					document.getElementById('ista-auto-modal-bg').style.display = 'none';
+					document.getElementById('ista-auto-list').value             = '';
+					document.getElementById('checkbox').style.display           = 'none';
+					document.getElementById('parents').style.backgroundImage    = 'url("")';
+					ista_processing                                             = false;
+					throw new Error('limit-300');
+					return;
+				}
 				if( items.length < 1 && count < 10 ) {
 					setTimeout(add_candidates.bind(this, count+1), 200);
 					return;
@@ -100,7 +113,7 @@ let add_materials = () => {
 	// let a_promise = promise_list.reduce((promise, task) => (
 	// 	promise.then(task)
 	// ), Promise.resolve());
-	a_promise.then(() => {
+	a_promise.finally(() => {
 		document.getElementById('ista-auto-modal').style.display    = 'none';
 		document.getElementById('ista-auto-modal-bg').style.display = 'none';
 		document.getElementById('ista-auto-list').value             = '';
@@ -116,6 +129,10 @@ let auto_reg_candidates = () => {
 	let parent_works = document.getElementById('parents');
 	let items        = [... candidates.children];
 	let p_items      = [... document.getElementById('parents').children];
+	if( items.length + p_items.length > MAX_WORKS ) {
+		alert('合計親作品数が300件を超えるため、候補を一括登録することができません。');
+		return;
+	}
 	items.forEach(item => {
 		for(p_item of p_items) {
 			if(p_item.id === item.id) return;
@@ -178,6 +195,12 @@ let click_to_reg = event => {
 	/* 親をチェック */
 	const parent = event.currentTarget.parentNode;
 	if( parent.id !== 'candidate' ) return;
+	/* 親作品の件数チェック */
+	let p_items = [... document.getElementById('parents').children];
+	if( p_items.length + 1 > MAX_WORKS ) {
+		alert('300件を超える親作品を登録することはできません。');
+		return;
+	}
 	/* 移動する */
 	const parent_works = document.getElementById('parents');
 	parent_works.appendChild(event.currentTarget);
