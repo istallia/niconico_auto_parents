@@ -34,3 +34,13 @@
 	width  : 100%;
 	margin : 1em 0px;
 }
+button.ista-button-reg {
+	cursor        : pointer;
+	background    : #595959 url(/images/tree/edit/bg_candidateselect.jpg) repeat-x  left bottom;
+	color         : white;
+	border-radius : 2em;
+	padding       : 0.05em 0.5em;
+	margin        : 0px;
+	margin-left   : 0.3em;
+	outline       : none;
+}

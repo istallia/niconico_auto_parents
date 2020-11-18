@@ -70,17 +70,14 @@ let create_promise_candidates = id10 => {
 				let candidates   = document.getElementById('candidate');
 				let parent_works = document.getElementById('parents');
 				let items        = [... candidates.children];
-				console.log(items);
 				if( items.length < 1 && count < 10 ) {
 					setTimeout(add_candidates.bind(this, count+1), 200);
-					console.log('setTimeout');
 					return;
 				}
 				items.forEach(item => {
-					parents.appendChild(item);
-					console.log(item);
+					parent_works.appendChild(item);
 				});
-				console.log('[拡張機能]要素の移動');
+				// console.log('[拡張機能]要素の移動');
 				resolve();
 			};
 			setTimeout(add_candidates.bind(this, 0), 300);
@@ -113,8 +110,22 @@ let add_materials = () => {
 	});
 };
 
+/* --- 現在の候補から一括登録を行う --- */
+let auto_reg_candidates = () => {
+	let candidates   = document.getElementById('candidate');
+	let parent_works = document.getElementById('parents');
+	let items        = [... candidates.children];
+	let p_items      = [... document.getElementById('parents').children];
+	items.forEach(item => {
+		for(p_item of p_items) {
+			if(p_item.id === item.id) return;
+		}
+		parent_works.appendChild(item);
+	});
+};
+
 /* --- ページに要素を追加する --- */
-/* ボタンの追加 */
+/* 「IDリストから自動登録」ボタンの追加 */
 let button_open = document.createElement('a');
 button_open.classList.add('btn-01');
 button_open.innerText    = '[拡張機能]IDリストから自動登録';
@@ -138,7 +149,7 @@ modal_win.innerHTML = `
 	使用した素材のIDのリストを入力してください。<br>
 	[v0.1.1] IDのリストの整理は自動で行います。1行が10件未満、または超過でも10件ごとに整頓します。
 </p>
-<textarea id="ista-auto-list" rows="8"></textarea>
+<textarea id="ista-auto-list" rows="4"></textarea>
 <button id="ista-auto-button">自動登録</button>
 `;
 parent_button.parentNode.insertBefore(modal_win, parent_button);
@@ -153,3 +164,11 @@ modal_win_bg.addEventListener('click', () => {
 		document.getElementById('ista-auto-modal-bg').style.display = 'none';
 	}
 });
+/* 「一括登録」ボタンの追加 */
+let button_reg = document.createElement('button');
+button_reg.classList.add('ista-button-reg');
+button_reg.innerText = '[拡張機能]一括登録';
+button_reg.title     = '親候補作品を一括で親作品に移動'
+button_reg.addEventListener('click', auto_reg_candidates);
+let parent_h3 = document.querySelector('div.search-parent h3')
+parent_h3.appendChild(button_reg);

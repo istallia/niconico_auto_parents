@@ -75,7 +75,7 @@ let create_promise_candidates = id10 => {
 					return;
 				}
 				items.forEach(item => {
-					parents.appendChild(item);
+					parent_works.appendChild(item);
 				});
 				// console.log('[拡張機能]要素の移動');
 				resolve();
@@ -110,8 +110,22 @@ let add_materials = () => {
 	});
 };
 
+/* --- 現在の候補から一括登録を行う --- */
+let auto_reg_candidates = () => {
+	let candidates   = document.getElementById('candidate');
+	let parent_works = document.getElementById('parents');
+	let items        = [... candidates.children];
+	let p_items      = [... document.getElementById('parents').children];
+	items.forEach(item => {
+		for(p_item of p_items) {
+			if(p_item.id === item.id) return;
+		}
+		parent_works.appendChild(item);
+	});
+};
+
 /* --- ページに要素を追加する --- */
-/* ボタンの追加 */
+/* 「IDリストから自動登録」ボタンの追加 */
 let button_open = document.createElement('a');
 button_open.classList.add('btn-01');
 button_open.innerText    = '[拡張機能]IDリストから自動登録';
@@ -150,3 +164,11 @@ modal_win_bg.addEventListener('click', () => {
 		document.getElementById('ista-auto-modal-bg').style.display = 'none';
 	}
 });
+/* 「一括登録」ボタンの追加 */
+let button_reg = document.createElement('button');
+button_reg.classList.add('ista-button-reg');
+button_reg.innerText = '[拡張機能]一括登録';
+button_reg.title     = '親候補作品を一括で親作品に移動'
+button_reg.addEventListener('click', auto_reg_candidates);
+let parent_h3 = document.querySelector('div.search-parent h3')
+parent_h3.appendChild(button_reg);
