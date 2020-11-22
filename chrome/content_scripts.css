@@ -46,3 +46,9 @@ button.ista-button-reg {
 	margin-left   : 0.3rem;
 	outline       : none;
 }
+
+/* --- 候補作品のスタイル --- */
+div > div.dsc {
+	user-select : none;
+	cursor      : default;
+}
