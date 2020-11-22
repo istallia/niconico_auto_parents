@@ -139,6 +139,10 @@ let auto_reg_candidates = () => {
 		}
 		parent_works.appendChild(item);
 	});
+	if ( p_items.length === 0 && items.length > 0 ) {
+		document.getElementById('checkbox').style.display           = 'none';
+		document.getElementById('parents').style.backgroundImage    = 'url("")';
+	}
 };
 
 /* --- ページに要素を追加する --- */
@@ -204,6 +208,10 @@ let click_to_reg = event => {
 	/* 移動する */
 	const parent_works = document.getElementById('parents');
 	parent_works.appendChild(event.currentTarget);
+	if ( p_items.length === 0 ) {
+		document.getElementById('checkbox').style.display           = 'none';
+		document.getElementById('parents').style.backgroundImage    = 'url("")';
+	}
 };
 let observer_candidates = () => {
 	let parent_items = [... document.getElementById('candidate').children];
