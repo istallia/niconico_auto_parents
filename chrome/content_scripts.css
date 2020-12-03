@@ -8,9 +8,9 @@
 	display          : none;
 	position         : fixed;
 	z-index          : 200;
-	top              : 40vh;
+	top              : 38vh;
 	left             : 25vw;
-	height           : 20vh;
+	height           : 24vh;
 	width            : 50vw;
 	padding          : 1rem 1rem 2rem;
 	overflow-y       : scroll;

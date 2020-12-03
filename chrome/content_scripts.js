@@ -168,7 +168,8 @@ modal_win.classList.add('ista-auto-modal');
 modal_win.innerHTML = `
 <p>
 	使用した素材のIDのリストを入力してください。<br>
-	[v0.1.1] IDのリストの整理は自動で行います。1行が10件未満、または超過でも10件ごとに整頓します。
+	[v0.1.1] IDのリストの整理は自動で行います。1行が10件未満、または超過でも10件ごとに整頓します。<br>
+	[v0.3.0] exoファイルやccprojファイルなど、テキスト形式のファイルを投げ込むとIDを抽出してテキストエリアに追加します。
 </p>
 <textarea id="ista-auto-list"></textarea>
 <button id="ista-auto-button">自動登録</button>
