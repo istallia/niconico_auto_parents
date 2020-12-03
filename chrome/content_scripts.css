@@ -46,6 +46,9 @@ button.ista-button-reg {
 	margin-left   : 0.3rem;
 	outline       : none;
 }
+.ista-dragover {
+	background-color: #9fc;
+}
 
 /* --- 候補作品のスタイル --- */
 div > div.dsc {

@@ -154,7 +154,17 @@ button_open.style.cursor = 'pointer';
 button_open.addEventListener('click', () => {
 	document.getElementById('ista-auto-modal').style.display    = 'block';
 	document.getElementById('ista-auto-modal-bg').style.display = 'block';
-	document.getElementById('ista-auto-button').onclick         = add_materials;
+	document.getElementById('ista-auto-modal').ondragover = event => {
+		document.getElementById('ista-auto-list').classList.add('ista-dragover');
+	};
+	document.getElementById('ista-auto-modal').ondragleave = event => {
+		document.getElementById('ista-auto-list').classList.remove('ista-dragover');
+	};
+	document.getElementById('ista-auto-modal').ondrop = event => {
+		event.preventDefault();
+		document.getElementById('ista-auto-list').classList.remove('ista-dragover');
+	};
+	document.getElementById('ista-auto-button').onclick = add_materials;
 	let select           = document.getElementById('site_selector');
 	select.selectedIndex = select.options.length - 1;
 	select.dispatchEvent(new Event('change', {bubbles: true, composed: true}));
