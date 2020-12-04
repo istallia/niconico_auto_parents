@@ -8,7 +8,7 @@ const MAX_WORKS     = 300;
 let ista_processing = false;
 
 /* --- IDリストを最高効率に変換する --- */
-let optimize_list = id_list => {
+let optimize_list = (id_list, check_parents = true) => {
 	/* IDを1つずつバラバラの配列にする */
 	let p_list = id_list.split('\n');
 	for (i in p_list) p_list[i] = p_list[i].split(' ');
@@ -16,6 +16,7 @@ let optimize_list = id_list => {
 	/* 既に登録済みのリストを取得する */
 	let ng_list = [];
 	let items   = [... document.getElementById('parents').children];
+	if (!check_parents) items = [];
 	for (item of items) ng_list.push(item.id);
 	/* IDの形式であり、かつ重複のないリストを作成する */
 	let ok_list = [];
@@ -161,16 +162,23 @@ button_open.addEventListener('click', () => {
 		document.getElementById('ista-auto-list').classList.remove('ista-dragover');
 	};
 	document.getElementById('ista-auto-modal').ondrop = event => {
+		if (event.dataTransfer.files.length <= 0) return;
 		event.preventDefault();
 		document.getElementById('ista-auto-list').classList.remove('ista-dragover');
-		let name_files = [];
+		const reader = new FileReader();
+		reader.addEventListener('load', event => {
+			const regexp       = /(?:^|[^a-zA-Z0-9])((nc|im|sm|td)\d{2,12})(?:[^a-zA-Z0-9]|$)/g;
+			const dropped_text = event.currentTarget.result;
+			const dropped_ids  = [... dropped_text.matchAll(regexp)];
+			for (let index in dropped_ids) dropped_ids[index] = dropped_ids[index][1];
+			let text_list = document.getElementById('ista-auto-list').value;
+			if (text_list.slice(-1) !== '\n' && text_list.length > 0) text_list = text_list + '\n';
+			text_list = text_list + optimize_list(dropped_ids.join(' ')).join('\n');
+			document.getElementById('ista-auto-list').value = text_list;
+		});
 		for (let file of event.dataTransfer.files) {
-			name_files.push(file.name);
+			reader.readAsText(file);
 		}
-		let text_list = document.getElementById('ista-auto-list').value;
-		if (text_list.slice(-1) !== '\n' && text_list.length > 0) text_list = text_list + '\n';
-		text_list = text_list + name_files.join('\n');
-		document.getElementById('ista-auto-list').value = text_list;
 	};
 	document.getElementById('ista-auto-button').onclick = add_materials;
 	let select           = document.getElementById('site_selector');
