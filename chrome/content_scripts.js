@@ -163,6 +163,14 @@ button_open.addEventListener('click', () => {
 	document.getElementById('ista-auto-modal').ondrop = event => {
 		event.preventDefault();
 		document.getElementById('ista-auto-list').classList.remove('ista-dragover');
+		let name_files = [];
+		for (let file of event.dataTransfer.files) {
+			name_files.push(file.name);
+		}
+		let text_list = document.getElementById('ista-auto-list').value;
+		if (text_list.slice(-1) !== '\n' && text_list.length > 0) text_list = text_list + '\n';
+		text_list = text_list + name_files.join('\n');
+		document.getElementById('ista-auto-list').value = text_list;
 	};
 	document.getElementById('ista-auto-button').onclick = add_materials;
 	let select           = document.getElementById('site_selector');
@@ -179,7 +187,7 @@ modal_win.innerHTML = `
 <p>
 	使用した素材のIDのリストを入力してください。<br>
 	[v0.1.1] IDのリストの整理は自動で行います。1行が10件未満、または超過でも10件ごとに整頓します。<br>
-	[v0.3.0] exoファイルやccprojファイルなど、テキスト形式のファイルを投げ込むとIDを抽出してテキストエリアに追加します。
+	[v0.3.0] exoファイルやccprojファイルなどのファイルを投げ込むとIDを抽出してテキストエリアに追加します。
 </p>
 <textarea id="ista-auto-list"></textarea>
 <button id="ista-auto-button">自動登録</button>
