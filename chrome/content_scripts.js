@@ -156,19 +156,20 @@ button_open.addEventListener('click', () => {
 	document.getElementById('ista-auto-modal').style.display    = 'block';
 	document.getElementById('ista-auto-modal-bg').style.display = 'block';
 	document.getElementById('ista-auto-modal').ondragover = event => {
+		event.preventDefault();
 		document.getElementById('ista-auto-list').classList.add('ista-dragover');
 	};
 	document.getElementById('ista-auto-modal').ondragleave = event => {
 		document.getElementById('ista-auto-list').classList.remove('ista-dragover');
 	};
 	document.getElementById('ista-auto-modal').ondrop = event => {
+		document.getElementById('ista-auto-list').classList.remove('ista-dragover');
 		if (event.dataTransfer.files.length <= 0) return;
 		event.preventDefault();
-		document.getElementById('ista-auto-list').classList.remove('ista-dragover');
 		for (let file of event.dataTransfer.files) {
 			const reader = new FileReader();
 			reader.addEventListener('load', event => {
-				const regexp       = /(?:^|[^a-zA-Z0-9])((nc|im|sm|td)\d{2,12})(?:[^a-zA-Z0-9]|$)/g;
+				const regexp       = /(?<=^|[^a-zA-Z0-9])((nc|im|sm|td)\d{2,12})(?=[^a-zA-Z0-9]|$)/g;
 				const dropped_text = event.currentTarget.result;
 				const dropped_ids  = [... dropped_text.matchAll(regexp)];
 				for (let index in dropped_ids) dropped_ids[index] = dropped_ids[index][1];
@@ -218,7 +219,7 @@ button_reg.classList.add('ista-button-reg');
 button_reg.innerText = '[拡張機能]一括登録';
 button_reg.title     = '親候補作品を一括で親作品に移動'
 button_reg.addEventListener('click', auto_reg_candidates);
-let parent_h3 = document.querySelector('div.search-parent h3')
+let parent_h3 = document.querySelector('div.search-parent h3');
 parent_h3.appendChild(button_reg);
 
 /* --- 候補作品をクリックで移動させるためのイベント --- */
