@@ -1,8 +1,8 @@
 {
 	"manifest_version" : 2,
 	"name"             : "コンテンツツリー登録支援ツール",
-	"version"          : "0.3.0",
-	"description"      : "IDのリストをニコニコ動画のコンテンツツリーに登録する作業を自動化する拡張機能",
+	"version"          : "0.3.1",
+	"description"      : "候補作品をニコニコ動画のコンテンツツリーに登録する作業を自動化する拡張機能",
 	"author"           : "istallia",
 	"icons" : {
 		"32"  : "icon_32.png",

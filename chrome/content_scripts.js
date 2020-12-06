@@ -170,7 +170,7 @@ button_open.addEventListener('click', () => {
 			const reader = new FileReader();
 			reader.addEventListener('load', event => {
 				const regexp       = /(?<=^|[^a-zA-Z0-9])((nc|im|sm|td)\d{2,12})(?=[^a-zA-Z0-9]|$)/g;
-				const dropped_text = event.currentTarget.result;
+				const dropped_text = event.currentTarget.result.replace(/\x00/g, '');
 				const dropped_ids  = [... dropped_text.matchAll(regexp)];
 				for (let index in dropped_ids) dropped_ids[index] = dropped_ids[index][1];
 				let text_list = document.getElementById('ista-auto-list').value;
