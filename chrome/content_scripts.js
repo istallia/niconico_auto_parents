@@ -115,12 +115,21 @@ let add_materials = () => {
 	// 	promise.then(task)
 	// ), Promise.resolve());
 	a_promise.finally(() => {
-		document.getElementById('ista-auto-modal').style.display    = 'none';
-		document.getElementById('ista-auto-modal-bg').style.display = 'none';
-		document.getElementById('ista-auto-list').value             = '';
-		document.getElementById('checkbox').style.display           = 'none';
-		document.getElementById('parents').style.backgroundImage    = 'url("")';
-		ista_processing                                             = false;
+		let remained_list = optimize_list(document.getElementById('ista-auto-list').value).join('\n');
+		if ( remained_list.length > 2 ) {
+			/* IDが残留した場合 */
+			window.alert('[コンテンツツリー登録支援ツール]\nいくつかのIDの作品が正常に登録されませんでした。\n繰り返し登録しようとしても失敗する場合は、当該作品が非公開または削除された可能性があります。');
+			document.getElementById('ista-auto-list').value = remained_list;
+			ista_processing = false;
+		} else {
+			/* すべてのIDが正常に登録された場合 */
+			document.getElementById('ista-auto-modal').style.display    = 'none';
+			document.getElementById('ista-auto-modal-bg').style.display = 'none';
+			document.getElementById('ista-auto-list').value             = '';
+			document.getElementById('checkbox').style.display           = 'none';
+			document.getElementById('parents').style.backgroundImage    = 'url("")';
+			ista_processing                                             = false;
+		}
 	});
 };
 
