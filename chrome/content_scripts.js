@@ -84,7 +84,7 @@ let create_promise_candidates = id10 => {
 					throw new Error('limit-300');
 					return;
 				}
-				if( items.length < 1 && count < 10 ) {
+				if( items.length < 1 && count < 25 ) {
 					setTimeout(add_candidates.bind(this, count+1), 200);
 					return;
 				}
