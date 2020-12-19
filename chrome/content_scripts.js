@@ -105,6 +105,7 @@ let add_materials = () => {
 	let id_list      = document.getElementById('ista-auto-list').value;
 	id_list          = optimize_list(id_list);
 	document.getElementById('ista-auto-list').value = id_list.join('\n');
+	localStorage.setItem('ista-verify-contents', String(document.getElementById('ista-verify-contents').checked));
 	// let promise_list = [];
 	let a_promise = Promise.resolve();
 	for (const list of id_list) {
@@ -116,7 +117,8 @@ let add_materials = () => {
 	// ), Promise.resolve());
 	a_promise.finally(() => {
 		let remained_list = optimize_list(document.getElementById('ista-auto-list').value).join('\n');
-		if ( remained_list.length > 2 ) {
+		let verify        = (localStorage.getItem('ista-verify-contents') !== 'false');
+		if ( remained_list.length > 2 && verify ) {
 			/* IDが残留した場合 */
 			alert('[コンテンツツリー登録支援ツール]\nいくつかのIDの作品が正常に登録されませんでした。\n繰り返し登録しようとしても失敗する場合は、当該作品が非公開または削除された可能性があります。');
 			document.getElementById('ista-auto-list').value = remained_list;
@@ -194,6 +196,8 @@ button_open.addEventListener('click', () => {
 	let select           = document.getElementById('site_selector');
 	select.selectedIndex = select.options.length - 1;
 	select.dispatchEvent(new Event('change', {bubbles: true, composed: true}));
+	/* チェックボックスに値を反映する */
+	document.getElementById('ista-verify-contents').checked = (localStorage.getItem('ista-verify-contents') !== 'false');
 });
 let parent_button = document.getElementsByClassName('submit')[0];
 parent_button.insertBefore(button_open, parent_button.firstChild);
@@ -205,7 +209,8 @@ modal_win.innerHTML = `
 <p>
 	使用した素材のIDのリストを入力してください。<br>
 	[v0.1.1] IDのリストの整理は自動で行います。1行が10件未満、または超過でも10件ごとに整頓します。<br>
-	[v0.3.0] ファイル(複数可)をここにドラッグ＆ドロップするとID(動画/静画/コモンズ/立体)を抽出してテキストエリアに追加します。
+	[v0.3.0] ファイル(複数可)をここにドラッグ＆ドロップするとID(動画/静画/コモンズ/立体)を抽出してテキストエリアに追加します。<br>
+	<label for="ista-verify-contents"><input type="checkbox" id="ista-verify-contents" checked>&nbsp;書き込み検証を行う</label>
 </p>
 <textarea id="ista-auto-list"></textarea>
 <button id="ista-auto-button">自動登録</button>
