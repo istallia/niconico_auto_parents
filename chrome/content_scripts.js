@@ -186,7 +186,7 @@ button_open.addEventListener('click', () => {
 				for (let index in dropped_ids) dropped_ids[index] = dropped_ids[index][1];
 				let text_list = document.getElementById('ista-auto-list').value;
 				if (text_list.slice(-1) !== '\n' && text_list.length > 0) text_list = text_list + '\n';
-				text_list = text_list + optimize_list(dropped_ids.join(' ')).join('\n');
+				text_list = text_list + optimize_list(dropped_ids.join(' '),false).join('\n');
 				document.getElementById('ista-auto-list').value = text_list;
 			});
 			reader.readAsText(file);
