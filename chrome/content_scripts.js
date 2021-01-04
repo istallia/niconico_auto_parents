@@ -180,8 +180,10 @@ button_open.addEventListener('click', () => {
 		event.preventDefault();
 		const extract_func = (name, event) => {
 			const regexp       = /(?<=^|[^a-zA-Z0-9])((nc|im|sm|td)\d{2,12})(?=[^a-zA-Z0-9]|$)/g;
-			const dropped_text = name + '\n' + event.currentTarget.result.replace(/\x00/g, '');
-			const dropped_ids  = [... dropped_text.matchAll(regexp)];
+			const dropped_text = event.currentTarget.result.replace(/\x00/g, '');
+			let ids_in_name  = [... name.matchAll(regexp)];
+			let dropped_ids  = [... dropped_text.matchAll(regexp)];
+			if (ids_in_name.length > 0) dropped_ids = ids_in_name;
 			for (let index in dropped_ids) dropped_ids[index] = dropped_ids[index][1];
 			let text_list = document.getElementById('ista-auto-list').value;
 			if (text_list.slice(-1) !== '\n' && text_list.length > 0) text_list = text_list + '\n';
@@ -211,7 +213,7 @@ modal_win.innerHTML = `
 <p>
 	使用した素材のIDのリストを入力してください。<br>
 	[v0.1.1] IDのリストの整理は自動で行います。1行が10件未満、または超過でも10件ごとに整頓します。<br>
-	[v0.3.0] ファイル(複数可)をここにドラッグ＆ドロップするとID(動画/静画/コモンズ/立体)を抽出してテキストエリアに追加します。<br>
+	[v0.3.0] ファイル(複数可)をここにドラッグ＆ドロップするとID(動画/静画/コモンズ/立体)を抽出してテキストエリアに追加します。<br>(ファイル名にIDが含まれる場合はそちらを優先し、ファイル内容は確認しません)<br>
 	<label for="ista-verify-contents"><input type="checkbox" id="ista-verify-contents" checked>&nbsp;書き込み検証を行う</label>
 </p>
 <textarea id="ista-auto-list"></textarea>
