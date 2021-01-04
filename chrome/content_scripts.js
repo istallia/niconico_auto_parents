@@ -174,21 +174,23 @@ button_open.addEventListener('click', () => {
 		document.getElementById('ista-auto-list').classList.remove('ista-dragover');
 	};
 	document.getElementById('ista-auto-modal').ondrop = event => {
+		/* ファイルからID抽出 */
 		document.getElementById('ista-auto-list').classList.remove('ista-dragover');
 		if (event.dataTransfer.files.length <= 0) return;
 		event.preventDefault();
+		const extract_func = (name, event) => {
+			const regexp       = /(?<=^|[^a-zA-Z0-9])((nc|im|sm|td)\d{2,12})(?=[^a-zA-Z0-9]|$)/g;
+			const dropped_text = name + '\n' + event.currentTarget.result.replace(/\x00/g, '');
+			const dropped_ids  = [... dropped_text.matchAll(regexp)];
+			for (let index in dropped_ids) dropped_ids[index] = dropped_ids[index][1];
+			let text_list = document.getElementById('ista-auto-list').value;
+			if (text_list.slice(-1) !== '\n' && text_list.length > 0) text_list = text_list + '\n';
+			text_list = text_list + optimize_list(dropped_ids.join(' '),false).join('\n');
+			document.getElementById('ista-auto-list').value = text_list;
+		}
 		for (let file of event.dataTransfer.files) {
 			const reader = new FileReader();
-			reader.addEventListener('load', event => {
-				const regexp       = /(?<=^|[^a-zA-Z0-9])((nc|im|sm|td)\d{2,12})(?=[^a-zA-Z0-9]|$)/g;
-				const dropped_text = event.currentTarget.result.replace(/\x00/g, '');
-				const dropped_ids  = [... dropped_text.matchAll(regexp)];
-				for (let index in dropped_ids) dropped_ids[index] = dropped_ids[index][1];
-				let text_list = document.getElementById('ista-auto-list').value;
-				if (text_list.slice(-1) !== '\n' && text_list.length > 0) text_list = text_list + '\n';
-				text_list = text_list + optimize_list(dropped_ids.join(' '),false).join('\n');
-				document.getElementById('ista-auto-list').value = text_list;
-			});
+			reader.addEventListener('load', extract_func.bind(this, file.name));
 			reader.readAsText(file);
 		}
 	};
