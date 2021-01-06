@@ -57,6 +57,7 @@ button#ista-auto-button {
 	padding          : 0.25rem 1rem;
 	border-radius    : 0.20rem;
 }
+#Column01 > div.tree-edit-area.editbox.round5-t > p.helpimg { cursor : pointer; }
 
 /* --- 候補作品のスタイル --- */
 div > div.dsc {
