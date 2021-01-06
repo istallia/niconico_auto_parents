@@ -214,7 +214,7 @@ modal_win.innerHTML = `
 	使用した素材のIDのリストを入力してください。<br>
 	[v0.1.1] IDのリストの整理は自動で行います。1行が10件未満、または超過でも10件ごとに整頓します。<br>
 	[v0.3.0] ファイル(複数可)をここにドラッグ＆ドロップするとID(動画/静画/コモンズ/立体)を抽出してテキストエリアに追加します。<br>(ファイル名にIDが含まれる場合はそちらを優先し、ファイル内容は確認しません)<br>
-	<label for="ista-verify-contents"><input type="checkbox" id="ista-verify-contents" checked>&nbsp;書き込み検証を行う</label>
+	<label for="ista-verify-contents" title="(v0.3.2) これがOnのとき、親作品に登録できなかった作品を自動で確認してお知らせします。"><input type="checkbox" id="ista-verify-contents" checked>&nbsp;書き込み検証を行う</label>
 </p>
 <textarea id="ista-auto-list"></textarea>
 <button id="ista-auto-button">自動登録</button>

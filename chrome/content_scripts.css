@@ -11,12 +11,12 @@
 	top              : 36vh;
 	left             : 25vw;
 	height           : 28vh;
-	width            : 50vw;
+	width            : calc(50vw - 2rem);
 	padding          : 1rem 1rem 2rem;
 	overflow-y       : scroll;
-	background-color : #cff;
-	border           : 1px solid #369;
-	border-radius    : 0.5rem;
+	background-color : #eee;
+	border           : 2px solid #F17603;
+	border-radius    : 0.1rem;
 }
 .ista-auto-modal-bg {
 	display          : none;
@@ -31,10 +31,11 @@
 	background-color : #000a;
 }
 #ista-auto-list {
-	width  : 100%;
-	height : 6rem;
-	margin : 1em 0px;
-	font   : inherit;
+	width         : 100%;
+	height        : 6rem;
+	margin        : 1em 0px;
+	font          : inherit;
+	border-radius : 0.3rem;
 }
 button.ista-button-reg {
 	cursor        : pointer;
@@ -47,7 +48,14 @@ button.ista-button-reg {
 	outline       : none;
 }
 .ista-dragover {
-	background-color: #9fc;
+	background-color: #fc6;
+}
+button#ista-auto-button {
+	background-color : #F17603;
+	color            : #eee;
+	border           : 1px solid black;
+	padding          : 0.25rem 1rem;
+	border-radius    : 0.20rem;
 }
 
 /* --- 候補作品のスタイル --- */
