@@ -74,10 +74,12 @@ let create_promise_candidates = id10 => {
 		/* 要素の移動 */
 		return new Promise(resolve => {
 			let add_candidates = count => {
+				/* 各要素の取得 */
 				let candidates   = document.getElementById('candidate');
 				let parent_works = document.getElementById('parents');
 				let items        = [... candidates.children];
 				let p_items      = [... parent_works.children];
+				/* 親作登録上限の確認 */
 				if( items.length + p_items.length > MAX_WORKS ) {
 					alert_alt('合計親作品数が300件を超えるため、候補を自動登録することができません。');
 					document.getElementById('ista-auto-modal').style.display    = 'none';
@@ -89,10 +91,18 @@ let create_promise_candidates = id10 => {
 					throw new Error('limit-300');
 					return;
 				}
+				/* 要素がなければもう一度予約 */
 				if( items.length < 1 && count < 25 ) {
 					setTimeout(add_candidates.bind(this, count+1), 200);
 					return;
 				}
+				/* 親作品欄との重複がないか確認 */
+				const p_items_id = p_items.map(li => li.id);
+				items            = items.filter(li => {
+					check_linked_commons(li);
+					return p_items_id.indexOf(li.id) === -1;
+				});
+				/* 要素を親作品欄に追加 */
 				items.forEach(item => {
 					parent_works.appendChild(item);
 				});
@@ -144,16 +154,20 @@ let add_materials = () => {
 
 /* --- 現在の候補から一括登録を行う --- */
 let auto_reg_candidates = () => {
+	/* 各種要素を取得 */
 	let candidates   = document.getElementById('candidate');
 	let parent_works = document.getElementById('parents');
 	let items        = [... candidates.children];
 	let p_items      = [... document.getElementById('parents').children];
+	/* 親作品欄の件数を確認 */
 	if( items.length + p_items.length > MAX_WORKS ) {
 		alert_alt('合計親作品数が300件を超えるため、候補を一括登録することができません。');
 		return;
 	}
+	/* 重複チェック＆追加 */
 	items.forEach(item => {
 		for(p_item of p_items) {
+			check_linked_commons(p_item);
 			if(p_item.id === item.id) return;
 		}
 		parent_works.appendChild(item);
@@ -262,6 +276,10 @@ let click_to_reg = event => {
 		alert_alt('300件を超える親作品を登録することはできません。');
 		return;
 	}
+	/* 親作品欄との重複がないか確認 */
+	const p_items_id = p_items.map(li => li.id);
+	check_linked_commons(event.currentTarget);
+	if (p_items_id.indexOf(event.currentTarget.id) > -1) return;
 	/* 移動する */
 	const parent_works = document.getElementById('parents');
 	parent_works.appendChild(event.currentTarget);
@@ -283,16 +301,18 @@ setInterval(observer_candidates, 200);
 
 
 /* --- 連携付きコモンズ作品を連携先の表示に変更 --- */
-const replace_linked_commons = element => {
+const check_linked_commons = (element, do_replace = true) => {
 	/* 連携が付いているかチェック */
 	const main_creation   = element.querySelector('div.main-creation');
 	const linked_creation = element.querySelector('div.linked-creation');
 	if (!linked_creation) return null;
 	/* IDを置き換え */
 	const dest_id = main_creation.querySelector('div.linked-creation-data').getAttribute('data-linked-creation-id');
-	element.id    = dest_id;
-	/* 表示を切り替え */
-	main_creation.hidden   = true;
-	linked_creation.hidden = false;
+	if (do_replace) {
+		element.id = dest_id;
+		/* 表示を切り替え */
+		main_creation.hidden   = true;
+		linked_creation.hidden = false;
+	}
 	return dest_id;
 };
