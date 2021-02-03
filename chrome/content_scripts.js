@@ -269,6 +269,12 @@ document.querySelector("#Column01 > div.tree-edit-area.editbox.round5-t > p.help
 document.querySelector("#Column01 > div.tree-edit-area.editbox.round5-t > p.helpimg img").title = '[拡張機能] (v0.3.4)この矢印をクリックすると候補作品を一括で親作品欄に移動することができます。';
 let parent_h3 = document.querySelector('div.search-parent h3');
 parent_h3.appendChild(button_reg);
+/* コンテンツツリーの連携がある場合のお知らせメッセージ */
+const p_submit           = document.querySelector('p.submit');
+const notice_message     = document.createElement('p');
+notice_message.innerText = '[拡張機能] 1つ以上のコモンズ作品にコンテンツツリーの連携が設定されていたため、登録先を切り替えました。';
+notice_message.hidden    = true;
+p_submit.insertBefore(notice_message, p_submit.firstChild);
 
 
 /* --- 候補作品をクリックで移動させるためのイベント --- */
@@ -321,6 +327,7 @@ const check_linked_commons = (element, do_replace = true) => {
 		/* 表示を切り替え */
 		main_creation.hidden   = true;
 		linked_creation.hidden = false;
+		notice_message.hidden  = false;
 	}
 	return dest_id;
 };
