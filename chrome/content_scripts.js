@@ -3,11 +3,13 @@
  * ボタンやモーダルウィンドウの追加、および動作の記述を行う
  */
 
+
 /* --- 状態を保存する --- */
 const MAX_WORKS     = 300;
 let ista_processing = false;
 const alert_alt     = window.alert;
 window.alert        = text => console.log('alert -> '+text);
+
 
 /* --- IDリストを最高効率に変換する --- */
 let optimize_list = (id_list, check_parents = true) => {
@@ -44,6 +46,7 @@ let optimize_list = (id_list, check_parents = true) => {
 	}
 	return res_list;
 };
+
 
 /* --- 入力→候補に追加→要素の移動 を行うPromiseを返す --- */
 let create_promise_candidates = id10 => {
@@ -101,6 +104,7 @@ let create_promise_candidates = id10 => {
 	});
 };
 
+
 /* --- IDリストを読み取り、すべてのIDを追加する --- */
 let add_materials = () => {
 	ista_processing  = true;
@@ -137,6 +141,7 @@ let add_materials = () => {
 	});
 };
 
+
 /* --- 現在の候補から一括登録を行う --- */
 let auto_reg_candidates = () => {
 	let candidates   = document.getElementById('candidate');
@@ -158,6 +163,7 @@ let auto_reg_candidates = () => {
 		document.getElementById('parents').style.backgroundImage    = 'url("")';
 	}
 };
+
 
 /* --- ページに要素を追加する --- */
 /* 「IDリストから自動登録」ボタンの追加 */
@@ -244,6 +250,7 @@ document.querySelector("#Column01 > div.tree-edit-area.editbox.round5-t > p.help
 let parent_h3 = document.querySelector('div.search-parent h3');
 parent_h3.appendChild(button_reg);
 
+
 /* --- 候補作品をクリックで移動させるためのイベント --- */
 let click_to_reg = event => {
 	/* 親をチェック */
@@ -273,3 +280,19 @@ let observer_candidates = () => {
 	});
 };
 setInterval(observer_candidates, 200);
+
+
+/* --- 連携付きコモンズ作品を連携先の表示に変更 --- */
+const replace_linked_commons = element => {
+	/* 連携が付いているかチェック */
+	const main_creation   = element.querySelector('div.main-creation');
+	const linked_creation = element.querySelector('div.linked-creation');
+	if (!linked_creation) return null;
+	/* IDを置き換え */
+	const dest_id = main_creation.querySelector('div.linked-creation-data').getAttribute('data-linked-creation-id');
+	element.id    = dest_id;
+	/* 表示を切り替え */
+	main_creation.hidden   = true;
+	linked_creation.hidden = false;
+	return dest_id;
+};
