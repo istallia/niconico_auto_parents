@@ -9,6 +9,7 @@ const MAX_WORKS     = 300;
 let ista_processing = false;
 const alert_alt     = window.alert;
 window.alert        = text => console.log('alert -> '+text);
+let ista_linked_ids = {};
 
 
 /* --- IDリストを最高効率に変換する --- */
@@ -132,7 +133,12 @@ let add_materials = () => {
 	// 	promise.then(task)
 	// ), Promise.resolve());
 	a_promise.finally(() => {
-		let remained_list = optimize_list(document.getElementById('ista-auto-list').value).join('\n');
+		let text_list = document.getElementById('ista-auto-list').value;
+		for (let source_id in ista_linked_ids) {
+			let dest_id = ista_linked_ids[source_id];
+			text_list = text_list.replace(source_id, dest_id);
+		}
+		let remained_list = optimize_list(text_list).join('\n');
 		let verify        = (localStorage.getItem('ista-verify-contents') !== 'false');
 		if ( remained_list.length > 2 && verify ) {
 			/* IDが残留した場合 */
@@ -307,7 +313,9 @@ const check_linked_commons = (element, do_replace = true) => {
 	const linked_creation = element.querySelector('div.linked-creation');
 	if (!linked_creation) return null;
 	/* IDを置き換え */
-	const dest_id = main_creation.querySelector('div.linked-creation-data').getAttribute('data-linked-creation-id');
+	const source_id            = element.id;
+	const dest_id              = main_creation.querySelector('div.linked-creation-data').getAttribute('data-linked-creation-id');
+	ista_linked_ids[source_id] = dest_id;
 	if (do_replace) {
 		element.id = dest_id;
 		/* 表示を切り替え */
