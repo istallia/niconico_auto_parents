@@ -172,8 +172,8 @@ let auto_reg_candidates = () => {
 	}
 	/* 重複チェック＆追加 */
 	items.forEach(item => {
+		check_linked_commons(item);
 		for(p_item of p_items) {
-			check_linked_commons(p_item);
 			if(p_item.id === item.id) return;
 		}
 		parent_works.appendChild(item);
