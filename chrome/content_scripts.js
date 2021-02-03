@@ -6,6 +6,8 @@
 /* --- 状態を保存する --- */
 const MAX_WORKS     = 300;
 let ista_processing = false;
+const alert_alt     = window.alert;
+window.alert        = text => console.log('alert -> '+text);
 
 /* --- IDリストを最高効率に変換する --- */
 let optimize_list = (id_list, check_parents = true) => {
@@ -74,7 +76,7 @@ let create_promise_candidates = id10 => {
 				let items        = [... candidates.children];
 				let p_items      = [... parent_works.children];
 				if( items.length + p_items.length > MAX_WORKS ) {
-					alert('合計親作品数が300件を超えるため、候補を自動登録することができません。');
+					alert_alt('合計親作品数が300件を超えるため、候補を自動登録することができません。');
 					document.getElementById('ista-auto-modal').style.display    = 'none';
 					document.getElementById('ista-auto-modal-bg').style.display = 'none';
 					document.getElementById('ista-auto-list').value             = '';
@@ -120,7 +122,7 @@ let add_materials = () => {
 		let verify        = (localStorage.getItem('ista-verify-contents') !== 'false');
 		if ( remained_list.length > 2 && verify ) {
 			/* IDが残留した場合 */
-			alert('[コンテンツツリー登録支援ツール]\nいくつかのIDの作品が正常に登録されませんでした。\n繰り返し登録しようとしても失敗する場合は、当該作品が非公開または削除された可能性があります。');
+			alert_alt('[コンテンツツリー登録支援ツール]\nいくつかのIDの作品が正常に登録されませんでした。\n繰り返し登録しようとしても失敗する場合は、当該作品が非公開または削除された可能性があります。');
 			document.getElementById('ista-auto-list').value = remained_list;
 			ista_processing = false;
 		} else {
@@ -142,7 +144,7 @@ let auto_reg_candidates = () => {
 	let items        = [... candidates.children];
 	let p_items      = [... document.getElementById('parents').children];
 	if( items.length + p_items.length > MAX_WORKS ) {
-		alert('合計親作品数が300件を超えるため、候補を一括登録することができません。');
+		alert_alt('合計親作品数が300件を超えるため、候補を一括登録することができません。');
 		return;
 	}
 	items.forEach(item => {
@@ -250,7 +252,7 @@ let click_to_reg = event => {
 	/* 親作品の件数チェック */
 	let p_items = [... document.getElementById('parents').children];
 	if( p_items.length + 1 > MAX_WORKS ) {
-		alert('300件を超える親作品を登録することはできません。');
+		alert_alt('300件を超える親作品を登録することはできません。');
 		return;
 	}
 	/* 移動する */
