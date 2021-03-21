@@ -64,3 +64,18 @@ div > div.dsc {
 	user-select : none;
 	cursor      : default;
 }
+
+/* --- ニコニコ・ブックマーク --- */
+div.commonHeaderArea { z-index : 1000; }
+div.ista-sidebar {
+	display          : none;
+	position         : fixed;
+	z-index          : 500;
+	top              : 36px;
+	right            : 0px;
+	width            : 25vw;
+	height           : 100vh;
+	background-color : #eee;
+	border-left      : 3px solid #222;
+}
+div.visible { display : block; }

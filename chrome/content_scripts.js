@@ -239,10 +239,9 @@ modal_win.id = 'ista-auto-modal';
 modal_win.classList.add('ista-auto-modal');
 modal_win.innerHTML = `
 <p>
-	使用した素材のIDのリストを入力してください。<br>
-	[v0.1.1] IDのリストの整理は自動で行います。1行が10件未満、または超過でも10件ごとに整頓します。<br>
-	[v0.3.0] ファイル(複数可)をここにドラッグ＆ドロップするとID(動画/静画/コモンズ/立体)を抽出してテキストエリアに追加します。<br>(ファイル名にIDが含まれる場合はそちらを優先し、ファイル内容は確認しません)<br>
-	<label for="ista-verify-contents" title="(v0.3.2) これがOnのとき、親作品に登録できなかった作品を自動で確認してお知らせします。"><input type="checkbox" id="ista-verify-contents" checked>&nbsp;書き込み検証を行う</label>
+	使用した素材のIDのリストを入力してください。1行が10件未満、または11件以上になっている場合は自動で整頓されます。<br>
+	ファイル(複数可)を枠内にD&Dすると、そのファイルの中身または名前に含まれる作品ID(動画/静画/コモンズ/立体)を抽出できます。<br>
+	<button type="button" id="ista-open-sidebar-bookmarks" title="(v0.4.0) ブラウザのブックマークから作品IDを選択して追加します。">ニコニコ・ブックマーク</button> <label for="ista-verify-contents" title="(v0.3.2) これがOnのとき、親作品に登録できなかった作品を自動で確認してお知らせします。"><input type="checkbox" id="ista-verify-contents" checked>&nbsp;書き込み検証を行う</label>
 </p>
 <textarea id="ista-auto-list"></textarea>
 <button id="ista-auto-button">自動登録</button>
@@ -310,6 +309,18 @@ let observer_candidates = () => {
 	});
 };
 setInterval(observer_candidates, 200);
+
+
+/* --- [ニコニコ・ブックマーク] サイドバーを開く --- */
+const openSidebarBookmarks = () => {
+	/* 要素がなければ生成 */
+	if (!document.getElementById('ista-sidebar-bookmarks')) {
+		let div = document.createElement('div');
+		div.classList.add('ista-sidebar');
+		document.body.appendChild(div);
+	}
+};
+button_open.addEventListener('click', openSidebarBookmarks);
 
 
 /* --- 連携付きコモンズ作品を連携先の表示に変更 --- */
