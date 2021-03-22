@@ -4,6 +4,10 @@
  */
 
 
+/* --- browserの読み込み --- */
+if (typeof browser === 'undefined') browser = chrome;
+
+
 /* --- 状態を保存する --- */
 const MAX_WORKS     = 300;
 let ista_processing = false;

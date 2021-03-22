@@ -14,6 +14,12 @@
 		"js"      : ["content_scripts.js"],
 		"css"     : ["content_scripts.css"]
 	}],
+	"background": {
+		"scripts": [
+			"background.js"
+		],
+		"persistent": false
+	},
 	"permissions" : [
 		"http://commons.nicovideo.jp/tree/edit/*",
 		"https://commons.nicovideo.jp/tree/edit/*"
