@@ -311,16 +311,37 @@ let observer_candidates = () => {
 setInterval(observer_candidates, 200);
 
 
+/* --- [ニコニコ・ブックマーク] サイドバーを準備する --- */
+const generateSidebarBookmarks = () => {
+	/* 要素がなければ生成 */
+	if (document.getElementById('ista-sidebar-bookmarks')) return;
+	/* まずはベースを作成 */
+	let div = document.createElement('div');
+	div.id  = 'ista-sidebar-bookmarks';
+	div.classList.add('ista-sidebar');
+	document.body.appendChild(div);
+	/* モーダルウィンドウのボタンにイベント登録 */
+	document.getElementById('ista-open-sidebar-bookmarks').addEventListener('click', openSidebarBookmarks);
+};
+button_open.addEventListener('click', generateSidebarBookmarks);
+
+
 /* --- [ニコニコ・ブックマーク] サイドバーを開く --- */
 const openSidebarBookmarks = () => {
-	/* 要素がなければ生成 */
-	if (!document.getElementById('ista-sidebar-bookmarks')) {
-		let div = document.createElement('div');
-		div.classList.add('ista-sidebar');
-		document.body.appendChild(div);
-	}
+	/* 要素の存在チェック */
+	if (!document.getElementById('ista-sidebar-bookmarks')) return;
+	/* サイドバーのベースを表示する */
+	document.getElementById('ista-sidebar-bookmarks').classList.add('visible');
 };
-button_open.addEventListener('click', openSidebarBookmarks);
+
+
+/* --- [ニコニコ・ブックマーク] サイドバーを閉じる --- */
+const closeSidebarBookmarks = () => {
+	/* 要素の存在チェック */
+	if (!document.getElementById('ista-sidebar-bookmarks')) return;
+	/* サイドバーのベースを表示する */
+	document.getElementById('ista-sidebar-bookmarks').classList.remove('visible');
+};
 
 
 /* --- 連携付きコモンズ作品を連携先の表示に変更 --- */
