@@ -50,12 +50,17 @@ button.ista-button-reg {
 .ista-dragover {
 	background-color: #fc6;
 }
-button#ista-auto-button {
+button.ista-button {
 	background-color : #F17603;
 	color            : #eee;
 	border           : 1px solid black;
 	padding          : 0.25rem 1rem;
 	border-radius    : 0.20rem;
+}
+button.ista-button.white {
+	padding          : 0.05rem 1rem;
+	background-color : white;
+	color            : inherit;
 }
 #Column01 > div.tree-edit-area.editbox.round5-t > p.helpimg { cursor : pointer; }
 
