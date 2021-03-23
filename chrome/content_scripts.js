@@ -344,6 +344,13 @@ const generateSidebarBookmarks = () => {
 	button_add_all.classList.add('ista-button', 'white');
 	button_back.innerText    = '戻る';
 	button_add_all.innerText = 'すべて追加';
+	button_back.addEventListener('click', event => {
+		const i = String(document.getElementById('ista-sidebar-bookmarks-title').getAttribute('current-index'));
+		document.getElementById('ista-sidebar-bookmarks-list-'+i).classList.remove('visible');
+		document.getElementById('ista-sidebar-bookmarks-buttons').classList.remove('visible');
+		document.getElementById('ista-sidebar-bookmarks-title').innerText = 'ニコニコ・ブックマーク';
+		document.getElementById('ista-sidebar-bookmarks-folders').classList.add('visible');
+	});
 	area_buttons.appendChild(button_back);
 	area_buttons.appendChild(button_add_all);
 	div.appendChild(area_buttons);
@@ -371,6 +378,7 @@ const openSidebarBookmarks = () => {
 			/* フォルダ→作品一覧のイベント作成 */
 			let openSidebarWorks = event => {
 				const i = event.currentTarget.getAttribute('folder-index');
+				document.getElementById('ista-sidebar-bookmarks-title').setAttribute('current-index', String(i));
 				document.getElementById('ista-sidebar-bookmarks-title').innerText = event.currentTarget.innerText;
 				document.getElementById('ista-sidebar-bookmarks-folders').classList.remove('visible');
 				document.getElementById('ista-sidebar-bookmarks-buttons').classList.add('visible');
