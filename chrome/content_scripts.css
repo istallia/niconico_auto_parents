@@ -60,7 +60,8 @@ button.ista-button {
 	border-radius    : 0.20rem;
 }
 button.ista-button.white {
-	padding          : 0.05rem 0.75rem;
+	margin-bottom    : 0.25rem;
+	padding          : 0.2rem 0.75rem;
 	background-color : white;
 	color            : inherit;
 }
@@ -102,7 +103,7 @@ div.ista-sidebar-buttons {
 	margin        : 0px;
 	padding       : 0.1rem;
 	width         : 100%;
-	height        : 1.5rem;
+	height        : 1.75rem;
 	border-bottom : 1px solid #444;
 	overflow      : hidden;
 }
@@ -111,7 +112,7 @@ div.ista-sidebar-list {
 	margin   : 0px;
 	padding  : 0.25rem;
 	width    : 100%;
-	height   : calc(100vh - 36px - 2.7rem);
+	height   : calc(100vh - 36px - 1.2rem - 1.75rem);
 	overflow : scroll;
 }
 div.ista-sidebar-list.folders {
