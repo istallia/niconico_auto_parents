@@ -21,6 +21,7 @@
 		"persistent": false
 	},
 	"permissions" : [
+		"bookmarks",
 		"http://commons.nicovideo.jp/tree/edit/*",
 		"https://commons.nicovideo.jp/tree/edit/*"
 	]
