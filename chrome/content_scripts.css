@@ -110,6 +110,7 @@ div.ista-sidebar-list.folders {
 div.ista-sidebar-list > div {
 	text-align : left;
 	overflow-x : hidden;
+	padding    : 0.25rem;
 }
 div.ista-sidebar-list > div.error {
 	color : darkred;
