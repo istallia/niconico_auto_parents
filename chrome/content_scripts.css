@@ -55,6 +55,7 @@ button.ista-button {
 	background-color : #F17603;
 	color            : #eee;
 	border           : 1px solid black;
+	margin           : 0px 0.25rem;
 	padding          : 0.25rem 1rem;
 	border-radius    : 0.20rem;
 }
@@ -96,12 +97,21 @@ div.ista-sidebar-title {
 	font-size     : 1.25rem;
 	overflow      : hidden;
 }
+div.ista-sidebar-buttons {
+	display       : none;
+	margin        : 0px;
+	padding       : 0.1rem;
+	width         : 100%;
+	height        : 1.5rem;
+	border-bottom : 1px solid #444;
+	overflow      : hidden;
+}
 div.ista-sidebar-list {
 	display  : none;
 	margin   : 0px;
 	padding  : 0.25rem;
 	width    : 100%;
-	height   : calc(100vh - 36px - 2.2rem);
+	height   : calc(100vh - 36px - 2.7rem);
 	overflow : scroll;
 }
 div.ista-sidebar-list.folders {
