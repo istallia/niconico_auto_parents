@@ -351,6 +351,17 @@ const generateSidebarBookmarks = () => {
 		document.getElementById('ista-sidebar-bookmarks-title').innerText = 'ニコニコ・ブックマーク';
 		document.getElementById('ista-sidebar-bookmarks-folders').classList.add('visible');
 	});
+	button_add_all.addEventListener('click', event => {
+		const i            = String(document.getElementById('ista-sidebar-bookmarks-title').getAttribute('current-index'));
+		const current_area = document.getElementById('ista-auto-list');
+		let works          = [...document.getElementById('ista-sidebar-bookmarks-list-'+String(i)).children].filter(elem => !elem.classList.contains('added'));
+		works              = works.map(elem => {
+			elem.classList.add('added');
+			return elem.getAttribute('work-id');
+		});
+		if (current_area.value.length > 0 && current_area.value.slice(-1) !== '\n') current_area.value += '\n';
+		current_area.value += works.join(' ');
+	});
 	area_buttons.appendChild(button_back);
 	area_buttons.appendChild(button_add_all);
 	div.appendChild(area_buttons);
