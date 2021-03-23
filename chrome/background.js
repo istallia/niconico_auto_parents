@@ -6,17 +6,7 @@ if (typeof browser === 'undefined') browser = chrome;
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	/* [ニコニコ・ブックマーク] ブックマーク内の作品一覧を取得 */
 	if (message.request === 'get-bookmarks') {
-		const temp_data = [
-			{
-				name  : 'サンプルフォルダ1',
-				works : [
-					{name:'コンテンツツリー登録支援ツール', id:'nc235560'},
-					{name:'コモンズ素材名直送ツール'      , id:'nc235559'},
-					{name:'コモンズ20プレイヤー'          , id:'nc235556'},
-					{name:'ニコ生ツリー転送ツール'        , id:'nc235682'}
-				]
-			}
-		];
+		const temp_data = [];
 		sendResponse(temp_data);
 		return true;
 	}
