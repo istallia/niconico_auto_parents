@@ -343,6 +343,7 @@ const openSidebarBookmarks = () => {
 	/* 要素の存在チェック */
 	if (!document.getElementById('ista-sidebar-bookmarks')) return;
 	/* サイドバーのベースを表示する */
+	document.getElementById('ista-sidebar-bookmarks-title').innerText = 'ニコニコ・ブックマーク';
 	document.getElementById('ista-sidebar-bookmarks').classList.add('visible');
 };
 
