@@ -7,16 +7,38 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	/* [ニコニコ・ブックマーク] ブックマーク内の作品一覧を取得 */
 	if (message.request === 'get-bookmarks') {
 		browser.bookmarks.search('.nicovideo.jp/', bookmark_tree_nodes => {
-			let works   = bookmark_tree_nodes.filter(n => checkSupportedURL(n.url));
-			let parents = Array.from(new Set(works.map(n => n.parentId)));
-			parents     = parents.map(id => {
+			let works      = bookmark_tree_nodes.filter(n => checkSupportedURL(n.url));
+			let parent_ids = Array.from(new Set(works.map(n => n.parentId)));
+			let parents    = parent_ids.map(id => {
 				return {
 					id    : id,
 					name  : '',
 					works : []
 				};
 			});
-			sendResponse([]);
+			for (let work of works) {
+				for (let folder of parents) {
+					if (folder.id === work.parentId) {
+						folder.works.push({
+							name : work.title,
+							id   : extractWorkID(work.url)
+						});
+						break;
+					}
+				}
+			}
+			browser.bookmarks.get(parent_ids, parent_tree_nodes => {
+				for (let obj of parents) {
+					for (let node of parent_tree_nodes) {
+						if (node.id === obj.id) {
+							obj.name = node.title;
+							delete obj.id;
+							break;
+						}
+					}
+				}
+				sendResponse(parents);
+			});
 		});
 		return true;
 	}
@@ -47,6 +69,15 @@ const checkSupportedURL = target_url => {
 		if (checking_url.indexOf(url) === 0) return true;
 	}
 	/* ブロマガのURLを判定 */
-	const regexp = /^ch\.nicovideo\.jp\/[a-zA-Z0-9_]+\/blomaga\/ar\d{2,20}$/;
+	const regexp = /^ch\.nicovideo\.jp\/[a-zA-Z0-9_]+\/blomaga\/ar\d{2,20}/;
 	return regexp.test(checking_url);
+};
+
+
+/* --- [ニコニコ・ブックマーク] 対応したURLからIDを抽出する --- */
+const extractWorkID = url => {
+	if (!checkSupportedURL(url)) return null;
+	const target_url = url.replace(/https?:\/\//g, '').replace(/\?.*$/g, '');
+	const split_url  = target_url.split('/');
+	return split_url[split_url.length-1];
 };

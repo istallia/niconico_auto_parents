@@ -128,6 +128,6 @@ div.ista-sidebar-list > div.error {
 	color : darkred;
 }
 div.ista-sidebar-list > div:hover { background-color : #fc6; }
-div.ista-sidebar-list.folders > div:hover { background-color : inherit; }
+div.ista-sidebar-list.folders > div.error:hover { background-color : inherit; }
 div.visible { display : block; }
 div.added { display : none; }
