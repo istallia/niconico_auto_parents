@@ -10,9 +10,9 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			{
 				name  : 'サンプルフォルダ1',
 				works : [
-					{name:'コンテンツツリー登録支援ツール', id:'nc235560'}
-					{name:'コモンズ素材名直送ツール'      , id:'nc235559'}
-					{name:'コモンズ20プレイヤー'          , id:'nc235556'}
+					{name:'コンテンツツリー登録支援ツール', id:'nc235560'},
+					{name:'コモンズ素材名直送ツール'      , id:'nc235559'},
+					{name:'コモンズ20プレイヤー'          , id:'nc235556'},
 					{name:'ニコ生ツリー転送ツール'        , id:'nc235682'}
 				]
 			}

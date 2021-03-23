@@ -81,7 +81,7 @@ div.ista-sidebar {
 	top              : 36px;
 	right            : 0px;
 	width            : 20vw;
-	height           : 100vh;
+	height           : calc(100vh - 36px);
 	background-color : #eee;
 	border-left      : 3px solid #444;
 }
@@ -95,4 +95,15 @@ div.ista-sidebar-title {
 	font-size     : 1.25rem;
 	overflow      : hidden;
 }
+div.ista-sidebar-list {
+	margin   : 0px;
+	padding  : 0.25rem;
+	width    : 100%;
+	height   : calc(100vh - 36px - 2.2rem);
+	overflow : scroll;
+}
+div.ista-sidebar-list.folders {
+	height : calc(100vh - 36px - 1.2rem);
+}
+div.ista-sidebar-list > div:hover { background-color : #fc6; }
 div.visible { display : block; }

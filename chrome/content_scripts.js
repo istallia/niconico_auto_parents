@@ -332,6 +332,11 @@ const generateSidebarBookmarks = () => {
 	title.classList.add('ista-sidebar-title');
 	title.innerText = 'ニコニコ・ブックマーク';
 	div.appendChild(title);
+	/* フォルダ一覧の箱を作成 */
+	let folders = document.createElement('div');
+	folders.id  = 'ista-sidebar-bookmarks-folders';
+	folders.classList.add('ista-sidebar-list', 'folders');
+	div.appendChild(folders);
 	/* モーダルウィンドウのボタンにイベント登録 */
 	document.getElementById('ista-open-sidebar-bookmarks').addEventListener('click', openSidebarBookmarks);
 };
