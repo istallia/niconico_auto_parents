@@ -115,7 +115,8 @@ div.ista-sidebar-list {
 	overflow : scroll;
 }
 div.ista-sidebar-list.folders {
-	height : calc(100vh - 36px - 1.2rem);
+	padding-top : 1.5rem;
+	height      : calc(100vh - 36px - 1.2rem);
 }
 div.ista-sidebar-list > div {
 	text-align : left;
