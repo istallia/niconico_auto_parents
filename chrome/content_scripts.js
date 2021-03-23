@@ -356,6 +356,7 @@ const openSidebarBookmarks = () => {
 			/* フォルダ→作品一覧のイベント作成 */
 			let openSidebarWorks = event => {
 				const i = event.currentTarget.getAttribute('folder-index');
+				document.getElementById('ista-sidebar-bookmarks-title').innerText = event.currentTarget.innerText;
 				document.getElementById('ista-sidebar-bookmarks-folders').classList.remove('visible');
 				document.getElementById('ista-sidebar-bookmarks-list-'+String(i)).classList.add('visible');
 			};
@@ -366,7 +367,6 @@ const openSidebarBookmarks = () => {
 				folder.innerText = element.name;
 				folder.setAttribute('folder-index', String(index));
 				folder.addEventListener('click', openSidebarWorks);
-				console.log(openSidebarWorks);
 				document.getElementById('ista-sidebar-bookmarks-folders').appendChild(folder);
 				/* 作品一覧を追加 */
 				let works = document.createElement('div');
@@ -389,6 +389,7 @@ const openSidebarBookmarks = () => {
 		/* サイドバーのベースを表示する */
 		document.getElementById('ista-sidebar-bookmarks-title').innerText = 'ニコニコ・ブックマーク';
 		document.getElementById('ista-sidebar-bookmarks').classList.add('visible');
+		document.getElementById('ista-sidebar-bookmarks-folders').classList.add('visible');
 	});
 };
 
