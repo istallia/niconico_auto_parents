@@ -84,6 +84,7 @@ div.ista-sidebar {
 	height           : calc(100vh - 36px);
 	background-color : #eee;
 	border-left      : 3px solid #444;
+	user-select      : none;
 }
 div.ista-sidebar-title {
 	text-align    : center;
@@ -96,6 +97,7 @@ div.ista-sidebar-title {
 	overflow      : hidden;
 }
 div.ista-sidebar-list {
+	display  : none;
 	margin   : 0px;
 	padding  : 0.25rem;
 	width    : 100%;
@@ -104,6 +106,13 @@ div.ista-sidebar-list {
 }
 div.ista-sidebar-list.folders {
 	height : calc(100vh - 36px - 1.2rem);
+}
+div.ista-sidebar-list > div {
+	text-align : left;
+	overflow-x : hidden;
+}
+div.ista-sidebar-list > div.error {
+	color : darkred;
 }
 div.ista-sidebar-list > div:hover { background-color : #fc6; }
 div.visible { display : block; }
