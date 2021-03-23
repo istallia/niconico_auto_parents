@@ -7,7 +7,15 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	/* [ニコニコ・ブックマーク] ブックマーク内の作品一覧を取得 */
 	if (message.request === 'get-bookmarks') {
 		browser.bookmarks.search('.nicovideo.jp/', bookmark_tree_nodes => {
-			let works = bookmark_tree_nodes.filter(n => checkSupportedURL(n.url));
+			let works   = bookmark_tree_nodes.filter(n => checkSupportedURL(n.url));
+			let parents = Array.from(new Set(works.map(n => n.parentId)));
+			parents     = parents.map(id => {
+				return {
+					id    : id,
+					name  : '',
+					works : []
+				};
+			});
 			sendResponse([]);
 		});
 		return true;
