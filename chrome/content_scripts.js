@@ -376,13 +376,30 @@ const openSidebarBookmarks = () => {
 	browser.runtime.sendMessage({request:'get-bookmarks'}, response => {
 		if (response.length > 0) {
 			/* フォルダ→作品一覧のイベント作成 */
-			let openSidebarWorks = event => {
-				const i = event.currentTarget.getAttribute('folder-index');
+			const openSidebarWorks = event => {
+				const i            = event.currentTarget.getAttribute('folder-index');
+				const current_text = document.getElementById('ista-auto-list').value;
 				document.getElementById('ista-sidebar-bookmarks-title').setAttribute('current-index', String(i));
 				document.getElementById('ista-sidebar-bookmarks-title').innerText = event.currentTarget.innerText;
 				document.getElementById('ista-sidebar-bookmarks-folders').classList.remove('visible');
 				document.getElementById('ista-sidebar-bookmarks-buttons').classList.add('visible');
+				[...document.getElementById('ista-sidebar-bookmarks-list-'+String(i)).children].forEach(elem => {
+					if (current_text.indexOf(elem.getAttribute('work-id')) > -1) {
+						elem.classList.add('added');
+					} else {
+						elem.classList.remove('added');
+					}
+				});
 				document.getElementById('ista-sidebar-bookmarks-list-'+String(i)).classList.add('visible');
+			};
+			/* 作品クリックでIDを追加するイベントハンドラ */
+			const addWorkFromBookmarks = event => {
+				const id           = event.currentTarget.getAttribute('work-id');
+				const area_list    = document.getElementById('ista-auto-list');
+				let current_text   = area_list.value;
+				if (current_text.length > 0 && current_text.slice(-1) !== ' ' && current_text.slice(-1) !== '\n') current_text += ' ';
+				area_list.value = current_text + id;
+				event.currentTarget.classList.add('added');
 			};
 			/* 作品一覧を生成 */
 			response.forEach((element, index) => {
@@ -400,6 +417,8 @@ const openSidebarBookmarks = () => {
 				element.works.forEach(data => {
 					let work       = document.createElement('div');
 					work.innerText = data.name + '\n(' + data.id + ')';
+					work.setAttribute('work-id', data.id);
+					work.addEventListener('click', addWorkFromBookmarks);
 					works.appendChild(work);
 				});
 			});

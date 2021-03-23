@@ -127,3 +127,4 @@ div.ista-sidebar-list > div.error {
 }
 div.ista-sidebar-list > div:hover { background-color : #fc6; }
 div.visible { display : block; }
+div.added { display : none; }
