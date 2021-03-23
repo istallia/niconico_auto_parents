@@ -375,7 +375,7 @@ const openSidebarBookmarks = () => {
 				document.getElementById('ista-sidebar-bookmarks').appendChild(works);
 				element.works.forEach(data => {
 					let work       = document.createElement('div');
-					work.innerText = data.name + '(' + data.id + ')';
+					work.innerText = data.name + '\n(' + data.id + ')';
 					works.appendChild(work);
 				});
 			});
