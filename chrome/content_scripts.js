@@ -4,6 +4,10 @@
  */
 
 
+/* --- browserの読み込み --- */
+if (typeof browser === 'undefined') browser = chrome;
+
+
 /* --- 状態を保存する --- */
 const MAX_WORKS     = 300;
 let ista_processing = false;
@@ -239,13 +243,13 @@ modal_win.id = 'ista-auto-modal';
 modal_win.classList.add('ista-auto-modal');
 modal_win.innerHTML = `
 <p>
-	使用した素材のIDのリストを入力してください。<br>
-	[v0.1.1] IDのリストの整理は自動で行います。1行が10件未満、または超過でも10件ごとに整頓します。<br>
-	[v0.3.0] ファイル(複数可)をここにドラッグ＆ドロップするとID(動画/静画/コモンズ/立体)を抽出してテキストエリアに追加します。<br>(ファイル名にIDが含まれる場合はそちらを優先し、ファイル内容は確認しません)<br>
-	<label for="ista-verify-contents" title="(v0.3.2) これがOnのとき、親作品に登録できなかった作品を自動で確認してお知らせします。"><input type="checkbox" id="ista-verify-contents" checked>&nbsp;書き込み検証を行う</label>
+	使用した素材のIDのリストを入力してください。1行が10件未満、または11件以上になっている場合は自動で整頓されます。<br>
+	ファイル(複数可)を枠内にD&Dすると、そのファイルの中身または名前に含まれる作品ID(動画/静画/コモンズ/立体)を抽出できます。
 </p>
+<button type="button" id="ista-open-sidebar-bookmarks" class="ista-button white" title="(v0.4.0) ブラウザのブックマークから作品IDを選択して追加します。">ニコニコ・ブックマーク</button><br>
+<label for="ista-verify-contents" title="(v0.3.2) これがOnのとき、親作品に登録できなかった作品を自動で確認してお知らせします。"><input type="checkbox" id="ista-verify-contents" checked>&nbsp;書き込み検証を行う</label>
 <textarea id="ista-auto-list"></textarea>
-<button id="ista-auto-button">自動登録</button>
+<button id="ista-auto-button" class="ista-button">自動登録</button>
 `;
 parent_button.parentNode.insertBefore(modal_win, parent_button);
 /* モーダル背景の追加 */
@@ -257,6 +261,7 @@ modal_win_bg.addEventListener('click', () => {
 	if( !ista_processing ) {
 		document.getElementById('ista-auto-modal').style.display    = 'none';
 		document.getElementById('ista-auto-modal-bg').style.display = 'none';
+		document.getElementById('ista-sidebar-bookmarks').classList.remove('visible');
 	}
 });
 /* 「一括登録」ボタンの追加 */
@@ -310,6 +315,147 @@ let observer_candidates = () => {
 	});
 };
 setInterval(observer_candidates, 200);
+
+
+/* --- [ニコニコ・ブックマーク] サイドバーを準備する --- */
+const generateSidebarBookmarks = () => {
+	/* 要素がなければ生成 */
+	if (document.getElementById('ista-sidebar-bookmarks')) return;
+	/* まずはベースを作成 */
+	let div = document.createElement('div');
+	div.id  = 'ista-sidebar-bookmarks';
+	div.classList.add('ista-sidebar');
+	document.body.appendChild(div);
+	/* タイトルバーを作成 */
+	let title = document.createElement('div');
+	title.id  = 'ista-sidebar-bookmarks-title';
+	title.classList.add('ista-sidebar-title');
+	title.innerText = 'ニコニコ・ブックマーク';
+	div.appendChild(title);
+	/* ボタン用エリアを作成 */
+	let area_buttons   = document.createElement('div');
+	let button_back    = document.createElement('button');
+	let button_add_all = document.createElement('button');
+	area_buttons.id    = 'ista-sidebar-bookmarks-buttons';
+	area_buttons.classList.add('ista-sidebar-buttons');
+	button_back.id    = 'ista-sidebar-bookmarks-button-back';
+	button_add_all.id = 'ista-sidebar-bookmarks-button-add_all';
+	button_back.classList.add('ista-button', 'white');
+	button_add_all.classList.add('ista-button', 'white');
+	button_back.innerText    = '戻る';
+	button_add_all.innerText = 'すべて追加';
+	button_back.addEventListener('click', event => {
+		const i = String(document.getElementById('ista-sidebar-bookmarks-title').getAttribute('current-index'));
+		document.getElementById('ista-sidebar-bookmarks-list-'+i).classList.remove('visible');
+		document.getElementById('ista-sidebar-bookmarks-buttons').classList.remove('visible');
+		document.getElementById('ista-sidebar-bookmarks-title').innerText = 'ニコニコ・ブックマーク';
+		document.getElementById('ista-sidebar-bookmarks-folders').classList.add('visible');
+	});
+	button_add_all.addEventListener('click', event => {
+		const i            = String(document.getElementById('ista-sidebar-bookmarks-title').getAttribute('current-index'));
+		const current_area = document.getElementById('ista-auto-list');
+		let works          = [...document.getElementById('ista-sidebar-bookmarks-list-'+String(i)).children].filter(elem => !elem.classList.contains('added'));
+		works              = works.map(elem => {
+			elem.classList.add('added');
+			return elem.getAttribute('work-id');
+		});
+		if (current_area.value.length > 0 && current_area.value.slice(-1) !== '\n') current_area.value += '\n';
+		current_area.value += works.join(' ');
+	});
+	area_buttons.appendChild(button_back);
+	area_buttons.appendChild(button_add_all);
+	div.appendChild(area_buttons);
+	/* フォルダ一覧の箱を作成 */
+	let folders = document.createElement('div');
+	folders.id  = 'ista-sidebar-bookmarks-folders';
+	folders.classList.add('ista-sidebar-list', 'folders', 'visible');
+	div.appendChild(folders);
+	/* モーダルウィンドウのボタンにイベント登録 */
+	document.getElementById('ista-open-sidebar-bookmarks').addEventListener('click', openSidebarBookmarks);
+};
+button_open.addEventListener('click', generateSidebarBookmarks);
+
+
+/* --- [ニコニコ・ブックマーク] サイドバーを開く --- */
+const openSidebarBookmarks = () => {
+	/* 要素の存在チェック */
+	if (!document.getElementById('ista-sidebar-bookmarks')) return;
+	let div_lists = [...document.getElementsByClassName('ista-sidebar-list')].filter(div => !div.classList.contains('folders'));
+	div_lists.forEach(div => div.remove());
+	[...document.getElementById('ista-sidebar-bookmarks-folders').children].forEach(div => div.remove());
+	/* ブックマーク内の作品一覧を取得 */
+	browser.runtime.sendMessage({request:'get-bookmarks'}, response => {
+		if (response.length > 0) {
+			/* フォルダ→作品一覧のイベント作成 */
+			const openSidebarWorks = event => {
+				const i            = event.currentTarget.getAttribute('folder-index');
+				const current_text = document.getElementById('ista-auto-list').value;
+				document.getElementById('ista-sidebar-bookmarks-title').setAttribute('current-index', String(i));
+				document.getElementById('ista-sidebar-bookmarks-title').innerText = event.currentTarget.innerText;
+				document.getElementById('ista-sidebar-bookmarks-folders').classList.remove('visible');
+				document.getElementById('ista-sidebar-bookmarks-buttons').classList.add('visible');
+				[...document.getElementById('ista-sidebar-bookmarks-list-'+String(i)).children].forEach(elem => {
+					if (current_text.indexOf(elem.getAttribute('work-id')) > -1) {
+						elem.classList.add('added');
+					} else {
+						elem.classList.remove('added');
+					}
+				});
+				document.getElementById('ista-sidebar-bookmarks-list-'+String(i)).classList.add('visible');
+			};
+			/* 作品クリックでIDを追加するイベントハンドラ */
+			const addWorkFromBookmarks = event => {
+				const id           = event.currentTarget.getAttribute('work-id');
+				const area_list    = document.getElementById('ista-auto-list');
+				let current_text   = area_list.value;
+				if (current_text.length > 0 && current_text.slice(-1) !== ' ' && current_text.slice(-1) !== '\n') current_text += ' ';
+				area_list.value = current_text + id;
+				event.currentTarget.classList.add('added');
+			};
+			/* 作品一覧を生成 */
+			response.forEach((element, index) => {
+				/* フォルダ要素を追加 */
+				let folder       = document.createElement('div');
+				folder.innerText = element.name;
+				folder.setAttribute('folder-index', String(index));
+				folder.addEventListener('click', openSidebarWorks);
+				document.getElementById('ista-sidebar-bookmarks-folders').appendChild(folder);
+				/* 作品一覧を追加 */
+				let works = document.createElement('div');
+				works.id  = 'ista-sidebar-bookmarks-list-' + String(index);
+				works.classList.add('ista-sidebar-list');
+				document.getElementById('ista-sidebar-bookmarks').appendChild(works);
+				element.works.forEach(data => {
+					let work       = document.createElement('div');
+					work.innerText = data.name + '\n(' + data.id + ')';
+					work.setAttribute('work-id', data.id);
+					work.addEventListener('click', addWorkFromBookmarks);
+					works.appendChild(work);
+				});
+			});
+		} else {
+			/* ブックマーク内に作品が存在しない */
+			let folder       = document.createElement('div');
+			folder.innerText = 'ニコニコ作品が見つかりませんでした。';
+			folder.classList.add('error');
+			document.getElementById('ista-sidebar-bookmarks-folders').appendChild(folder);
+		}
+		/* サイドバーのベースを表示する */
+		document.getElementById('ista-sidebar-bookmarks-title').innerText = 'ニコニコ・ブックマーク';
+		document.getElementById('ista-sidebar-bookmarks-buttons').classList.remove('visible');
+		document.getElementById('ista-sidebar-bookmarks').classList.add('visible');
+		document.getElementById('ista-sidebar-bookmarks-folders').classList.add('visible');
+	});
+};
+
+
+/* --- [ニコニコ・ブックマーク] サイドバーを閉じる --- */
+const closeSidebarBookmarks = () => {
+	/* 要素の存在チェック */
+	if (!document.getElementById('ista-sidebar-bookmarks')) return;
+	/* サイドバーのベースを表示する */
+	document.getElementById('ista-sidebar-bookmarks').classList.remove('visible');
+};
 
 
 /* --- 連携付きコモンズ作品を連携先の表示に変更 --- */
