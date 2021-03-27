@@ -68,9 +68,7 @@ const checkSupportedURL = target_url => {
 	for (let url of supported_urls) {
 		if (checking_url.indexOf(url) === 0) return true;
 	}
-	/* ブロマガのURLを判定 */
-	const regexp = /^ch\.nicovideo\.jp\/[a-zA-Z0-9_]+\/blomaga\/ar\d{2,20}/;
-	return regexp.test(checking_url);
+	return false;
 };
 
 
