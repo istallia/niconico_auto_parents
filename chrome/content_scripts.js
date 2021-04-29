@@ -246,7 +246,8 @@ modal_win.innerHTML = `
 	使用した素材のIDのリストを入力してください。1行が10件未満、または11件以上になっている場合は自動で整頓されます。<br>
 	ファイル(複数可)を枠内にD&Dすると、そのファイルの中身または名前に含まれる作品ID(動画/静画/コモンズ/立体)を抽出できます。
 </p>
-<button type="button" id="ista-open-sidebar-bookmarks" class="ista-button white" title="(v0.4.0) ブラウザのブックマークから作品IDを選択して追加します。">ニコニコ・ブックマーク</button><br>
+<button type="button" id="ista-read-parent-works" class="ista-button white" title="(v0.4.1) 親作品の欄にある作品を読み出します。">親作品を読み出し</button>&nbsp;
+<button type="button" id="ista-open-sidebar-bookmarks" class="ista-button white" title="(v0.4.2) ブラウザのブックマークから作品IDを選択して追加します。">ニコニコ・ブックマーク</button><br>
 <label for="ista-verify-contents" title="(v0.3.2) これがOnのとき、親作品に登録できなかった作品を自動で確認してお知らせします。"><input type="checkbox" id="ista-verify-contents" checked>&nbsp;書き込み検証を行う</label>
 <textarea id="ista-auto-list"></textarea>
 <button id="ista-auto-button" class="ista-button">自動登録</button>
@@ -456,6 +457,34 @@ const closeSidebarBookmarks = () => {
 	/* サイドバーのベースを表示する */
 	document.getElementById('ista-sidebar-bookmarks').classList.remove('visible');
 };
+
+
+/* --- [読み出し] 読み出す --- */
+const readParentWorks = () => {
+	/* 要素のリストを読み出す */
+	const element_parents_area = document.getElementById('parents');
+	const element_parents_list = [... element_parents_area.children];
+	/* テキスト化 */
+	let materials_list = [];
+	// element_parents_list.forEach(work => {
+	// 	const work_id    = work.id;
+	// 	const work_title = work.querySelector('div.item1 > div.dsc').innerText;
+	// 	materials_list   = work_id + ' ' + work_title + '\n';
+	// });
+	for (let work of element_parents_list) {
+		const work_id    = work.id;
+		const work_title = work.querySelector('div.item1 > div.dsc').innerText;
+		materials_list.push(work_id + ' -> ' + work_title);
+	}
+	materials_list = materials_list.join('\n');
+	if (!window.confirm('タイトル付きの形式で読み出しますか？')) {
+		materials_list = optimize_list(materials_list, false).join('\n');
+	}
+	document.getElementById('ista-auto-list').value = materials_list;
+};
+button_open.addEventListener('click', () => {
+	document.getElementById('ista-read-parent-works').addEventListener('click', readParentWorks);
+});
 
 
 /* --- 連携付きコモンズ作品を連携先の表示に変更 --- */
