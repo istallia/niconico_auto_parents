@@ -10,9 +10,13 @@
 		"128" : "icon_128.png"
 	},
 	"content_scripts" : [{
-		"matches" : ["http://commons.nicovideo.jp/tree/edit/*", "https://commons.nicovideo.jp/tree/edit/*"],
+		"matches" : ["*://commons.nicovideo.jp/tree/edit/*"],
 		"js"      : ["tree-edit.js"],
 		"css"     : ["tree-edit.css"]
+	}, {
+		"matches" : ["*://commons.nicovideo.jp/tree/*"],
+		"js"      : ["tree-view.js"],
+		"css"     : ["tree-view.css"]
 	}],
 	"background": {
 		"scripts": [
@@ -22,7 +26,6 @@
 	},
 	"permissions" : [
 		"bookmarks",
-		"http://commons.nicovideo.jp/tree/edit/*",
-		"https://commons.nicovideo.jp/tree/edit/*"
+		"*://commons.nicovideo.jp/tree/*"
 	]
 }
