@@ -487,6 +487,21 @@ button_open.addEventListener('click', () => {
 });
 
 
+/* --- GETパラメータを解析 --- */
+const analyzeGetParam = url => {
+	/* まずは"?"以降を切り取り */
+	const q_pos = url.indexOf('?');
+	if (q_pos < 0) return {};
+	const query = url.slice(q_pos+1)
+	/* 分割してパラメータ取得 */
+	let params = query.split('&');
+	let result = {};
+	params = params.map(param => param.split('='));
+	params.forEach(param => result[param[0]] = decodeURI(param[1]));
+	return result;
+};
+
+
 /* --- 連携付きコモンズ作品を連携先の表示に変更 --- */
 const check_linked_commons = (element, do_replace = true) => {
 	/* 連携が付いているかチェック */
