@@ -89,10 +89,10 @@ const extractWorkID = url => {
 
 
 /* --- [予約投稿] 時刻になったらタブを開く --- */
-browser.alarms.onAlarms.addListener(alarm => {
+browser.alarms.onAlarm.addListener(alarm => {
 	const video_id = alarm.name.split('-')[2];
 	browser.tabs.create({
-		url    : 'https://commons.nicovideo.jp/tree/edit/' + video_id + '?ista-reserved-tree=true',
-		pinned : true
+		url      : 'https://commons.nicovideo.jp/tree/edit/' + video_id + '?ista-reserved-tree=true',
+		selected : false
 	});
 });

@@ -15,7 +15,7 @@ const reserveParents = () => {
 	const info_time = document.getElementById('ista-form-reserving-time').value;
 	const info_ids  = document.getElementById('ista-form-reserving-ids').value;
 	const id_count  = countIDs(info_ids);
-	const video_id  = location.pathname.split('/')[2];
+	const video_id  = 'sm38655159'; // location.pathname.split('/')[2];
 	if (id_count < 1 || info_date.length < 1 || info_time.length < 1) return;
 	/* backgroundに送信する */
 	localStorage.setItem('ista-reserved-list-'+video_id, info_ids);
@@ -70,22 +70,60 @@ const addReservingParentsForm = () => {
 addReservingParentsForm();
 
 
+/* --- [予約投稿] tree-editで生成したUIを操作してIDを流し込む --- */
+const registReservedParents = () => {
+	/* URLを確認 */
+	if (location.pathname.slice(0,13) !== '/tree/edit/sm') return;
+	const get_params = analyzeGetParam(location.search);
+	if (get_params['ista-reserved-tree'] !== 'true') return;
+	const video_id = location.pathname.split('/')[3];
+	const id_list  = localStorage.getItem('ista-reserved-list-'+video_id);
+	if (countIDs(id_list) < 1) return;
+	/* モーダルを出す */
+	const button_open = document.getElementById('ista-open-modal');
+	const textarea    = document.getElementById('ista-auto-list');
+	if (!button_open || !textarea) {
+		setTimeout(registReservedParents, 500);
+		return;
+	}
+	button_open.dispatchEvent(new Event('click', {bubbles: true, composed: true}));
+	textarea.value = id_list;
+	/* 適当なタイミングで流し込む */
+	setTimeout(() => {
+		document.getElementById('ista-auto-button').dispatchEvent(new Event('click', {bubbles: true, composed: true}));
+		const target   = document.getElementById('ista-auto-modal-bg');
+		const observer = new MutationObserver(records => {
+			if (document.getElementById('ista-auto-modal-bg').style.display === 'none') {
+				localStorage.removeItem('ista-reserved-list-'+video_id);
+				document.getElementById('send_check').dispatchEvent(new Event('click', {bubbles: true, composed: true}));
+			}
+		});
+		observer.observe(target, {attributes:true});
+	}, 500);
+};
+setTimeout(registReservedParents, 500);
+
+
 /* --- IDリストに含まれるIDをカウントする --- */
 let countIDs = id_list => {
+	/* リストを取得 */
 	let p_list = id_list.split('\n');
 	for (i in p_list) p_list[i] = p_list[i].split(' ');
 	p_list = p_list.flat();
+	/* IDの形式であり、かつ重複のないリストを作成する */
+	let ok_list = [];
+	for (i in p_list) {
+		if( /^[a-zA-Z]{1,3}\d{1,12}$/.test(p_list[i]) && ok_list.indexOf(p_list[i]) < 0 ) {
+			ok_list.push(p_list[i]);
+		}
+	}
 	return p_list.length;
 };
 
 
 /* --- GETパラメータを解析 --- */
-const analyzeGetParam = url => {
-	/* まずは"?"以降を切り取り */
-	const q_pos = url.indexOf('?');
-	if (q_pos < 0) return {};
-	const query = url.slice(q_pos+1)
-	/* 分割してパラメータ取得 */
+const analyzeGetParam = query => {
+	if (query.slice(0,1) === '?') query = query.slice(1);
 	let params = query.split('&');
 	let result = {};
 	params = params.map(param => param.split('='));

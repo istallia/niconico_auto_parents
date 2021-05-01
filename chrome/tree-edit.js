@@ -192,6 +192,7 @@ let auto_reg_candidates = () => {
 /* --- ページに要素を追加する --- */
 /* 「IDリストから自動登録」ボタンの追加 */
 let button_open = document.createElement('a');
+button_open.id  = 'ista-open-modal';
 button_open.classList.add('btn-01');
 button_open.innerText    = '[拡張機能]IDリストから自動登録';
 button_open.style.cursor = 'pointer';
