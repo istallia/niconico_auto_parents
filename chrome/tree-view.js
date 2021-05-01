@@ -15,12 +15,14 @@ const reserveParents = () => {
 	const info_time = document.getElementById('ista-form-reserving-time').value;
 	const info_ids  = document.getElementById('ista-form-reserving-ids').value;
 	const id_count  = countIDs(info_ids);
-	if (id_count < 1) return;
+	const video_id  = location.pathname.split('/')[2];
+	if (id_count < 1 || info_date.length < 1 || info_time.length < 1) return;
 	/* backgroundに送信する */
+	localStorage.setItem('ista-reserved-list-'+video_id, info_ids);
 	browser.runtime.sendMessage({
 		request  : 'reserve-parents',
-		datetime : info_date + 'T' + info_time + ':30',
-		list     : info_ids
+		id       : video_id,
+		datetime : info_date + 'T' + info_time + ':30'
 	}, res => {
 		window.alert(String(id_count)+'件のIDからの登録を予約しました。');
 	});

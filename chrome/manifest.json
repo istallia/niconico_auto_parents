@@ -26,6 +26,8 @@
 	},
 	"permissions" : [
 		"bookmarks",
+		"alarms",
+		"tabs",
 		"*://commons.nicovideo.jp/tree/*"
 	]
 }

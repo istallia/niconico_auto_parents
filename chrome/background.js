@@ -42,6 +42,13 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		});
 		return true;
 	}
+	/* [予約投稿] ツリー登録予約 */
+	if (message.request === 'reserve-parents') {
+		const datetime = new Date(message.datetime);
+		browser.alarms.create('ista-reserve-'+message.id, {when:datetime.getTime()});
+		sendResponse({});
+		return true;
+	}
 	/* どれにも当てはまらなかった場合の処理 */
 	sendResponse({});
 	return true;
