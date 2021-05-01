@@ -92,7 +92,7 @@ const extractWorkID = url => {
 browser.alarms.onAlarm.addListener(alarm => {
 	const video_id = alarm.name.split('-')[2];
 	browser.tabs.create({
-		url      : 'https://commons.nicovideo.jp/tree/edit/' + video_id + '?ista-reserved-tree=true',
-		selected : false
+		url    : 'https://commons.nicovideo.jp/tree/edit/' + video_id + '?ista-reserved-tree=true',
+		active : false
 	});
 });
