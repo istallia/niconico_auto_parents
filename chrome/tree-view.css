@@ -1,10 +1,11 @@
 /* --- [ツリー登録予約] フォームのスタイル --- */
 li.ista-form-reserving {
 	margin-top : 1.2rem;
-	min-width  : 50vw;
+	width      : 50vw;
+	max-width  : 100%;
 }
 li.ista-form-reserving > * {
-	margin : 0.3rem auto;
+	margin : 0.3rem 0px;
 }
 li.ista-form-reserving > div.ista-form-reserving-title {
 	font-size       : 1.2em;
@@ -22,7 +23,7 @@ li.ista-form-reserving > input[type="time"] {
 }
 li.ista-form-reserving > textarea {
 	display     : block;
-	width       : 100%;
+	width       : calc(100% - 6px);
 	min-height  : 15vh;
 	font-family : inherit;
 }
