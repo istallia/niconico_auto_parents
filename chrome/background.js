@@ -86,3 +86,13 @@ const extractWorkID = url => {
 	const split_url  = target_url.split('/');
 	return split_url[split_url.length-1];
 };
+
+
+/* --- [予約投稿] 時刻になったらタブを開く --- */
+browser.alarms.onAlarms.addListener(alarm => {
+	const video_id = alarm.name.split('-')[2];
+	browser.tabs.create({
+		url    : 'https://commons.nicovideo.jp/tree/edit/' + video_id + '?ista-reserved-tree=true',
+		pinned : true
+	});
+});
