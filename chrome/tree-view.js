@@ -16,7 +16,9 @@ const reserveParents = () => {
 	const info_ids  = document.getElementById('ista-form-reserving-ids').value;
 	const id_count  = countIDs(info_ids);
 	const video_id  = location.pathname.split('/')[2];
+	const unixtime  = new Date(info_date + 'T' + info_time + ':30').getTime();
 	if (id_count < 1 || info_date.length < 1 || info_time.length < 1) return;
+	if (unixtime <= Date.now()) return;
 	/* backgroundに送信する */
 	localStorage.setItem('ista-reserved-list-'+video_id, info_ids);
 	browser.runtime.sendMessage({
@@ -146,7 +148,7 @@ let countIDs = id_list => {
 			ok_list.push(p_list[i]);
 		}
 	}
-	return p_list.length;
+	return ok_list.length;
 };
 
 
