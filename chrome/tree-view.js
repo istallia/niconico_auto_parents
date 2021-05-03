@@ -73,6 +73,8 @@ const addReservingParentsForm = () => {
 	const input_time     = document.createElement('input');
 	const input_ids      = document.createElement('textarea');
 	const button_reserve = document.createElement('a');
+	const video_id       = location.pathname.split('/')[2];
+	const current_ids    = localStorage.getItem('ista-reserved-list-'+video_id) || '';
 	li.classList.add('ista-form-reserving');
 	form_title.classList.add('ista-form-reserving-title');
 	button_reserve.classList.add('btn-02');
@@ -84,6 +86,7 @@ const addReservingParentsForm = () => {
 	input_date.type          = 'date';
 	input_time.type          = 'time';
 	input_ids.placeholder    = 'ここにIDリストを入力\nファイルをD&DするとIDを抽出します(複数ファイル可)';
+	input_ids.value          = current_ids;
 	button_reserve.innerText = '[拡張機能] ツリー登録予約';
 	button_reserve.href      = 'javascript:void(0)';
 	input_ids.addEventListener('dragover' , event => event.currentTarget.classList.add('ista-hover')   );
