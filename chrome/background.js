@@ -42,6 +42,13 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		});
 		return true;
 	}
+	/* [予約投稿] ツリー登録予約 */
+	if (message.request === 'reserve-parents') {
+		const datetime = new Date(message.datetime);
+		browser.alarms.create('ista-reserve-'+message.id, {when:datetime.getTime()});
+		sendResponse({});
+		return true;
+	}
 	/* どれにも当てはまらなかった場合の処理 */
 	sendResponse({});
 	return true;
@@ -79,3 +86,13 @@ const extractWorkID = url => {
 	const split_url  = target_url.split('/');
 	return split_url[split_url.length-1];
 };
+
+
+/* --- [予約投稿] 時刻になったらタブを開く --- */
+browser.alarms.onAlarm.addListener(alarm => {
+	const video_id = alarm.name.split('-')[2];
+	browser.tabs.create({
+		url    : 'https://commons.nicovideo.jp/tree/edit/' + video_id + '?ista-reserved-tree=true',
+		active : false
+	});
+});
