@@ -93,6 +93,7 @@ let create_promise_candidates = id10 => {
 					document.getElementById('checkbox').style.display           = 'none';
 					document.getElementById('parents').style.backgroundImage    = 'url("")';
 					ista_processing                                             = false;
+					document.getElementById('ista-sidebar-bookmarks').classList.remove('visible');
 					throw new Error('limit-300');
 					return;
 				}
@@ -157,6 +158,7 @@ let add_materials = () => {
 			document.getElementById('checkbox').style.display           = 'none';
 			document.getElementById('parents').style.backgroundImage    = 'url("")';
 			ista_processing                                             = false;
+			document.getElementById('ista-sidebar-bookmarks').classList.remove('visible');
 		}
 	});
 };
