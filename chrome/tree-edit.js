@@ -128,6 +128,10 @@ let add_materials = () => {
 	id_list          = optimize_list(id_list);
 	document.getElementById('ista-auto-list').value = id_list.join('\n');
 	localStorage.setItem('ista-verify-contents', String(document.getElementById('ista-verify-contents').checked));
+	if (id_list.length > 0) {
+		document.getElementById('checkbox').style.display        = 'none';
+		document.getElementById('parents').style.backgroundImage = 'url("")';
+	}
 	// let promise_list = [];
 	let a_promise = Promise.resolve();
 	for (const list of id_list) {
@@ -155,8 +159,6 @@ let add_materials = () => {
 			document.getElementById('ista-auto-modal').style.display    = 'none';
 			document.getElementById('ista-auto-modal-bg').style.display = 'none';
 			document.getElementById('ista-auto-list').value             = '';
-			document.getElementById('checkbox').style.display           = 'none';
-			document.getElementById('parents').style.backgroundImage    = 'url("")';
 			ista_processing                                             = false;
 			document.getElementById('ista-sidebar-bookmarks').classList.remove('visible');
 		}
