@@ -46,6 +46,10 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	if (message.request === 'reserve-parents') {
 		const datetime = new Date(message.datetime);
 		browser.alarms.create('ista-reserve-'+message.id, {when:datetime.getTime()});
+		localStorage.setItem('ista-reserve-'+message.id, String(datetime.getTime()));
+		let video_list = (localStorage.getItem('ista-reserve-list') || '').split(',').filter(id => id.length > 0);
+		video_list.push(message.id);
+		localStorage.setItem('ista-reserve-list', video_list.join(','));
 		sendResponse({});
 		return true;
 	}
@@ -91,8 +95,31 @@ const extractWorkID = url => {
 /* --- [予約投稿] 時刻になったらタブを開く --- */
 browser.alarms.onAlarm.addListener(alarm => {
 	const video_id = alarm.name.split('-')[2];
+	let video_list = (localStorage.getItem('ista-reserve-list') || '').split(',').filter(id => id.length > 0);
+	localStorage.setItem('ista-reserve-list', video_list.filter(id => id !== video_id).join(','));
+	localStorage.removeItem('ista-reserve-'+video_id);
 	browser.tabs.create({
 		url    : 'https://commons.nicovideo.jp/tree/edit/' + video_id + '?ista-reserved-tree=true',
 		active : false
 	});
 });
+
+
+/* --- [予約投稿] イベント再登録 --- */
+let video_list = (localStorage.getItem('ista-reserve-list') || '').split(',').filter(id => id.length > 0);
+video_list.forEach((id, i, list) => {
+	const current_dt = Date.now();
+	const target_dt  = Number(localStorage.getItem('ista-reserve-'+id));
+	if (target_dt < current_dt) {
+		list[i] = null;
+		localStorage.removeItem('ista-reserve-'+id);
+		browser.tabs.create({
+			url    : 'https://commons.nicovideo.jp/tree/edit/' + id + '?ista-reserved-tree=true',
+			active : false
+		});
+	} else {
+		browser.alarms.create('ista-reserve-'+id, {when:target_dt.getTime()});
+	}
+});
+video_list = video_list.filter(id => id !== null);
+localStorage.setItem('ista-reserve-list', video_list.join(','));
