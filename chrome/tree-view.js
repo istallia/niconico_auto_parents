@@ -119,7 +119,7 @@ const rereserveParents = () {
 		id       : work_id,
 		datetime : next_reserving_time
 	}, res => {
-		window.alert('エラーにより登録を完了できなかったため、ツリー登録を20分後に再予約しました。');
+		window.alert('エラーにより登録を完了できなかったため、ツリー登録を20分後に再予約しました。\nすぐに登録を行う場合はブラウザバックしてください。');
 	});
 }
 if (location.pathname === '/tree/update') rereserveParents();
