@@ -104,6 +104,27 @@ const addReservingParentsForm = () => {
 addReservingParentsForm();
 
 
+/* --- [予約投稿] サーバ側でエラーが出たときは再予約する --- */
+const rereserveParents = () {
+	/* 作品IDを取得 */
+	const work_id = document.referrer.split('?').shift().split('#').shift().split('/').pop();
+	const id_list = sessionStorage('ista-reserved-list-'+work_id);
+	/* 次の予約時刻を計算 */
+	let current_time        = new Date(Date.now() + 9*60*60*1000 + 20*60*1000);
+	let next_reserving_time = current_time.toISOString().slice(0,19);
+	/* backgroundに送信する */
+	localStorage.setItem('ista-reserved-list-'+work_id, id_list);
+	browser.runtime.sendMessage({
+		request  : 'reserve-parents',
+		id       : work_id,
+		datetime : next_reserving_time
+	}, res => {
+		window.alert('エラーにより登録を完了できなかったため、ツリー登録を20分後に再予約しました。');
+	});
+}
+if (location.pathname === '/tree/update') rereserveParents();
+
+
 /* --- [予約投稿] tree-editで生成したUIを操作してIDを流し込む --- */
 const registReservedParents = () => {
 	/* URLを確認 */
