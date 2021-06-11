@@ -128,6 +128,7 @@ const registReservedParents = () => {
 		const target   = document.getElementById('ista-auto-modal-bg');
 		const observer = new MutationObserver(records => {
 			if (document.getElementById('ista-auto-modal-bg').style.display === 'none') {
+				sessionStorage.setItem('ista-reserved-list-'+video_id, id_list);
 				localStorage.removeItem('ista-reserved-list-'+video_id);
 				document.getElementById('send_check').dispatchEvent(new Event('click', {bubbles: true, composed: true}));
 			}
