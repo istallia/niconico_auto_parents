@@ -105,7 +105,7 @@ addReservingParentsForm();
 
 
 /* --- [予約投稿] サーバ側でエラーが出たときは再予約する --- */
-const rereserveParents = () {
+const rereserveParents = () => {
 	/* 作品IDを取得 */
 	const work_id = document.referrer.split('?').shift().split('#').shift().split('/').pop();
 	const id_list = sessionStorage('ista-reserved-list-'+work_id);
