@@ -324,15 +324,60 @@ let observer_candidates = () => {
 setInterval(observer_candidates, 200);
 
 
-/* --- [ツリー・チェイン] ボタンが押されたら親作品の親作品を取得 --- */
+/* --- [ツリー・チェイン] ボタンが押されたらチェイン開始 --- */
 button_open.addEventListener('click', () => {
 	document.getElementById('ista-get-parents-of-parents').addEventListener('click', event => {
+		/* イベント無効 */
 		event.preventDefault();
+		/* 選択範囲のID取得 */
 		const selection = window.getSelection();
-		const id_list   = selection.toString();
-		console.log(optimize_list(id_list, false).join(' ').split(' '));
+		const id_list   = optimize_list(selection.toString(), false).join(' ').split(' ');
+		if (id_list.length < 1) return;
+		/* すべてのIDに対して親作品取得を実行 */
+		id_list.forEach(getParentsOfParents);
 	});
 });
+
+
+/* --- [ツリー・チェイン] 親作品の親作品を取得 --- */
+const getParentsOfParents = id => {
+	/* パラメータを準備 */
+	const params = new URLSearchParams({
+		_offset   : 0,
+		_limit    : 300,
+		with_meta : 0,
+		_sort     : '-id'
+	});
+	/* 送信 */
+	fetch('https://public-api.commons.nicovideo.jp/v1/tree/'+id+'/relatives/parents?'+params.toString(), {
+		mode        : 'cors',
+		credentials : 'include',
+		cache       : 'no-cache'
+	})
+	.catch(err => {
+		window.alert('サーバーに接続できませんでした。インターネット接続を確認してください。');
+		console.log(err);
+		return null;
+	})
+	.then(response => response.json())
+	.then(json => {
+		/* IDリストの文字列を取得 */
+		let id_list = json.data.parents.contents.map(work => work.globalId);
+		let id_text = '';
+		id_list.forEach((id, i) => {
+			if (i % 10 < 9) {
+				id_text += id + ' '
+			} else {
+				id_text += id + '\n'
+			}
+		});
+		/* IDリストを入力欄の末尾に追加 */
+		const textarea   = document.getElementById('ista-auto-list');
+		let current_text = textarea.value;
+		if (current_text.slice(-1) !== '\n') current_text += '\n';
+		textarea.value = current_text + id_text;
+	});
+};
 
 
 /* --- [ニコニコ・ブックマーク] サイドバーを準備する --- */
