@@ -252,6 +252,7 @@ modal_win.innerHTML = `
 	ファイル(複数可)を枠内にD&Dすると、そのファイルの中身または名前に含まれる作品ID(動画/静画/コモンズ/立体)を抽出できます。
 </p>
 <button type="button" id="ista-read-parent-works" class="ista-button white" title="(v0.4.1) 親作品の欄にある作品を読み出します。">親作品を読み出し</button>&nbsp;
+<button type="button" id="ista-get-parents-of-parents" class="ista-button white" title="(v0.5.3) 選択範囲の作品の親作品を取得します。">ツリー・チェイン</button>&nbsp;
 <button type="button" id="ista-open-sidebar-bookmarks" class="ista-button white" title="(v0.4.2) ブラウザのブックマークから作品IDを選択して追加します。">ニコニコ・ブックマーク</button><br>
 <label for="ista-verify-contents" title="(v0.3.2) これがOnのとき、親作品に登録できなかった作品を自動で確認してお知らせします。"><input type="checkbox" id="ista-verify-contents" checked>&nbsp;書き込み検証を行う</label>
 <textarea id="ista-auto-list"></textarea>
@@ -321,6 +322,17 @@ let observer_candidates = () => {
 	});
 };
 setInterval(observer_candidates, 200);
+
+
+/* --- [ツリー・チェイン] ボタンが押されたら親作品の親作品を取得 --- */
+button_open.addEventListener('click', () => {
+	document.getElementById('ista-get-parents-of-parents').addEventListener('click', event => {
+		event.preventDefault();
+		const selection = window.getSelection();
+		const id_list   = selection.toString();
+		console.log(optimize_list(id_list, false).join(' ').split(' '));
+	});
+});
 
 
 /* --- [ニコニコ・ブックマーク] サイドバーを準備する --- */
