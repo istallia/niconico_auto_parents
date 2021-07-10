@@ -28,6 +28,7 @@
 		"bookmarks",
 		"alarms",
 		"tabs",
-		"*://commons.nicovideo.jp/tree/*"
+		"*://commons.nicovideo.jp/tree/*",
+		"*://public-api.commons.nicovideo.jp/v1/tree/*"
 	]
 }

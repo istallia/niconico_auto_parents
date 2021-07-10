@@ -331,8 +331,17 @@ button_open.addEventListener('click', () => {
 		event.preventDefault();
 		/* 選択範囲のID取得 */
 		const selection = window.getSelection();
-		const id_list   = optimize_list(selection.toString(), false).join(' ').split(' ');
-		if (id_list.length < 1) return;
+		let id_text     = '';
+		if (selection.toString().length > 0) {
+			id_text = selection.toString();
+		} else {
+			const textarea = document.getElementById('ista-auto-list');
+			const s_start  = textarea.selectionStart;
+			const s_end    = textarea.selectionEnd;
+			id_text        = textarea.value.substring(s_start, s_end);
+		}
+		let id_list = optimize_list(id_text, false).join(' ').split(' ');
+		if (id_list.length < 1 || id_list[0].length < 3) return;
 		/* すべてのIDに対して親作品取得を実行 */
 		id_list.forEach(getParentsOfParents);
 	});
