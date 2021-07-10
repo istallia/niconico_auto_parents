@@ -248,8 +248,8 @@ modal_win.id = 'ista-auto-modal';
 modal_win.classList.add('ista-auto-modal');
 modal_win.innerHTML = `
 <p>
-	使用した素材のIDのリストを入力してください。1行が10件未満、または11件以上になっている場合は自動で整頓されます。<br>
-	ファイル(複数可)を枠内にD&Dすると、そのファイルの中身または名前に含まれる作品ID(動画/静画/コモンズ/立体)を抽出できます。
+	使用した素材のIDのリスト(登録できるのは最大300件)を入力してください。ファイル(複数可)を枠内にD&Dすると、そのファイルの中身または名前に含まれる作品ID(動画/静画/コモンズ/立体)を抽出できます。<br>
+	各機能のボタンはカーソルを合わせると簡単な説明を見ることができます。
 </p>
 <button type="button" id="ista-read-parent-works" class="ista-button white" title="(v0.4.1) 親作品の欄にある作品を読み出します。">親作品を読み出し</button>&nbsp;
 <button type="button" id="ista-open-sidebar-bookmarks" class="ista-button white" title="(v0.4.2) ブラウザのブックマークから作品IDを選択して追加します。">ニコニコ・ブックマーク</button>&nbsp;
