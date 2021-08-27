@@ -136,7 +136,7 @@ const registReservedParents = () => {
 	if (countIDs(id_list) < 1) return;
 	/* モーダルを出す */
 	const button_open = document.getElementById('ista-open-modal');
-	const textarea    = document.getElementById('ista-auto-list');
+	const textarea    = document.getElementById('ista-textarea-id-list');
 	if (!button_open || !textarea) {
 		setTimeout(registReservedParents, 500);
 		return;
@@ -145,7 +145,7 @@ const registReservedParents = () => {
 	textarea.value = id_list;
 	/* 適当なタイミングで流し込む */
 	setTimeout(() => {
-		document.getElementById('ista-auto-button').dispatchEvent(new Event('click', {bubbles: true, composed: true}));
+		document.getElementById('ista-button-auto-regist').dispatchEvent(new Event('click', {bubbles: true, composed: true}));
 		const target   = document.getElementById('ista-auto-modal-bg');
 		const observer = new MutationObserver(records => {
 			if (document.getElementById('ista-auto-modal-bg').style.display === 'none') {

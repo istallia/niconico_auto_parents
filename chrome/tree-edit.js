@@ -89,7 +89,7 @@ let create_promise_candidates = id10 => {
 					alert_alt('合計親作品数が300件を超えるため、候補を自動登録することができません。');
 					document.getElementById('ista-auto-modal').style.display    = 'none';
 					document.getElementById('ista-auto-modal-bg').style.display = 'none';
-					document.getElementById('ista-auto-list').value             = '';
+					document.getElementById('ista-textarea-id-list').value             = '';
 					document.getElementById('checkbox').style.display           = 'none';
 					document.getElementById('parents').style.backgroundImage    = 'url("")';
 					ista_processing                                             = false;
@@ -124,9 +124,9 @@ let create_promise_candidates = id10 => {
 /* --- IDリストを読み取り、すべてのIDを追加する --- */
 let add_materials = () => {
 	ista_processing  = true;
-	let id_list      = document.getElementById('ista-auto-list').value;
+	let id_list      = document.getElementById('ista-textarea-id-list').value;
 	id_list          = optimize_list(id_list);
-	document.getElementById('ista-auto-list').value = id_list.join('\n');
+	document.getElementById('ista-textarea-id-list').value = id_list.join('\n');
 	localStorage.setItem('ista-verify-contents', String(document.getElementById('ista-verify-contents').checked));
 	if (id_list.length > 0) {
 		document.getElementById('checkbox').style.display        = 'none';
@@ -142,7 +142,7 @@ let add_materials = () => {
 	// 	promise.then(task)
 	// ), Promise.resolve());
 	a_promise.finally(() => {
-		let text_list = document.getElementById('ista-auto-list').value;
+		let text_list = document.getElementById('ista-textarea-id-list').value;
 		for (let source_id in ista_linked_ids) {
 			let dest_id = ista_linked_ids[source_id];
 			text_list = text_list.replace(source_id, dest_id);
@@ -152,13 +152,13 @@ let add_materials = () => {
 		if ( remained_list.length > 2 && verify ) {
 			/* IDが残留した場合 */
 			alert_alt('[コンテンツツリー登録支援ツール]\nいくつかのIDの作品が正常に登録されませんでした。\n繰り返し登録しようとしても失敗する場合は、当該作品が非公開または削除された可能性があります。');
-			document.getElementById('ista-auto-list').value = remained_list;
+			document.getElementById('ista-textarea-id-list').value = remained_list;
 			ista_processing = false;
 		} else {
 			/* すべてのIDが正常に登録された場合 */
 			document.getElementById('ista-auto-modal').style.display    = 'none';
 			document.getElementById('ista-auto-modal-bg').style.display = 'none';
-			document.getElementById('ista-auto-list').value             = '';
+			document.getElementById('ista-textarea-id-list').value             = '';
 			ista_processing                                             = false;
 			document.getElementById('ista-sidebar-bookmarks').classList.remove('visible');
 		}
@@ -205,14 +205,14 @@ button_open.addEventListener('click', () => {
 	document.getElementById('ista-auto-modal-bg').style.display = 'block';
 	document.getElementById('ista-auto-modal').ondragover = event => {
 		event.preventDefault();
-		document.getElementById('ista-auto-list').classList.add('ista-dragover');
+		document.getElementById('ista-textarea-id-list').classList.add('ista-dragover');
 	};
 	document.getElementById('ista-auto-modal').ondragleave = event => {
-		document.getElementById('ista-auto-list').classList.remove('ista-dragover');
+		document.getElementById('ista-textarea-id-list').classList.remove('ista-dragover');
 	};
 	document.getElementById('ista-auto-modal').ondrop = event => {
 		/* ファイルからID抽出 */
-		document.getElementById('ista-auto-list').classList.remove('ista-dragover');
+		document.getElementById('ista-textarea-id-list').classList.remove('ista-dragover');
 		if (event.dataTransfer.files.length <= 0) return;
 		event.preventDefault();
 		const extract_func = (name, event) => {
@@ -222,10 +222,10 @@ button_open.addEventListener('click', () => {
 			let dropped_ids  = [... dropped_text.matchAll(regexp)];
 			if (ids_in_name.length > 0) dropped_ids = ids_in_name;
 			for (let index in dropped_ids) dropped_ids[index] = dropped_ids[index][1];
-			let text_list = document.getElementById('ista-auto-list').value;
+			let text_list = document.getElementById('ista-textarea-id-list').value;
 			if (text_list.slice(-1) !== '\n' && text_list.length > 0) text_list = text_list + '\n';
 			text_list = text_list + optimize_list(dropped_ids.join(' '),false).join('\n');
-			document.getElementById('ista-auto-list').value = text_list;
+			document.getElementById('ista-textarea-id-list').value = text_list;
 		}
 		for (let file of event.dataTransfer.files) {
 			const reader = new FileReader();
@@ -233,7 +233,7 @@ button_open.addEventListener('click', () => {
 			reader.readAsText(file);
 		}
 	};
-	document.getElementById('ista-auto-button').onclick = add_materials;
+	document.getElementById('ista-button-auto-regist').onclick = add_materials;
 	let select           = document.getElementById('site_selector');
 	select.selectedIndex = select.options.length - 1;
 	select.dispatchEvent(new Event('change', {bubbles: true, composed: true}));
@@ -255,8 +255,8 @@ modal_win.innerHTML = `
 <button type="button" id="ista-open-sidebar-bookmarks" class="ista-button white" title="(v0.4.2) ブラウザのブックマークから作品IDを選択して追加します。">ニコニコ・ブックマーク</button>&nbsp;
 <button type="button" id="ista-get-parents-of-parents" class="ista-button white" title="(v0.5.3) 選択範囲の作品の親作品を取得します。">ツリー・チェイン</button><br>
 <label for="ista-verify-contents" title="(v0.3.2) これがOnのとき、親作品に登録できなかった作品を自動で確認してお知らせします。"><input type="checkbox" id="ista-verify-contents" checked>&nbsp;書き込み検証を行う</label>
-<textarea id="ista-auto-list"></textarea>
-<button id="ista-auto-button" class="ista-button">自動登録</button>
+<textarea id="ista-textarea-id-list"></textarea>
+<button id="ista-button-auto-regist" class="ista-button">自動登録</button>
 `;
 parent_button.parentNode.insertBefore(modal_win, parent_button);
 /* モーダル背景の追加 */
@@ -335,7 +335,7 @@ button_open.addEventListener('click', () => {
 		if (selection.toString().length > 0) {
 			id_text = selection.toString();
 		} else {
-			const textarea = document.getElementById('ista-auto-list');
+			const textarea = document.getElementById('ista-textarea-id-list');
 			const s_start  = textarea.selectionStart;
 			const s_end    = textarea.selectionEnd;
 			id_text        = textarea.value.substring(s_start, s_end);
@@ -381,7 +381,7 @@ const getParentsOfParents = id => {
 			}
 		});
 		/* IDリストを入力欄の末尾に追加 */
-		const textarea   = document.getElementById('ista-auto-list');
+		const textarea   = document.getElementById('ista-textarea-id-list');
 		let current_text = textarea.value;
 		if (current_text.slice(-1) !== '\n') current_text += '\n';
 		textarea.value = current_text + id_text;
@@ -425,7 +425,7 @@ const generateSidebarBookmarks = () => {
 	});
 	button_add_all.addEventListener('click', event => {
 		const i            = String(document.getElementById('ista-sidebar-bookmarks-title').getAttribute('current-index'));
-		const current_area = document.getElementById('ista-auto-list');
+		const current_area = document.getElementById('ista-textarea-id-list');
 		let works          = [...document.getElementById('ista-sidebar-bookmarks-list-'+String(i)).children].filter(elem => !elem.classList.contains('added'));
 		works              = works.map(elem => {
 			elem.classList.add('added');
@@ -461,7 +461,7 @@ const openSidebarBookmarks = () => {
 			/* フォルダ→作品一覧のイベント作成 */
 			const openSidebarWorks = event => {
 				const i            = event.currentTarget.getAttribute('folder-index');
-				const current_text = document.getElementById('ista-auto-list').value;
+				const current_text = document.getElementById('ista-textarea-id-list').value;
 				document.getElementById('ista-sidebar-bookmarks-title').setAttribute('current-index', String(i));
 				document.getElementById('ista-sidebar-bookmarks-title').innerText = event.currentTarget.innerText;
 				document.getElementById('ista-sidebar-bookmarks-folders').classList.remove('visible');
@@ -478,7 +478,7 @@ const openSidebarBookmarks = () => {
 			/* 作品クリックでIDを追加するイベントハンドラ */
 			const addWorkFromBookmarks = event => {
 				const id           = event.currentTarget.getAttribute('work-id');
-				const area_list    = document.getElementById('ista-auto-list');
+				const area_list    = document.getElementById('ista-textarea-id-list');
 				let current_text   = area_list.value;
 				if (current_text.length > 0 && current_text.slice(-1) !== ' ' && current_text.slice(-1) !== '\n') current_text += ' ';
 				area_list.value = current_text + id;
@@ -551,7 +551,7 @@ const readParentWorks = () => {
 	if (!window.confirm('タイトル付きの形式で読み出しますか？')) {
 		materials_list = optimize_list(materials_list, false).join('\n');
 	}
-	document.getElementById('ista-auto-list').value = materials_list;
+	document.getElementById('ista-textarea-id-list').value = materials_list;
 };
 button_open.addEventListener('click', () => {
 	document.getElementById('ista-read-parent-works').addEventListener('click', readParentWorks);
