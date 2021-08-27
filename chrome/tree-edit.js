@@ -117,10 +117,12 @@ const optimizeList = (id_list, check_parents = true) => {
 	for (i in p_list) p_list[i] = p_list[i].split(' ');
 	p_list = p_list.flat();
 	/* 既に登録済みのリストを取得する */
+	const parent_works_ul = document.getElementById('parents');
 	let ng_list = [];
-	let items   = [... document.getElementById('parents').children];
-	if (!check_parents) items = [];
-	for (item of items) ng_list.push(item.id);
+	if (parent_works_ul && check_parents) {
+		let items   = [... parent_works_ul.children];
+		for (let item of items) ng_list.push(item.id);
+	}
 	/* IDの形式であり、かつ重複のないリストを作成する */
 	let ok_list = [];
 	for (i in p_list) {

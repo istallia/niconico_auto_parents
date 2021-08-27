@@ -186,35 +186,3 @@ const analyzeGetParam = query => {
 	params.forEach(param => result[param[0]] = decodeURI(param[1]));
 	return result;
 };
-
-
-/* --- IDリストを最高効率に変換する --- */
-let optimizeList = (id_list, check_parents = true) => {
-	/* IDを1つずつバラバラの配列にする */
-	let p_list = id_list.split('\n');
-	for (i in p_list) p_list[i] = p_list[i].split(' ');
-	p_list = p_list.flat();
-	/* IDの形式であり、かつ重複のないリストを作成する */
-	let ok_list = [];
-	for (i in p_list) {
-		if( /^[a-zA-Z]{1,3}\d{1,12}$/.test(p_list[i]) && ok_list.indexOf(p_list[i]) < 0 ) {
-			ok_list.push(p_list[i]);
-		}
-	}
-	/* 10件ごとのリストに変換する */
-	let res_list = [];
-	for (i in ok_list) {
-		i = Number(i);
-		if( i % 10 === 0 ) res_list.push('');
-		res_list[Math.floor(i/10)] += ok_list[i];
-		if( i % 10 < 9 ) {
-			res_list[Math.floor(i/10)] += ' ';
-		} else {
-			res_list[Math.floor(i/10)] += '\n';
-		}
-	}
-	for (i in res_list) {
-		res_list[i] = res_list[i].slice(0, -1);
-	}
-	return res_list;
-};
