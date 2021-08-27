@@ -16,8 +16,102 @@ window.alert        = text => console.log('alert -> '+text);
 let ista_linked_ids = {};
 
 
+/* --- ページに要素を追加する --- */
+/* 「IDリストから自動登録」ボタンの追加 */
+const button_open = document.createElement('a');
+button_open.id    = 'ista-open-modal';
+button_open.classList.add('btn-01');
+button_open.innerText    = '[拡張機能]IDリストから自動登録';
+button_open.style.cursor = 'pointer';
+button_open.addEventListener('click', () => {
+	document.getElementById('ista-auto-modal').style.display    = 'block';
+	document.getElementById('ista-auto-modal-bg').style.display = 'block';
+	document.getElementById('ista-auto-modal').ondragover = event => {
+		event.preventDefault();
+		document.getElementById('ista-textarea-id-list').classList.add('ista-dragover');
+	};
+	document.getElementById('ista-auto-modal').ondragleave = event => {
+		document.getElementById('ista-textarea-id-list').classList.remove('ista-dragover');
+	};
+	document.getElementById('ista-auto-modal').ondrop = event => {
+		/* ファイルからID抽出 */
+		document.getElementById('ista-textarea-id-list').classList.remove('ista-dragover');
+		if (event.dataTransfer.files.length <= 0) return;
+		event.preventDefault();
+		const extract_func = (name, event) => {
+			const regexp       = /(?<=^|[^a-zA-Z0-9])((nc|im|sm|td)\d{2,12})(?=[^a-zA-Z0-9]|$)/g;
+			const dropped_text = event.currentTarget.result.replace(/\x00/g, '');
+			let ids_in_name  = [... name.matchAll(regexp)];
+			let dropped_ids  = [... dropped_text.matchAll(regexp)];
+			if (ids_in_name.length > 0) dropped_ids = ids_in_name;
+			for (let index in dropped_ids) dropped_ids[index] = dropped_ids[index][1];
+			let text_list = document.getElementById('ista-textarea-id-list').value;
+			if (text_list.slice(-1) !== '\n' && text_list.length > 0) text_list = text_list + '\n';
+			text_list = text_list + optimize_list(dropped_ids.join(' '),false).join('\n');
+			document.getElementById('ista-textarea-id-list').value = text_list;
+		}
+		for (let file of event.dataTransfer.files) {
+			const reader = new FileReader();
+			reader.addEventListener('load', extract_func.bind(this, file.name));
+			reader.readAsText(file);
+		}
+	};
+	document.getElementById('ista-button-auto-regist').onclick = add_materials;
+	let select           = document.getElementById('site_selector');
+	select.selectedIndex = select.options.length - 1;
+	select.dispatchEvent(new Event('change', {bubbles: true, composed: true}));
+	/* チェックボックスに値を反映する */
+	document.getElementById('ista-verify-contents').checked = (localStorage.getItem('ista-verify-contents') !== 'false');
+});
+const parent_button = document.getElementsByClassName('submit')[0];
+parent_button.insertBefore(button_open, parent_button.firstChild);
+/* モーダルウィンドウの追加 */
+const modal_win = document.createElement('div');
+modal_win.id = 'ista-auto-modal';
+modal_win.classList.add('ista-auto-modal');
+modal_win.innerHTML = `
+<p>
+	使用した素材のIDのリスト(登録できるのは最大300件)を入力してください。ファイル(複数可)を枠内にD&Dすると、そのファイルの中身または名前に含まれる作品ID(動画/静画/コモンズ/立体)を抽出できます。<br>
+	各機能のボタンはカーソルを合わせると簡単な説明を見ることができます。
+</p>
+<button type="button" id="ista-read-parent-works" class="ista-button white" title="(v0.4.1) 親作品の欄にある作品を読み出します。">親作品を読み出し</button>&nbsp;
+<button type="button" id="ista-open-sidebar-bookmarks" class="ista-button white" title="(v0.4.2) ブラウザのブックマークから作品IDを選択して追加します。">ニコニコ・ブックマーク</button>&nbsp;
+<button type="button" id="ista-get-parents-of-parents" class="ista-button white" title="(v0.5.3) 選択範囲の作品の親作品を取得します。">ツリー・チェイン</button><br>
+<label for="ista-verify-contents" title="(v0.3.2) これがOnのとき、親作品に登録できなかった作品を自動で確認してお知らせします。"><input type="checkbox" id="ista-verify-contents" checked>&nbsp;書き込み検証を行う</label>
+<textarea id="ista-textarea-id-list"></textarea>
+<button id="ista-button-auto-regist" class="ista-button">自動登録</button>
+`;
+parent_button.parentNode.insertBefore(modal_win, parent_button);
+/* モーダル背景の追加 */
+const modal_win_bg = document.createElement('div');
+modal_win_bg.id  = 'ista-auto-modal-bg';
+modal_win_bg.classList.add('ista-auto-modal-bg');
+parent_button.parentNode.insertBefore(modal_win_bg, parent_button);
+modal_win_bg.addEventListener('click', () => {
+	if( !ista_processing ) {
+		document.getElementById('ista-auto-modal').style.display    = 'none';
+		document.getElementById('ista-auto-modal-bg').style.display = 'none';
+		document.getElementById('ista-sidebar-bookmarks').classList.remove('visible');
+	}
+});
+/* 「一括登録」ボタンの追加 */
+const button_regist_candidates = document.createElement('button');
+button_regist_candidates.classList.add('ista-button-reg');
+button_regist_candidates.innerText = '[拡張機能]一括登録';
+button_regist_candidates.title     = 'このボタンをクリックすると候補作品を一括で親作品欄に移動することができます。';
+document.querySelector("#Column01 > div.tree-edit-area.editbox.round5-t > p.helpimg img").title = '[拡張機能] (v0.3.4)この矢印をクリックすると候補作品を一括で親作品欄に移動することができます。';
+const parent_h3 = document.querySelector('div.search-parent h3');
+parent_h3.appendChild(button_regist_candidates);
+/* コンテンツツリーの連携がある場合のお知らせメッセージ */
+const p_submit           = document.querySelector('p.submit');
+const notice_message     = document.createElement('p');
+notice_message.innerText = '[拡張機能] 1つ以上のコモンズ作品にコンテンツツリーの連携が設定されていたため、登録先を切り替えました。';
+notice_message.hidden    = true;
+p_submit.insertBefore(notice_message, p_submit.firstChild);
+
+
 /* --- IDリストを最高効率に変換する --- */
-let optimize_list = (id_list, check_parents = true) => {
+const optimize_list = (id_list, check_parents = true) => {
 	/* IDを1つずつバラバラの配列にする */
 	let p_list = id_list.split('\n');
 	for (i in p_list) p_list[i] = p_list[i].split(' ');
@@ -54,7 +148,7 @@ let optimize_list = (id_list, check_parents = true) => {
 
 
 /* --- 入力→候補に追加→要素の移動 を行うPromiseを返す --- */
-let create_promise_candidates = id10 => {
+const create_promise_candidates = id10 => {
 	return new Promise(resolve => {
 		/* 入力 */
 		return new Promise(() => {
@@ -122,7 +216,7 @@ let create_promise_candidates = id10 => {
 
 
 /* --- IDリストを読み取り、すべてのIDを追加する --- */
-let add_materials = () => {
+const add_materials = () => {
 	ista_processing  = true;
 	let id_list      = document.getElementById('ista-textarea-id-list').value;
 	id_list          = optimize_list(id_list);
@@ -167,7 +261,7 @@ let add_materials = () => {
 
 
 /* --- 現在の候補から一括登録を行う --- */
-let auto_reg_candidates = () => {
+const auto_reg_candidates = () => {
 	/* 各種要素を取得 */
 	let candidates   = document.getElementById('candidate');
 	let parent_works = document.getElementById('parents');
@@ -191,106 +285,12 @@ let auto_reg_candidates = () => {
 		document.getElementById('parents').style.backgroundImage    = 'url("")';
 	}
 };
-
-
-/* --- ページに要素を追加する --- */
-/* 「IDリストから自動登録」ボタンの追加 */
-let button_open = document.createElement('a');
-button_open.id  = 'ista-open-modal';
-button_open.classList.add('btn-01');
-button_open.innerText    = '[拡張機能]IDリストから自動登録';
-button_open.style.cursor = 'pointer';
-button_open.addEventListener('click', () => {
-	document.getElementById('ista-auto-modal').style.display    = 'block';
-	document.getElementById('ista-auto-modal-bg').style.display = 'block';
-	document.getElementById('ista-auto-modal').ondragover = event => {
-		event.preventDefault();
-		document.getElementById('ista-textarea-id-list').classList.add('ista-dragover');
-	};
-	document.getElementById('ista-auto-modal').ondragleave = event => {
-		document.getElementById('ista-textarea-id-list').classList.remove('ista-dragover');
-	};
-	document.getElementById('ista-auto-modal').ondrop = event => {
-		/* ファイルからID抽出 */
-		document.getElementById('ista-textarea-id-list').classList.remove('ista-dragover');
-		if (event.dataTransfer.files.length <= 0) return;
-		event.preventDefault();
-		const extract_func = (name, event) => {
-			const regexp       = /(?<=^|[^a-zA-Z0-9])((nc|im|sm|td)\d{2,12})(?=[^a-zA-Z0-9]|$)/g;
-			const dropped_text = event.currentTarget.result.replace(/\x00/g, '');
-			let ids_in_name  = [... name.matchAll(regexp)];
-			let dropped_ids  = [... dropped_text.matchAll(regexp)];
-			if (ids_in_name.length > 0) dropped_ids = ids_in_name;
-			for (let index in dropped_ids) dropped_ids[index] = dropped_ids[index][1];
-			let text_list = document.getElementById('ista-textarea-id-list').value;
-			if (text_list.slice(-1) !== '\n' && text_list.length > 0) text_list = text_list + '\n';
-			text_list = text_list + optimize_list(dropped_ids.join(' '),false).join('\n');
-			document.getElementById('ista-textarea-id-list').value = text_list;
-		}
-		for (let file of event.dataTransfer.files) {
-			const reader = new FileReader();
-			reader.addEventListener('load', extract_func.bind(this, file.name));
-			reader.readAsText(file);
-		}
-	};
-	document.getElementById('ista-button-auto-regist').onclick = add_materials;
-	let select           = document.getElementById('site_selector');
-	select.selectedIndex = select.options.length - 1;
-	select.dispatchEvent(new Event('change', {bubbles: true, composed: true}));
-	/* チェックボックスに値を反映する */
-	document.getElementById('ista-verify-contents').checked = (localStorage.getItem('ista-verify-contents') !== 'false');
-});
-let parent_button = document.getElementsByClassName('submit')[0];
-parent_button.insertBefore(button_open, parent_button.firstChild);
-/* モーダルウィンドウの追加 */
-let modal_win = document.createElement('div');
-modal_win.id = 'ista-auto-modal';
-modal_win.classList.add('ista-auto-modal');
-modal_win.innerHTML = `
-<p>
-	使用した素材のIDのリスト(登録できるのは最大300件)を入力してください。ファイル(複数可)を枠内にD&Dすると、そのファイルの中身または名前に含まれる作品ID(動画/静画/コモンズ/立体)を抽出できます。<br>
-	各機能のボタンはカーソルを合わせると簡単な説明を見ることができます。
-</p>
-<button type="button" id="ista-read-parent-works" class="ista-button white" title="(v0.4.1) 親作品の欄にある作品を読み出します。">親作品を読み出し</button>&nbsp;
-<button type="button" id="ista-open-sidebar-bookmarks" class="ista-button white" title="(v0.4.2) ブラウザのブックマークから作品IDを選択して追加します。">ニコニコ・ブックマーク</button>&nbsp;
-<button type="button" id="ista-get-parents-of-parents" class="ista-button white" title="(v0.5.3) 選択範囲の作品の親作品を取得します。">ツリー・チェイン</button><br>
-<label for="ista-verify-contents" title="(v0.3.2) これがOnのとき、親作品に登録できなかった作品を自動で確認してお知らせします。"><input type="checkbox" id="ista-verify-contents" checked>&nbsp;書き込み検証を行う</label>
-<textarea id="ista-textarea-id-list"></textarea>
-<button id="ista-button-auto-regist" class="ista-button">自動登録</button>
-`;
-parent_button.parentNode.insertBefore(modal_win, parent_button);
-/* モーダル背景の追加 */
-let modal_win_bg = document.createElement('div');
-modal_win_bg.id  = 'ista-auto-modal-bg';
-modal_win_bg.classList.add('ista-auto-modal-bg');
-parent_button.parentNode.insertBefore(modal_win_bg, parent_button);
-modal_win_bg.addEventListener('click', () => {
-	if( !ista_processing ) {
-		document.getElementById('ista-auto-modal').style.display    = 'none';
-		document.getElementById('ista-auto-modal-bg').style.display = 'none';
-		document.getElementById('ista-sidebar-bookmarks').classList.remove('visible');
-	}
-});
-/* 「一括登録」ボタンの追加 */
-let button_reg = document.createElement('button');
-button_reg.classList.add('ista-button-reg');
-button_reg.innerText = '[拡張機能]一括登録';
-button_reg.title     = 'このボタンをクリックすると候補作品を一括で親作品欄に移動することができます。'
-button_reg.addEventListener('click', auto_reg_candidates);
+button_regist_candidates.addEventListener('click', auto_reg_candidates);
 document.querySelector("#Column01 > div.tree-edit-area.editbox.round5-t > p.helpimg").addEventListener('click', auto_reg_candidates);
-document.querySelector("#Column01 > div.tree-edit-area.editbox.round5-t > p.helpimg img").title = '[拡張機能] (v0.3.4)この矢印をクリックすると候補作品を一括で親作品欄に移動することができます。';
-let parent_h3 = document.querySelector('div.search-parent h3');
-parent_h3.appendChild(button_reg);
-/* コンテンツツリーの連携がある場合のお知らせメッセージ */
-const p_submit           = document.querySelector('p.submit');
-const notice_message     = document.createElement('p');
-notice_message.innerText = '[拡張機能] 1つ以上のコモンズ作品にコンテンツツリーの連携が設定されていたため、登録先を切り替えました。';
-notice_message.hidden    = true;
-p_submit.insertBefore(notice_message, p_submit.firstChild);
 
 
 /* --- 候補作品をクリックで移動させるためのイベント --- */
-let click_to_reg = event => {
+const click_to_reg = event => {
 	/* 親をチェック */
 	const parent = event.currentTarget.parentNode;
 	if( parent.id !== 'candidate' ) return;
