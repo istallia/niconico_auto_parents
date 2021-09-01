@@ -113,9 +113,8 @@ p_submit.insertBefore(notice_message, p_submit.firstChild);
 /* --- IDリストを最高効率に変換する --- */
 const optimizeList = (id_list, check_parents = true) => {
 	/* IDを1つずつバラバラの配列にする */
-	let p_list = id_list.split('\n');
-	for (i in p_list) p_list[i] = p_list[i].split(' ');
-	p_list = p_list.flat();
+	let p_list = [... id_list.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)];
+	p_list = p_list.map(res => res[0]);
 	/* 既に登録済みのリストを取得する */
 	const parent_works_ul = document.getElementById('parents');
 	let ng_list = [];
@@ -126,7 +125,7 @@ const optimizeList = (id_list, check_parents = true) => {
 	/* IDの形式であり、かつ重複のないリストを作成する */
 	let ok_list = [];
 	for (i in p_list) {
-		if( /^[a-zA-Z]{1,3}\d{1,12}$/.test(p_list[i]) && ok_list.indexOf(p_list[i]) < 0 && ng_list.indexOf(p_list[i]) < 0 ) {
+		if( ok_list.indexOf(p_list[i]) < 0 && ng_list.indexOf(p_list[i]) < 0 ) {
 			ok_list.push(p_list[i]);
 		}
 	}
