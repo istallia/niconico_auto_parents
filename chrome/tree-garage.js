@@ -2,14 +2,14 @@
 if (typeof browser === 'undefined') browser = chrome;
 
 
-/* --- [ニコニコ・ブックマーク]投稿画面にボタンを追加 --- */
+/* --- フォームはオプションを開いたときのみ現れる --- */
 const addButtonBookmark = records => {
 	/* 親を探す */
 	const input        = document.getElementById('commonsContentIdInput');
 	const exist_button = document.getElementById('ista-open-sidebar');
 	if (!input || exist_button) return;
 	const frame = input.parentNode.parentNode.parentNode;
-	/* ボタンを生成 */
+	/* [ニコニコ・ブックマーク] ボタンを生成 */
 	const button     = document.createElement('button');
 	button.innerText = '[拡張機能] ニコニコ・ブックマーク';
 	button.id        = 'ista-open-sidebar';
@@ -18,6 +18,13 @@ const addButtonBookmark = records => {
 	/* [ニコニコ・ブックマーク] サイドバーを生成 */
 	generateSidebarBookmarks();
 	button.addEventListener('click', openSidebarBookmarks);
+	/* [ファイルID抽出] D&D監視イベント登録 */
+	const ignoreEvents = event => {
+		event.preventDefault();
+	};
+	frame.addEventListener('dragover' , ignoreEvents);
+	frame.addEventListener('dragleave', ignoreEvents);
+	frame.addEventListener('drop'     , extractIDsFromFiles);
 };
 const root     = document.getElementById('root');
 const observer = new MutationObserver(addButtonBookmark);
@@ -86,7 +93,12 @@ const generateSidebarBookmarks = () => {
 /* --- [ニコニコ・ブックマーク] サイドバーを開く --- */
 const openSidebarBookmarks = () => {
 	/* 要素の存在チェック */
-	if (!document.getElementById('ista-sidebar-bookmarks')) return;
+	if (!document.getElementById('ista-sidebar-bookmarks')){
+		return;
+	} else if (document.getElementById('ista-sidebar-bookmarks').classList.contains('visible')) {
+		closeSidebarBookmarks();
+		return;
+	}
 	let div_lists = [...document.getElementsByClassName('ista-sidebar-list')].filter(div => !div.classList.contains('folders'));
 	div_lists.forEach(div => div.remove());
 	[...document.getElementById('ista-sidebar-bookmarks-folders').children].forEach(div => div.remove());
@@ -163,3 +175,45 @@ const closeSidebarBookmarks = () => {
 	/* サイドバーのベースを表示する */
 	document.getElementById('ista-sidebar-bookmarks').classList.remove('visible');
 };
+
+
+/* --- [ファイルID抽出] D&DでファイルからID抽出 --- */
+const extractIDsFromFiles = event => {
+	if (event.dataTransfer.files.length <= 0) return;
+	event.preventDefault();
+	const extract_func = (name, event) => {
+		const regexp       = /(?<=^|[^a-zA-Z0-9])((nc|im|sm|td)\d{2,12})(?=[^a-zA-Z0-9]|$)/g;
+		const dropped_text = event.currentTarget.result.replace(/\x00/g, '');
+		let ids_in_name  = [... name.matchAll(regexp)];
+		let dropped_ids  = [... dropped_text.matchAll(regexp)];
+		if (ids_in_name.length > 0) dropped_ids = ids_in_name;
+		for (let index in dropped_ids) dropped_ids[index] = dropped_ids[index][1];
+		let text_list = document.getElementById('commonsContentIdInput').value;
+		if (text_list.slice(-1) !== ' ' && text_list.length > 0) text_list = text_list + ' ';
+		text_list = text_list + optimizeList(dropped_ids.join(' '));
+		document.getElementById('commonsContentIdInput').value = text_list;
+	}
+	for (let file of event.dataTransfer.files) {
+		const reader = new FileReader();
+		reader.addEventListener('load', extract_func.bind(this, file.name));
+		reader.readAsText(file);
+	}
+};
+
+
+/* --- IDリストを最高効率に変換する --- */
+const optimizeList = (id_list) => {
+	/* IDを1つずつバラバラの配列にする */
+	let p_list = [... id_list.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)];
+	p_list = p_list.map(res => res[0]);
+	/* IDの形式であり、かつ重複のないリストを作成する */
+	let ok_list = [];
+	for (i in p_list) {
+		if( ok_list.indexOf(p_list[i]) < 0 ) {
+			ok_list.push(p_list[i]);
+		}
+	}
+	/* 1行で返す */
+	return ok_list.join(' ');
+};
+
