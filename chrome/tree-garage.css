@@ -5,3 +5,76 @@ button.ista-button-garage {
 button.ista-button-garage:hover {
 	background-color : #60bbff;
 }
+
+
+/* --- ニコニコ・ブックマーク --- */
+button.ista-button {
+	background-color : #F17603;
+	color            : #eee;
+	border           : 1px solid black;
+	margin           : 0px 0.25rem;
+	padding          : 0.25rem 1rem;
+	border-radius    : 0.20rem;
+}
+button.ista-button.white {
+	margin-bottom    : 0.25rem;
+	padding          : 0.2rem 0.75rem;
+	background-color : white;
+	color            : inherit;
+}
+div.commonHeaderArea { z-index : 1000; }
+div.ista-sidebar {
+	display          : none;
+	position         : fixed;
+	z-index          : 500;
+	top              : 108px;
+	right            : 0px;
+	width            : 20vw;
+	height           : calc(100vh - 36px);
+	background-color : #eee;
+	border-left      : 3px solid #444;
+	user-select      : none;
+}
+div.ista-sidebar-title {
+	text-align    : center;
+	margin        : 0px;
+	padding       : 0.5rem;
+	width         : 100%;
+	height        : 2.4rem;
+	border-bottom : 3px solid #444;
+	font-size     : 1.25rem;
+	overflow      : hidden;
+}
+div.ista-sidebar-buttons {
+	display       : none;
+	margin        : 0px;
+	padding       : 0.1rem;
+	width         : 100%;
+	height        : 1.75rem;
+	border-bottom : 1px solid #444;
+	overflow      : hidden;
+}
+div.ista-sidebar-list {
+	display  : none;
+	margin   : 0px;
+	padding  : 0.25rem;
+	width    : 100%;
+	height   : calc(100vh - 36px - 1.2rem - 1.75rem);
+	overflow : scroll;
+}
+div.ista-sidebar-list.folders {
+	padding-top : 1.5rem;
+	height      : calc(100vh - 36px - 1.2rem);
+}
+div.ista-sidebar-list > div {
+	text-align : left;
+	overflow-x : hidden;
+	padding    : 0.25rem;
+}
+div.ista-sidebar-list > div.error {
+	color : darkred;
+}
+div.ista-sidebar-list > div:hover { background-color : #fc6; }
+div.ista-sidebar-list.folders > div.error:hover { background-color : inherit; }
+div.visible { display : block; }
+div.added { display : none; }
