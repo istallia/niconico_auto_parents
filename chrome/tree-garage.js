@@ -7,9 +7,9 @@ const addButtonBookmark = records => {
 	const frame = input.parentNode.parentNode.parentNode;
 	/* ボタンを生成 */
 	const button     = document.createElement('button');
-	button.innerText = 'ニコニコ・ブックマーク';
+	button.innerText = '[拡張機能] ニコニコ・ブックマーク';
 	button.id        = 'ista-open-sidebar';
-	button.classList.add('ista-button-garage');
+	button.classList.add('ista-button-garage', 'MuiButtonBase-root', 'MuiButton-root', 'MuiButton-text');
 	frame.appendChild(button);
 };
 const root     = document.getElementById('root');
@@ -18,4 +18,3 @@ observer.observe(root, {
 	childList : true,
 	subtree   : true
 });
-console.log('[Debug] 監視を開始しました。');
