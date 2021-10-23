@@ -77,7 +77,7 @@ const generateSidebarBookmarks = () => {
 			return elem.getAttribute('work-id');
 		});
 		if (current_area.value.length > 0) current_area.value += ' ';
-		current_area.value += works.join(' ');
+		typeText(current_area, works.join(' '))
 	});
 	area_buttons.appendChild(button_back);
 	area_buttons.appendChild(button_add_all);
@@ -128,7 +128,7 @@ const openSidebarBookmarks = () => {
 				const area_list    = document.getElementById('commonsContentIdInput');
 				let current_text   = area_list.value;
 				if (current_text.length > 0 && current_text.slice(-1) !== ' ') current_text += ' ';
-				area_list.value = current_text + id;
+				typeText(area_list, current_text+id);
 				event.currentTarget.classList.add('added');
 			};
 			/* 作品一覧を生成 */
@@ -191,7 +191,7 @@ const extractIDsFromFiles = event => {
 		let text_list = document.getElementById('commonsContentIdInput').value;
 		if (text_list.slice(-1) !== ' ' && text_list.length > 0) text_list = text_list + ' ';
 		text_list = text_list + optimizeList(dropped_ids.join(' '));
-		document.getElementById('commonsContentIdInput').value = text_list;
+		typeText(document.getElementById('commonsContentIdInput'), text_list);
 	}
 	for (let file of event.dataTransfer.files) {
 		const reader = new FileReader();
@@ -217,3 +217,15 @@ const optimizeList = (id_list) => {
 	return ok_list.join(' ');
 };
 
+
+/* --- テキストを指定要素に入力 --- */
+const typeText = (element, text) => {
+	/* フォーカス */
+	element.focus();
+	/* キーボードイベント作成 */
+	setTimeout(() => {
+		const event = document.createEvent('TextEvent');
+		event.initTextEvent('textInput', true, true, null, text, 1, 'en-US');
+		element.dispatchEvent(event);
+	}, 100);
+};
