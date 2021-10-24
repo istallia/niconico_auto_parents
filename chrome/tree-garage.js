@@ -77,7 +77,7 @@ const generateSidebarBookmarks = () => {
 			return elem.getAttribute('work-id');
 		});
 		if (current_area.value.length > 0) current_area.value += ' ';
-		typeText(current_area, works.join(' '))
+		addIdsToList(works);
 	});
 	area_buttons.appendChild(button_back);
 	area_buttons.appendChild(button_add_all);
@@ -126,9 +126,7 @@ const openSidebarBookmarks = () => {
 			const addWorkFromBookmarks = event => {
 				const id           = event.currentTarget.getAttribute('work-id');
 				const area_list    = document.getElementById('commonsContentIdInput');
-				let current_text   = area_list.value;
-				if (current_text.length > 0 && current_text.slice(-1) !== ' ') current_text += ' ';
-				typeText(area_list, current_text+id);
+				addIdsToList([id]);
 				event.currentTarget.classList.add('added');
 			};
 			/* 作品一覧を生成 */
@@ -188,10 +186,7 @@ const extractIDsFromFiles = event => {
 		let dropped_ids  = [... dropped_text.matchAll(regexp)];
 		if (ids_in_name.length > 0) dropped_ids = ids_in_name;
 		for (let index in dropped_ids) dropped_ids[index] = dropped_ids[index][1];
-		let text_list = document.getElementById('commonsContentIdInput').value;
-		if (text_list.slice(-1) !== ' ' && text_list.length > 0) text_list = text_list + ' ';
-		text_list = text_list + optimizeList(dropped_ids.join(' '));
-		typeText(document.getElementById('commonsContentIdInput'), text_list);
+		addIdsToList(dropped_ids);
 	}
 	for (let file of event.dataTransfer.files) {
 		const reader = new FileReader();
@@ -213,19 +208,29 @@ const optimizeList = (id_list) => {
 			ok_list.push(p_list[i]);
 		}
 	}
+	/* 既にリストにあるか確認する */
+	const garage_list = [... document.querySelector('div.MuiPaper-root.MuiPaper-elevation1.MuiPaper-rounded').children].map(div => div.querySelector('span').innerText);
+	ok_list.filter(id => !garage_list.includes(id));
 	/* 1行で返す */
 	return ok_list.join(' ');
 };
 
 
-/* --- テキストを指定要素に入力 --- */
-const typeText = (element, text) => {
-	/* フォーカス */
-	element.focus();
-	/* キーボードイベント作成 */
-	setTimeout(() => {
-		const event = document.createEvent('TextEvent');
-		event.initTextEvent('textInput', true, true, null, text, 1, 'en-US');
-		element.dispatchEvent(event);
-	}, 100);
+/* --- IDリストをhtmlのリストに追加 --- */
+const addIdsToList = (ids) => {
+	/* IDリストの要素を作成 */
+	const parser       = new DOMParser();
+	const div_template = '<div role="button" class="ista-garage-id MuiChip-root MuiChip-deletable" tabindex="0"><span class="MuiChip-label">%id%</span></div>';
+	let id_list        = ids.map(id => parser.parseFromString(div_template.replace('%id%',id),'text/html').querySelector('div[role="button"]'));
+	/* IDリスト枠を取得/作成 */
+	let id_frame = document.querySelector('div.MuiPaper-root.MuiPaper-elevation1.MuiPaper-rounded');
+	if (!id_frame) {
+		id_frame = document.createElement('div');
+		id_frame.classList.add('ista-garage-id-frame', 'MuiPaper-root','MuiPaper-elevation1','MuiPaper-rounded');
+		const input = document.getElementById('commonsContentIdInput');
+		const frame = input.parentNode.parentNode.parentNode;
+		frame.appendChild(id_frame);
+	}
+	/* 枠に要素を追加 */
+	id_list.forEach(div => id_frame.appendChild(div));
 };

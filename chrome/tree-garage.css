@@ -1,9 +1,23 @@
+/* --- 追加UI関係 --- */
 button.ista-button-garage {
 	color            : white;
 	background-color : #0075c2;
 }
 button.ista-button-garage:hover {
 	background-color : #60bbff;
+}
+div.ista-garage-id-frame {
+	padding    : 4px;
+	box-shadow : none;
+}
+div.ista-garage-id {
+	height           : inherit;
+	margin           : 4px;
+	padding          : 4px 8px;
+	font-size        : 14px;
+	font-family      : unset;
+	border-radius    : 4px;
+	background-color : white;
 }
 
 
