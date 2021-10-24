@@ -76,7 +76,6 @@ const generateSidebarBookmarks = () => {
 			elem.classList.add('added');
 			return elem.getAttribute('work-id');
 		});
-		if (current_area.value.length > 0) current_area.value += ' ';
 		addIdsToList(works);
 	});
 	area_buttons.appendChild(button_back);
@@ -209,7 +208,7 @@ const optimizeList = (id_list) => {
 		}
 	}
 	/* 既にリストにあるか確認する */
-	const garage_list = [... document.querySelector('div.MuiPaper-root.MuiPaper-elevation1.MuiPaper-rounded').children].map(div => div.querySelector('span').innerText);
+	const garage_list = [... document.getElementById('commonsContentIdInput').value.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)].map(res => res[0]);
 	ok_list.filter(id => !garage_list.includes(id));
 	/* 1行で返す */
 	return ok_list.join(' ');
@@ -218,19 +217,13 @@ const optimizeList = (id_list) => {
 
 /* --- IDリストをhtmlのリストに追加 --- */
 const addIdsToList = (ids) => {
-	/* IDリストの要素を作成 */
-	const parser       = new DOMParser();
-	const div_template = '<div role="button" class="ista-garage-id MuiChip-root MuiChip-deletable" tabindex="0"><span class="MuiChip-label">%id%</span></div>';
-	let id_list        = ids.map(id => parser.parseFromString(div_template.replace('%id%',id),'text/html').querySelector('div[role="button"]'));
-	/* IDリスト枠を取得/作成 */
-	let id_frame = document.querySelector('div.MuiPaper-root.MuiPaper-elevation1.MuiPaper-rounded');
-	if (!id_frame) {
-		id_frame = document.createElement('div');
-		id_frame.classList.add('ista-garage-id-frame', 'MuiPaper-root','MuiPaper-elevation1','MuiPaper-rounded');
-		const input = document.getElementById('commonsContentIdInput');
-		const frame = input.parentNode.parentNode.parentNode;
-		frame.appendChild(id_frame);
-	}
-	/* 枠に要素を追加 */
-	id_list.forEach(div => id_frame.appendChild(div));
+	/* 要素にフォーカス */
+	const input = document.getElementById('commonsContentIdInput');
+	input.focus();
+	/* IDリストをコピー */
+	navigator.clipboard.writeText(' '+optimizeList(ids.join(' ')));
+	/* ちょっと後にペースト */
+	setTimeout(() => {
+		document.execCommand('paste');
+	}, 0);
 };
