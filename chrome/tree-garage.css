@@ -4,20 +4,13 @@ button.ista-button-garage {
 	background-color : #0075c2;
 }
 button.ista-button-garage:hover {
-	background-color : #60bbff;
+	background-color : #0088ee;
 }
-div.ista-garage-id-frame {
-	padding    : 4px;
-	box-shadow : none;
-}
-div.ista-garage-id {
-	height           : inherit;
-	margin           : 4px;
-	padding          : 4px 8px;
-	font-size        : 14px;
-	font-family      : unset;
-	border-radius    : 4px;
-	background-color : white;
+
+
+/* --- ファイルID抽出 --- */
+div.css-ow1ier.hover {
+	background-color : #f1760380;
 }
 
 

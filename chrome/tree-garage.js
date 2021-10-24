@@ -18,13 +18,18 @@ const addButtonBookmark = records => {
 	/* [ニコニコ・ブックマーク] サイドバーを生成 */
 	generateSidebarBookmarks();
 	button.addEventListener('click', openSidebarBookmarks);
-	/* [ファイルID抽出] D&D監視イベント登録 */
-	const ignoreEvents = event => {
+	/* [ファイルID抽出] D&D時の色変え */
+	frame.addEventListener('dragover' , event => {
 		event.preventDefault();
-	};
-	frame.addEventListener('dragover' , ignoreEvents);
-	frame.addEventListener('dragleave', ignoreEvents);
-	frame.addEventListener('drop'     , extractIDsFromFiles);
+		event.currentTarget.classList.add('hover');
+	});
+	frame.addEventListener('dragleave', event => {
+		event.preventDefault();
+		event.currentTarget.classList.remove('hover');
+	});
+	/* [ファイルID抽出] D&D監視イベント登録 */
+	frame.addEventListener('drop', extractIDsFromFiles);
+	frame.addEventListener('drop', event => event.currentTarget.classList.remove('hover'));
 };
 const root     = document.getElementById('root');
 const observer = new MutationObserver(addButtonBookmark);
