@@ -2,6 +2,10 @@
 if (typeof browser === 'undefined') browser = chrome;
 
 
+/* --- 広域変数 --- */
+const queue = [];
+
+
 /* --- フォームはオプションを開いたときのみ現れる --- */
 const addButtonBookmark = records => {
 	/* 親を探す */
@@ -81,7 +85,7 @@ const generateSidebarBookmarks = () => {
 			elem.classList.add('added');
 			return elem.getAttribute('work-id');
 		});
-		addIdsToList(works);
+		addQueue(works);
 	});
 	area_buttons.appendChild(button_back);
 	area_buttons.appendChild(button_add_all);
@@ -130,7 +134,7 @@ const openSidebarBookmarks = () => {
 			const addWorkFromBookmarks = event => {
 				const id           = event.currentTarget.getAttribute('work-id');
 				const area_list    = document.getElementById('commonsContentIdInput');
-				addIdsToList([id]);
+				addQueue([id]);
 				event.currentTarget.classList.add('added');
 			};
 			/* 作品一覧を生成 */
@@ -190,7 +194,7 @@ const extractIDsFromFiles = event => {
 		let dropped_ids  = [... dropped_text.matchAll(regexp)];
 		if (ids_in_name.length > 0) dropped_ids = ids_in_name;
 		for (let index in dropped_ids) dropped_ids[index] = dropped_ids[index][1];
-		addIdsToList(dropped_ids);
+		addQueue(dropped_ids);
 	}
 	for (let file of event.dataTransfer.files) {
 		const reader = new FileReader();
@@ -220,15 +224,24 @@ const optimizeList = (id_list) => {
 };
 
 
+/* --- キューを追加 --- */
+const addQueue = ids => {
+	queue.unshift(ids);
+	if (queue.length === 1) addIdsToList();
+};
+
+
 /* --- IDリストをhtmlのリストに追加 --- */
-const addIdsToList = (ids) => {
-	/* 要素にフォーカス */
-	const input = document.getElementById('commonsContentIdInput');
-	input.focus();
+const addIdsToList = () => {
 	/* IDリストをコピー */
+	const ids = queue[queue.length-1];
 	navigator.clipboard.writeText(' '+optimizeList(ids.join(' ')));
 	/* ちょっと後にペースト */
 	setTimeout(() => {
+		const input = document.getElementById('commonsContentIdInput');
+		input.focus();
 		document.execCommand('paste');
+		const used_ids = queue.pop();
+		if (queue.length > 0) setTimeout(addIdsToList, 0);
 	}, 0);
 };
