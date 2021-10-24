@@ -240,8 +240,13 @@ const addIdsToList = () => {
 	setTimeout(() => {
 		const input = document.getElementById('commonsContentIdInput');
 		input.focus();
-		document.execCommand('paste');
-		const used_ids = queue.pop();
-		if (queue.length > 0) setTimeout(addIdsToList, 0);
+		navigator.clipboard.readText().then(text => {
+			const ids = queue[queue.length-1];
+			if (text === ' '+optimizeList(ids.join(' '))) {
+				document.execCommand('paste');
+				queue.pop();
+			}
+			if (queue.length > 0) setTimeout(addIdsToList, 0);
+		});
 	}, 0);
 };
