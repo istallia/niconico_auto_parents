@@ -1,7 +1,7 @@
 {
 	"manifest_version" : 2,
 	"name"             : "コンテンツツリー登録支援ツール",
-	"version"          : "0.5.4",
+	"version"          : "0.5.5",
 	"description"      : "候補作品をニコニコのコンテンツツリーに登録する作業を自動化する拡張機能",
 	"author"           : "istallia",
 	"icons" : {
@@ -17,6 +17,10 @@
 		"matches" : ["*://commons.nicovideo.jp/tree/*"],
 		"js"      : ["tree-view.js"],
 		"css"     : ["tree-view.css"]
+	}, {
+		"matches" : ["*://www.upload.nicovideo.jp/*"],
+		"js"      : ["tree-garage.js"],
+		"css"     : ["tree-garage.css"]
 	}],
 	"background": {
 		"scripts": [
@@ -28,7 +32,10 @@
 		"bookmarks",
 		"alarms",
 		"tabs",
+		"clipboardWrite",
+		"clipboardRead",
 		"*://commons.nicovideo.jp/tree/*",
+		"*://www.upload.nicovideo.jp/*",
 		"*://public-api.commons.nicovideo.jp/v1/tree/*"
 	]
 }
