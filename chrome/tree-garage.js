@@ -58,8 +58,8 @@ const openSidebarBookmarks = () => {
 	browser.runtime.sendMessage({request:'get-bookmarks'}, response => {
 		const current_text = document.getElementById('commonsContentIdInput').value;
 		openSidebar('ニコニコ・ブックマーク', current_text, response, event => {
-			const id           = event.currentTarget.getAttribute('work-id');
-			const area_list    = document.getElementById('commonsContentIdInput');
+			const id        = event.currentTarget.getAttribute('work-id');
+			const area_list = document.getElementById('commonsContentIdInput');
 			addQueue([id]);
 			event.currentTarget.classList.add('added');
 		});

@@ -33,7 +33,7 @@ const generateSidebar = listener_add_all => {
 		const i = String(document.getElementById('ista-sidebar-bookmarks-title').getAttribute('current-index'));
 		document.getElementById('ista-sidebar-bookmarks-list-'+i).classList.remove('visible');
 		document.getElementById('ista-sidebar-bookmarks-buttons').classList.remove('visible');
-		document.getElementById('ista-sidebar-bookmarks-title').innerText = '(サイドバー タイトル)';
+		document.getElementById('ista-sidebar-bookmarks-title').innerText = document.getElementById('ista-sidebar-bookmarks-title').getAttribute('sidebar-title');
 		document.getElementById('ista-sidebar-bookmarks-folders').classList.add('visible');
 	});
 	button_add_all.addEventListener('click', listener_add_all);
@@ -113,6 +113,7 @@ const openSidebar = (header_title, current_text, works_lists, listener_add_one) 
 	document.getElementById('ista-sidebar-bookmarks-buttons').classList.remove('visible');
 	document.getElementById('ista-sidebar-bookmarks').classList.add('visible');
 	document.getElementById('ista-sidebar-bookmarks-folders').classList.add('visible');
+	document.getElementById('ista-sidebar-bookmarks-title').setAttribute('sidebar-title', header_title);
 };
 
 
