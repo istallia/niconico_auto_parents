@@ -19,8 +19,17 @@ const addButtonBookmark = records => {
 	button.id        = 'ista-open-sidebar';
 	button.classList.add('ista-button-garage', 'MuiButtonBase-root', 'MuiButton-root', 'MuiButton-text');
 	frame.appendChild(button);
-	/* [ニコニコ・ブックマーク] サイドバーを生成 */
-	generateSidebarBookmarks();
+	/* [サイドバー] サイドバーを生成 */
+	generateSidebar(event => {
+		const i            = String(document.getElementById('ista-sidebar-bookmarks-title').getAttribute('current-index'));
+		const current_area = document.getElementById('commonsContentIdInput');
+		let works          = [...document.getElementById('ista-sidebar-bookmarks-list-'+String(i)).children].filter(elem => !elem.classList.contains('added'));
+		works              = works.map(elem => {
+			elem.classList.add('added');
+			return elem.getAttribute('work-id');
+		});
+		addQueue(works);
+	});
 	button.addEventListener('click', openSidebarBookmarks);
 	/* [ファイルID抽出] D&D時の色変え */
 	frame.addEventListener('dragover' , event => {
@@ -43,62 +52,7 @@ observer.observe(root, {
 });
 
 
-/* --- [ニコニコ・ブックマーク] サイドバーを準備する --- */
-const generateSidebarBookmarks = () => {
-	/* 要素がなければ生成 */
-	if (document.getElementById('ista-sidebar-bookmarks')) return;
-	/* まずはベースを作成 */
-	let div = document.createElement('div');
-	div.id  = 'ista-sidebar-bookmarks';
-	div.classList.add('ista-sidebar');
-	document.body.appendChild(div);
-	/* タイトルバーを作成 */
-	let title = document.createElement('div');
-	title.id  = 'ista-sidebar-bookmarks-title';
-	title.classList.add('ista-sidebar-title');
-	title.innerText = 'ニコニコ・ブックマーク';
-	div.appendChild(title);
-	/* ボタン用エリアを作成 */
-	let area_buttons   = document.createElement('div');
-	let button_back    = document.createElement('button');
-	let button_add_all = document.createElement('button');
-	area_buttons.id    = 'ista-sidebar-bookmarks-buttons';
-	area_buttons.classList.add('ista-sidebar-buttons');
-	button_back.id    = 'ista-sidebar-bookmarks-button-back';
-	button_add_all.id = 'ista-sidebar-bookmarks-button-add_all';
-	button_back.classList.add('ista-button', 'white');
-	button_add_all.classList.add('ista-button', 'white');
-	button_back.innerText    = '戻る';
-	button_add_all.innerText = 'すべて追加';
-	button_back.addEventListener('click', event => {
-		const i = String(document.getElementById('ista-sidebar-bookmarks-title').getAttribute('current-index'));
-		document.getElementById('ista-sidebar-bookmarks-list-'+i).classList.remove('visible');
-		document.getElementById('ista-sidebar-bookmarks-buttons').classList.remove('visible');
-		document.getElementById('ista-sidebar-bookmarks-title').innerText = 'ニコニコ・ブックマーク';
-		document.getElementById('ista-sidebar-bookmarks-folders').classList.add('visible');
-	});
-	button_add_all.addEventListener('click', event => {
-		const i            = String(document.getElementById('ista-sidebar-bookmarks-title').getAttribute('current-index'));
-		const current_area = document.getElementById('commonsContentIdInput');
-		let works          = [...document.getElementById('ista-sidebar-bookmarks-list-'+String(i)).children].filter(elem => !elem.classList.contains('added'));
-		works              = works.map(elem => {
-			elem.classList.add('added');
-			return elem.getAttribute('work-id');
-		});
-		addQueue(works);
-	});
-	area_buttons.appendChild(button_back);
-	area_buttons.appendChild(button_add_all);
-	div.appendChild(area_buttons);
-	/* フォルダ一覧の箱を作成 */
-	let folders = document.createElement('div');
-	folders.id  = 'ista-sidebar-bookmarks-folders';
-	folders.classList.add('ista-sidebar-list', 'folders', 'visible');
-	div.appendChild(folders);
-};
-
-
-/* --- [ニコニコ・ブックマーク] サイドバーを開く --- */
+/* --- [サイドバー] サイドバーを開く --- */
 const openSidebarBookmarks = () => {
 	/* 要素の存在チェック */
 	if (!document.getElementById('ista-sidebar-bookmarks')){
@@ -174,7 +128,7 @@ const openSidebarBookmarks = () => {
 };
 
 
-/* --- [ニコニコ・ブックマーク] サイドバーを閉じる --- */
+/* --- [サイドバー] サイドバーを閉じる --- */
 const closeSidebarBookmarks = () => {
 	/* 要素の存在チェック */
 	if (!document.getElementById('ista-sidebar-bookmarks')) return;
