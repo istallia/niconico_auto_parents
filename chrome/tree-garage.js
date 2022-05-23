@@ -56,7 +56,7 @@ observer.observe(root, {
 const openSidebarBookmarks = () => {
 	/* ブックマーク内の作品一覧を取得 */
 	browser.runtime.sendMessage({request:'get-bookmarks'}, response => {
-		const current_text = document.getElementById('commonsContentIdInput').value;
+		const current_text = document.getElementById('commonsContentIdInput');
 		openSidebar('ニコニコ・ブックマーク', current_text, response, event => {
 			const id        = event.currentTarget.getAttribute('work-id');
 			const area_list = document.getElementById('commonsContentIdInput');

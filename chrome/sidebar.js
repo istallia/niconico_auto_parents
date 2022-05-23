@@ -49,7 +49,7 @@ const generateSidebar = listener_add_all => {
 
 
 /* --- [サイドバー] サイドバーを開く --- */
-const openSidebar = (header_title, current_text, works_lists, listener_add_one) => {
+const openSidebar = (header_title, current_text_element, works_lists, listener_add_one) => {
 	/* 要素の存在チェック */
 	if (!document.getElementById('ista-sidebar-bookmarks')){
 		return;
@@ -70,7 +70,7 @@ const openSidebar = (header_title, current_text, works_lists, listener_add_one) 
 			document.getElementById('ista-sidebar-bookmarks-folders').classList.remove('visible');
 			document.getElementById('ista-sidebar-bookmarks-buttons').classList.add('visible');
 			[...document.getElementById('ista-sidebar-bookmarks-list-'+String(i)).children].forEach(elem => {
-				if (current_text.indexOf(elem.getAttribute('work-id')) > -1) {
+				if (current_text_element.value.indexOf(elem.getAttribute('work-id')) > -1) {
 					elem.classList.add('added');
 				} else {
 					elem.classList.remove('added');
