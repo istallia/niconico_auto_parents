@@ -12,7 +12,7 @@
 	"content_scripts" : [{
 		"matches" : ["*://commons.nicovideo.jp/tree/edit/*"],
 		"js"      : ["sidebar.js", "tree-edit.js"],
-		"css"     : ["tree-edit.css"]
+		"css"     : ["sidebar.css", "tree-edit.css"]
 	}, {
 		"matches" : ["*://commons.nicovideo.jp/tree/*"],
 		"js"      : ["tree-view.js"],
@@ -20,7 +20,7 @@
 	}, {
 		"matches" : ["*://www.upload.nicovideo.jp/*"],
 		"js"      : ["sidebar.js", "tree-garage.js"],
-		"css"     : ["tree-garage.css"]
+		"css"     : ["sidebar.css", "tree-garage.css"]
 	}],
 	"background": {
 		"scripts": [

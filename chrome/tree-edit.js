@@ -393,9 +393,9 @@ const getParentsOfParents = id => {
 /* --- [サイドバー] サイドバーを準備する --- */
 button_open.addEventListener('click', () => {
 	generateSidebar(event => {
-		const i            = String(document.getElementById('ista-sidebar-bookmarks-title').getAttribute('current-index'));
+		const i            = String(document.getElementById('ista-sidebar-title').getAttribute('current-index'));
 		const current_area = document.getElementById('ista-textarea-id-list');
-		let works          = [...document.getElementById('ista-sidebar-bookmarks-list-'+String(i)).children].filter(elem => !elem.classList.contains('added'));
+		let works          = [...document.getElementById('ista-sidebar-list-'+String(i)).children].filter(elem => !elem.classList.contains('added'));
 		works              = works.map(elem => {
 			elem.classList.add('added');
 			return elem.getAttribute('work-id');

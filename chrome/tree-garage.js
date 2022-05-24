@@ -21,9 +21,9 @@ const addButtonBookmark = records => {
 	frame.appendChild(button);
 	/* [サイドバー] サイドバーを生成 */
 	generateSidebar(event => {
-		const i            = String(document.getElementById('ista-sidebar-bookmarks-title').getAttribute('current-index'));
+		const i            = String(document.getElementById('ista-sidebar-title').getAttribute('current-index'));
 		const current_area = document.getElementById('commonsContentIdInput');
-		let works          = [...document.getElementById('ista-sidebar-bookmarks-list-'+String(i)).children].filter(elem => !elem.classList.contains('added'));
+		let works          = [...document.getElementById('ista-sidebar-list-'+String(i)).children].filter(elem => !elem.classList.contains('added'));
 		works              = works.map(elem => {
 			elem.classList.add('added');
 			return elem.getAttribute('work-id');
