@@ -392,16 +392,10 @@ const getParentsOfParents = id => {
 
 /* --- [サイドバー] サイドバーを準備する --- */
 button_open.addEventListener('click', () => {
-	generateSidebar(event => {
-		const i            = String(document.getElementById('ista-sidebar-title').getAttribute('current-index'));
+	generateSidebar(ids => {
 		const current_area = document.getElementById('ista-textarea-id-list');
-		let works          = [...document.getElementById('ista-sidebar-list-'+String(i)).children].filter(elem => !elem.classList.contains('added'));
-		works              = works.map(elem => {
-			elem.classList.add('added');
-			return elem.getAttribute('work-id');
-		});
 		if (current_area.value.length > 0 && current_area.value.slice(-1) !== '\n') current_area.value += '\n';
-		current_area.value += works.join(' ');
+		current_area.value += ids.join(' ');
 	});
 	document.getElementById('ista-open-sidebar-bookmarks').addEventListener('click', openSidebarBookmarks);
 });
@@ -412,13 +406,11 @@ const openSidebarBookmarks = () => {
 	/* ブックマーク内の作品一覧を取得 */
 	browser.runtime.sendMessage({request:'get-bookmarks'}, response => {
 		const current_text = document.getElementById('ista-textarea-id-list');
-		openSidebar('ニコニコ・ブックマーク', current_text, response, event => {
-			const id         = event.currentTarget.getAttribute('work-id');
+		openSidebar('ニコニコ・ブックマーク', current_text, response, id => {
 			const area_list  = document.getElementById('ista-textarea-id-list');
 			let current_text = area_list.value;
 			if (current_text.length > 0 && current_text.slice(-1) !== ' ' && current_text.slice(-1) !== '\n') current_text += ' ';
 			area_list.value = current_text + id;
-			event.currentTarget.classList.add('added');
 		});
 	});
 };

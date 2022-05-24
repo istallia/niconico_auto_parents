@@ -36,7 +36,15 @@ const generateSidebar = listener_add_all => {
 		document.getElementById('ista-sidebar-title').innerText = document.getElementById('ista-sidebar-title').getAttribute('sidebar-title');
 		document.getElementById('ista-sidebar-folders').classList.add('visible');
 	});
-	button_add_all.addEventListener('click', listener_add_all);
+	button_add_all.addEventListener('click', () => {
+		const i            = String(document.getElementById('ista-sidebar-title').getAttribute('current-index'));
+		let works          = [...document.getElementById('ista-sidebar-list-'+String(i)).children].filter(elem => !elem.classList.contains('added'));
+		works              = works.map(elem => {
+			elem.classList.add('added');
+			return elem.getAttribute('work-id');
+		});
+		listener_add_all(works);
+	});
 	area_buttons.appendChild(button_back);
 	area_buttons.appendChild(button_add_all);
 	div.appendChild(area_buttons);
@@ -95,7 +103,11 @@ const openSidebar = (header_title, current_text_element, works_lists, listener_a
 				let work       = document.createElement('div');
 				work.innerText = item.label + '\n(' + item.id + ')';
 				work.setAttribute('work-id', item.id);
-				work.addEventListener('click', listener_add_one);
+				work.addEventListener('click', event => {
+					const id = event.currentTarget.getAttribute('work-id');
+					listener_add_one(id);
+					event.currentTarget.classList.add('added');
+				});
 				works.appendChild(work);
 			});
 		});

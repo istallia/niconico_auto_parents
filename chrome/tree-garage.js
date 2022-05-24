@@ -20,15 +20,8 @@ const addButtonBookmark = records => {
 	button.classList.add('ista-button-garage', 'MuiButtonBase-root', 'MuiButton-root', 'MuiButton-text');
 	frame.appendChild(button);
 	/* [サイドバー] サイドバーを生成 */
-	generateSidebar(event => {
-		const i            = String(document.getElementById('ista-sidebar-title').getAttribute('current-index'));
-		const current_area = document.getElementById('commonsContentIdInput');
-		let works          = [...document.getElementById('ista-sidebar-list-'+String(i)).children].filter(elem => !elem.classList.contains('added'));
-		works              = works.map(elem => {
-			elem.classList.add('added');
-			return elem.getAttribute('work-id');
-		});
-		addQueue(works);
+	generateSidebar(ids => {
+		addQueue(ids);
 	});
 	button.addEventListener('click', openSidebarBookmarks);
 	/* [ファイルID抽出] D&D時の色変え */
@@ -57,11 +50,9 @@ const openSidebarBookmarks = () => {
 	/* ブックマーク内の作品一覧を取得 */
 	browser.runtime.sendMessage({request:'get-bookmarks'}, response => {
 		const current_text = document.getElementById('commonsContentIdInput');
-		openSidebar('ニコニコ・ブックマーク', current_text, response, event => {
-			const id        = event.currentTarget.getAttribute('work-id');
+		openSidebar('ニコニコ・ブックマーク', current_text, response, id => {
 			const area_list = document.getElementById('commonsContentIdInput');
 			addQueue([id]);
-			event.currentTarget.classList.add('added');
 		});
 	});
 };
