@@ -11,16 +11,16 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			let parent_ids = Array.from(new Set(works.map(n => n.parentId)));
 			let parents    = parent_ids.map(id => {
 				return {
-					id    : id,
-					name  : '',
-					works : []
+					id   : id,
+					name : '',
+					list : []
 				};
 			});
 			for (let work of works) {
 				for (let folder of parents) {
 					if (folder.id === work.parentId) {
-						folder.works.push({
-							name : work.title,
+						folder.list.push({
+							label : work.title,
 							id   : extractWorkID(work.url)
 						});
 						break;
