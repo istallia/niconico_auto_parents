@@ -61,34 +61,18 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 /* --- [ニコニコ・ブックマーク] 対応URLか確認する --- */
 const checkSupportedURL = target_url => {
-	/* 対応URLリスト */
-	const supported_urls = [
-		'www.nicovideo.jp/watch/sm',
-		'www.nicovideo.jp/watch/so',
-		'seiga.nicovideo.jp/seiga/im',
-		'sp.nicovideo.jp/watch/sm',
-		'sp.nicovideo.jp/watch/so',
-		'sp.seiga.nicovideo.jp/seiga/#!/im',
-		'commons.nicovideo.jp/material/nc',
-		'3d.nicovideo.jp/works/td',
-		'game.nicovideo.jp/atsumaru/games/gm',
-		'com.nicovideo.jp/community/co'
-	];
-	/* リストのURLを判定 */
-	const checking_url = target_url.replace(/https?:\/\//g, '');
-	for (let url of supported_urls) {
-		if (checking_url.indexOf(url) === 0) return true;
-	}
+	if (/(?:sm|im|nc|td|lv|gm)\d{1,12}/.test(target_url)) return true;
+	if (/mylist\/\d{1,12}\b/.test(target_url)) return true;
 	return false;
 };
 
 
 /* --- [ニコニコ・ブックマーク] 対応したURLからIDを抽出する --- */
 const extractWorkID = url => {
-	if (!checkSupportedURL(url)) return null;
-	const target_url = url.replace(/https?:\/\//g, '').replace(/\?.*$/g, '');
-	const split_url  = target_url.split('/');
-	return split_url[split_url.length-1];
+	const match_id = url.match(/(?:sm|im|nc|td|lv|gm)\d{1,12}/);
+	if (match_id) return match_id[0];
+	const match_mylist = url.match(/mylist\/\d{1,12}\b/);
+	if (match_mylist) return match_mylist[0];
 };
 
 
