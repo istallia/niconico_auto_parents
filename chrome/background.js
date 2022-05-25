@@ -42,6 +42,59 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		});
 		return true;
 	}
+	/* --- [サイドバー] 展開マイリストの一覧を取得 --- */
+	if (message.request === 'get-expanded-list') {
+		const fetch_options_mylist = {
+		  "headers": {
+		    "x-frontend-id"       : "6",
+		    "x-frontend-version"  : "0",
+		    "x-niconico-language" : "ja-jp"
+		  },
+		  "referrer"       : "https://www.nicovideo.jp/",
+		  "referrerPolicy" : "strict-origin-when-cross-origin",
+		  "body"           : null,
+		  "method"         : "GET",
+		  "mode"           : "cors",
+		  "credentials"    : "include"
+		};
+		if (message.id.indexOf('mylist') === 0) {
+			fetch(`https://nvapi.nicovideo.jp/v2/mylists/${message.id.replace('mylist/','')}?pageSize=500&page=1`, fetch_options_mylist)
+			.then(res => res.ok ? res.json() : null)
+			.then(data => {
+				if (data) {
+					const res = {name:data.data.mylist.name, list:[]};
+					data.data.mylist.items.forEach(item => {
+						res.list.push({
+							id    : item.video.id,
+							label : item.video.title
+						});
+					});
+					sendResponse(res);
+				} else {
+					fetch(`https://nvapi.nicovideo.jp/v1/users/me/mylists/${message.id.replace('mylist/','')}?pageSize=500&page=1`, fetch_options_mylist)
+					.then(res => res.ok ? res.json() : null)
+					.then(data => {
+						if (data) {
+							const res = {name:data.data.mylist.name, list:[]};
+							data.data.mylist.items.forEach(item => {
+								res.list.push({
+									id    : item.video.id,
+									label : item.video.title
+								});
+							});
+							sendResponse(res);
+						} else {
+							sendResponse(null);
+						}
+					});
+				}
+			});
+			return true;
+		} else {
+			sendResponse(null);
+			return false;
+		}
+	}
 	/* [予約投稿] ツリー登録予約 */
 	if (message.request === 'reserve-parents') {
 		const datetime = new Date(message.datetime);

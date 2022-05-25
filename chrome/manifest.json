@@ -37,6 +37,7 @@
 		"*://commons.nicovideo.jp/tree/*",
 		"*://www.upload.nicovideo.jp/*",
 		"*://public-api.commons.nicovideo.jp/v1/tree/*",
-		"*://nvapi.nicovideo.jp/v1/*"
+		"*://nvapi.nicovideo.jp/v1/*",
+		"*://nvapi.nicovideo.jp/v2/*"
 	]
 }

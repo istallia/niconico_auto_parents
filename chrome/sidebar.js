@@ -127,7 +127,7 @@ const openSidebar = (header_title, current_text_element, works_lists, listener_a
 						listener_add_one(id);
 						event.currentTarget.classList.add('added');
 					} else {
-						openExpandedMylist(id);
+						openExpandedMylist(id, listener_add_one);
 					}
 				});
 				works.appendChild(work);
@@ -155,16 +155,42 @@ const openSidebar = (header_title, current_text_element, works_lists, listener_a
 
 
 /* --- [サイドバー] 展開マイリストを開く --- */
-const openExpandedMylist = mylist_id => {
+const openExpandedMylist = (list_id, listener_add_one) => {
 	/* 元のリストの要素を隠す */
 	const sidebar_title = document.getElementById('ista-sidebar-title');
 	const i = String(sidebar_title.getAttribute('current-index'));
 	document.getElementById('ista-sidebar-list-'+i).classList.remove('visible');
-	/* 展開マイリストの要素を開く */
-	sidebar_title.setAttribute('expanded-list', 'true');
-	document.getElementById('ista-sidebar-list-ex').classList.add('visible');
-	sidebar_title.setAttribute('sidebar-folder-title', sidebar_title.innerText);
-	sidebar_title.innerText = '(展開マイリスト)';
+	/* 展開マイリストの要素を開く処理 */
+	const works = document.getElementById('ista-sidebar-list-ex');
+	const setExpandedMylist = list => {
+		[... works.children].forEach(work => work.remove());
+		list.list.forEach(item => {
+			let work       = document.createElement('div');
+			work.innerText = item.label + '\n(' + item.id + ')';
+			work.setAttribute('work-id', item.id);
+			work.addEventListener('click', event => {
+				const id = event.currentTarget.getAttribute('work-id');
+				listener_add_one(id);
+				event.currentTarget.classList.add('added');
+			});
+			works.appendChild(work);
+		});
+		sidebar_title.setAttribute('expanded-list', 'true');
+		document.getElementById('ista-sidebar-list-ex').classList.add('visible');
+		sidebar_title.setAttribute('sidebar-folder-title', sidebar_title.innerText);
+		sidebar_title.innerText = list.name;
+	};
+	/* --- 表示する情報を取得 --- */
+	if (expanded_mylist_cache[list_id]) {
+		setExpandedMylist(expanded_mylist_cache[list_id]);
+	} else {
+		browser.runtime.sendMessage({request:'get-expanded-list', id:list_id}, response => {
+			if (response) {
+				setExpandedMylist(response);
+				expanded_mylist_cache[list_id] = response;
+			}
+		});
+	}
 };
 
 
