@@ -127,7 +127,7 @@ const openSidebar = (header_title, current_text_element, works_lists, listener_a
 						listener_add_one(id);
 						event.currentTarget.classList.add('added');
 					} else {
-						openExpandedMylist(id, listener_add_one);
+						openExpandedMylist(id, current_text_element, listener_add_one);
 					}
 				});
 				works.appendChild(work);
@@ -155,7 +155,7 @@ const openSidebar = (header_title, current_text_element, works_lists, listener_a
 
 
 /* --- [サイドバー] 展開マイリストを開く --- */
-const openExpandedMylist = (list_id, listener_add_one) => {
+const openExpandedMylist = (list_id, current_text_element, listener_add_one) => {
 	/* 元のリストの要素を隠す */
 	const sidebar_title = document.getElementById('ista-sidebar-title');
 	const i = String(sidebar_title.getAttribute('current-index'));
@@ -173,6 +173,7 @@ const openExpandedMylist = (list_id, listener_add_one) => {
 				listener_add_one(id);
 				event.currentTarget.classList.add('added');
 			});
+			if (current_text_element.value.indexOf(item.id) > -1) work.classList.add('added');
 			works.appendChild(work);
 		});
 		sidebar_title.setAttribute('expanded-list', 'true');
