@@ -2,6 +2,7 @@
 button.ista-button-garage {
 	color            : white;
 	background-color : #0075c2;
+	margin-right     : 0.5rem;
 }
 button.ista-button-garage:hover {
 	background-color : #0088ee;

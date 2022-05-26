@@ -3,27 +3,41 @@ if (typeof browser === 'undefined') browser = chrome;
 
 
 /* --- 広域変数 --- */
-const queue = [];
+const queue              = [];
+let nico_expansion_ready = false;
+
+
+/* --- [nicoExpansion] インストール確認 --- */
+browser.runtime.sendMessage({request:'get-exlists'}, response => nico_expansion_ready = Boolean(response));
 
 
 /* --- フォームはオプションを開いたときのみ現れる --- */
 const addButtonBookmark = records => {
 	/* 親を探す */
 	const input        = document.getElementById('commonsContentIdInput');
-	const exist_button = document.getElementById('ista-open-sidebar');
+	const exist_button = document.getElementById('ista-open-sidebar-bookmarks');
 	if (!input || exist_button) return;
 	const frame = input.parentNode.parentNode.parentNode;
 	/* [ニコニコ・ブックマーク] ボタンを生成 */
-	const button     = document.createElement('button');
-	button.innerText = '[拡張機能] ニコニコ・ブックマーク';
-	button.id        = 'ista-open-sidebar';
-	button.classList.add('ista-button-garage', 'MuiButtonBase-root', 'MuiButton-root', 'MuiButton-text');
-	frame.appendChild(button);
+	const button_bookmarks     = document.createElement('button');
+	button_bookmarks.innerText = '[拡張機能] ニコニコ・ブックマーク';
+	button_bookmarks.id        = 'ista-open-sidebar-bookmarks';
+	button_bookmarks.classList.add('ista-button-garage', 'MuiButtonBase-root', 'MuiButton-root', 'MuiButton-text');
+	button_bookmarks.addEventListener('click', openSidebarBookmarks);
+	frame.appendChild(button_bookmarks);
+	/* [nicoExpansion] ボタンを生成 */
+	if (nico_expansion_ready) {
+		const button_exlists     = document.createElement('button');
+		button_exlists.innerText = '[拡張機能] 拡張マイリスト';
+		button_exlists.id        = 'ista-open-sidebar-exlists';
+		button_exlists.classList.add('ista-button-garage', 'MuiButtonBase-root', 'MuiButton-root', 'MuiButton-text');
+		button_exlists.addEventListener('click', openSidebarExLists);
+		frame.appendChild(button_exlists);
+	}
 	/* [サイドバー] サイドバーを生成 */
 	generateSidebar(ids => {
 		addQueue(ids);
 	});
-	button.addEventListener('click', openSidebarBookmarks);
 	/* [ファイルID抽出] D&D時の色変え */
 	frame.addEventListener('dragover' , event => {
 		event.preventDefault();
@@ -45,12 +59,25 @@ observer.observe(root, {
 });
 
 
-/* --- [サイドバー] サイドバーを開く --- */
+/* --- [ニコニコ・ブックマーク] サイドバーを開く --- */
 const openSidebarBookmarks = () => {
 	/* ブックマーク内の作品一覧を取得 */
 	browser.runtime.sendMessage({request:'get-bookmarks'}, response => {
 		const current_text = document.getElementById('commonsContentIdInput');
 		openSidebar('ニコニコ・ブックマーク', current_text, response, id => {
+			const area_list = document.getElementById('commonsContentIdInput');
+			addQueue([id]);
+		});
+	});
+};
+
+
+/* --- [nicoExpansion] サイドバーを開く --- */
+const openSidebarExLists = () => {
+	/* 拡張マイリストを取得 */
+	browser.runtime.sendMessage({request:'get-exlists'}, response => {
+		const current_text = document.getElementById('commonsContentIdInput');
+		openSidebar('拡張マイリスト', current_text, response, id => {
 			const area_list = document.getElementById('commonsContentIdInput');
 			addQueue([id]);
 		});

@@ -95,6 +95,18 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			return false;
 		}
 	}
+	/* [nicoExpansion] 拡張マイリストの取得 */
+	if (message.request === 'get-exlists') {
+		browser.runtime.sendMessage('lkgnmcenpioadnmkfemdlagimojbkgbk', {type:'get-exlists'}, response => {
+			if (response) {
+				response.forEach(folder => {
+					folder.list = folder.list.filter(item => checkSupportedURL(item.id));
+				});
+			}
+			sendResponse(response);
+		});
+		return true;
+	}
 	/* [予約投稿] ツリー登録予約 */
 	if (message.request === 'reserve-parents') {
 		const datetime = new Date(message.datetime);
@@ -104,15 +116,15 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		video_list.push(message.id);
 		localStorage.setItem('ista-reserve-list', video_list.join(','));
 		sendResponse({});
-		return true;
+		return false;
 	}
 	/* どれにも当てはまらなかった場合の処理 */
 	sendResponse({});
-	return true;
+	return false;
 });
 
 
-/* --- [ニコニコ・ブックマーク] 対応URLか確認する --- */
+/* --- [サイドバー] 対応URLか確認する --- */
 const checkSupportedURL = target_url => {
 	if (/(?:sm|im|nc|td|lv|gm)\d{1,12}/.test(target_url)) return true;
 	if (/mylist\/\d{1,12}\b/.test(target_url)) return true;
@@ -120,7 +132,7 @@ const checkSupportedURL = target_url => {
 };
 
 
-/* --- [ニコニコ・ブックマーク] 対応したURLからIDを抽出する --- */
+/* --- [サイドバー] 対応したURLからIDを抽出する --- */
 const extractWorkID = url => {
 	const match_id = url.match(/(?:sm|im|nc|td|lv|gm)\d{1,12}/);
 	if (match_id) return match_id[0];
