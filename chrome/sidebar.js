@@ -2,6 +2,10 @@
 if (typeof browser === 'undefined') browser = chrome;
 
 
+/* --- 拡張マイリストのキャッシュ --- */
+const expanded_mylist_cache = {};
+
+
 /* --- サイドバー生成 --- */
 const generateSidebar = listener_add_all => {
 	/* 要素がなければ生成 */
@@ -29,16 +33,10 @@ const generateSidebar = listener_add_all => {
 	button_add_all.classList.add('ista-button', 'white');
 	button_back.innerText    = '戻る';
 	button_add_all.innerText = 'すべて追加';
-	button_back.addEventListener('click', event => {
-		const i = String(document.getElementById('ista-sidebar-title').getAttribute('current-index'));
-		document.getElementById('ista-sidebar-list-'+i).classList.remove('visible');
-		document.getElementById('ista-sidebar-buttons').classList.remove('visible');
-		document.getElementById('ista-sidebar-title').innerText = document.getElementById('ista-sidebar-title').getAttribute('sidebar-title');
-		document.getElementById('ista-sidebar-folders').classList.add('visible');
-	});
-	button_add_all.addEventListener('click', () => {
-		const i            = String(document.getElementById('ista-sidebar-title').getAttribute('current-index'));
-		let works          = [...document.getElementById('ista-sidebar-list-'+String(i)).children].filter(elem => !elem.classList.contains('added'));
+	button_back.addEventListener('click', listener_back);
+	button_add_all.addEventListener('click', event => {
+		const visible_list = document.querySelector('.ista-sidebar-list.visible');
+		let works          = [...visible_list.children].filter(elem => !elem.classList.contains('added') && /[A-Za-z]{2}\d{1,12}/.test(elem.getAttribute('work-id')));
 		works              = works.map(elem => {
 			elem.classList.add('added');
 			return elem.getAttribute('work-id');
@@ -54,6 +52,26 @@ const generateSidebar = listener_add_all => {
 	folders.classList.add('ista-sidebar-list', 'folders', 'visible');
 	div.appendChild(folders);
 };
+
+
+/* --- 「戻る」ボタン --- */
+const listener_back = event => {
+	const sidebar_title = document.getElementById('ista-sidebar-title');
+	const i = String(sidebar_title.getAttribute('current-index'));
+	if (sidebar_title.getAttribute('expanded-list') === 'true') {
+		/* 展開マイリスト→元のリスト */
+		document.getElementById('ista-sidebar-list-ex').classList.remove('visible');
+		document.getElementById('ista-sidebar-list-'+i).classList.add('visible');
+		sidebar_title.innerText = sidebar_title.getAttribute('sidebar-folder-title');
+		sidebar_title.setAttribute('expanded-list', 'false');
+	} else {
+		/* リスト→フォルダ一覧 */
+		document.getElementById('ista-sidebar-list-'+i).classList.remove('visible');
+		document.getElementById('ista-sidebar-buttons').classList.remove('visible');
+		sidebar_title.innerText = sidebar_title.getAttribute('sidebar-title');
+		document.getElementById('ista-sidebar-folders').classList.add('visible');
+	}
+}
 
 
 /* --- [サイドバー] サイドバーを開く --- */
@@ -105,12 +123,21 @@ const openSidebar = (header_title, current_text_element, works_lists, listener_a
 				work.setAttribute('work-id', item.id);
 				work.addEventListener('click', event => {
 					const id = event.currentTarget.getAttribute('work-id');
-					listener_add_one(id);
-					event.currentTarget.classList.add('added');
+					if (/^[A-Za-z]{2}\d{1,12}$/.test(id)) {
+						listener_add_one(id);
+						event.currentTarget.classList.add('added');
+					} else {
+						openExpandedMylist(id, current_text_element, listener_add_one);
+					}
 				});
 				works.appendChild(work);
 			});
 		});
+		/* 展開マイリスト用のエリアを生成 */
+		let expanded_list = document.createElement('div');
+		expanded_list.id  = 'ista-sidebar-list-ex';
+		expanded_list.classList.add('ista-sidebar-list');
+		document.getElementById('ista-sidebar').appendChild(expanded_list);
 	} else {
 		/* ブックマーク内に作品が存在しない */
 		let folder       = document.createElement('div');
@@ -124,6 +151,47 @@ const openSidebar = (header_title, current_text_element, works_lists, listener_a
 	document.getElementById('ista-sidebar').classList.add('visible');
 	document.getElementById('ista-sidebar-folders').classList.add('visible');
 	document.getElementById('ista-sidebar-title').setAttribute('sidebar-title', header_title);
+};
+
+
+/* --- [サイドバー] 展開マイリストを開く --- */
+const openExpandedMylist = (list_id, current_text_element, listener_add_one) => {
+	/* 元のリストの要素を隠す */
+	const sidebar_title = document.getElementById('ista-sidebar-title');
+	const i = String(sidebar_title.getAttribute('current-index'));
+	document.getElementById('ista-sidebar-list-'+i).classList.remove('visible');
+	/* 展開マイリストの要素を開く処理 */
+	const works = document.getElementById('ista-sidebar-list-ex');
+	const setExpandedMylist = list => {
+		[... works.children].forEach(work => work.remove());
+		list.list.forEach(item => {
+			let work       = document.createElement('div');
+			work.innerText = item.label + '\n(' + item.id + ')';
+			work.setAttribute('work-id', item.id);
+			work.addEventListener('click', event => {
+				const id = event.currentTarget.getAttribute('work-id');
+				listener_add_one(id);
+				event.currentTarget.classList.add('added');
+			});
+			if (current_text_element.value.indexOf(item.id) > -1) work.classList.add('added');
+			works.appendChild(work);
+		});
+		sidebar_title.setAttribute('expanded-list', 'true');
+		document.getElementById('ista-sidebar-list-ex').classList.add('visible');
+		sidebar_title.setAttribute('sidebar-folder-title', sidebar_title.innerText);
+		sidebar_title.innerText = list.name;
+	};
+	/* --- 表示する情報を取得 --- */
+	if (expanded_mylist_cache[list_id]) {
+		setExpandedMylist(expanded_mylist_cache[list_id]);
+	} else {
+		browser.runtime.sendMessage({request:'get-expanded-list', id:list_id}, response => {
+			if (response) {
+				setExpandedMylist(response);
+				expanded_mylist_cache[list_id] = response;
+			}
+		});
+	}
 };
 
 
