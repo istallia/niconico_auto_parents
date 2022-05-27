@@ -9,11 +9,12 @@ if (typeof browser === 'undefined') browser = chrome;
 
 
 /* --- 状態を保存する --- */
-const MAX_WORKS     = 300;
-let ista_processing = false;
-const alert_alt     = window.alert;
-window.alert        = text => console.log('alert -> '+text);
-let ista_linked_ids = {};
+const MAX_WORKS          = 300;
+let ista_processing      = false;
+const alert_alt          = window.alert;
+window.alert             = text => console.log('alert -> '+text);
+let ista_linked_ids      = {};
+let nico_expansion_ready = false;
 
 
 /* --- ページに要素を追加する --- */
@@ -76,6 +77,7 @@ modal_win.innerHTML = `
 </p>
 <button type="button" id="ista-read-parent-works" class="ista-button white" title="(v0.4.1) 親作品の欄にある作品を読み出します。">親作品を読み出し</button>&nbsp;
 <button type="button" id="ista-open-sidebar-bookmarks" class="ista-button white" title="(v0.4.2) ブラウザのブックマークから作品IDを選択して追加します。">ニコニコ・ブックマーク</button>&nbsp;
+<button type="button" id="ista-open-sidebar-exlists" class="ista-button white" title="(v0.5.6) nicoExpansion(ニコニコ拡張)の拡張マイリストから作品IDを選択して追加します。">拡張マイリスト</button>&nbsp;
 <button type="button" id="ista-get-parents-of-parents" class="ista-button white" title="(v0.5.3) 選択範囲の作品の親作品を取得します。">ツリー・チェイン</button><br>
 <label for="ista-verify-contents" title="(v0.3.2) これがOnのとき、親作品に登録できなかった作品を自動で確認してお知らせします。"><input type="checkbox" id="ista-verify-contents" checked>&nbsp;書き込み検証を行う</label>
 <textarea id="ista-textarea-id-list"></textarea>
@@ -108,6 +110,10 @@ const notice_message     = document.createElement('p');
 notice_message.innerText = '[拡張機能] 1つ以上のコモンズ作品にコンテンツツリーの連携が設定されていたため、登録先を切り替えました。';
 notice_message.hidden    = true;
 p_submit.insertBefore(notice_message, p_submit.firstChild);
+
+
+/* --- [nicoExpansion] インストール確認 --- */
+browser.runtime.sendMessage({request:'get-exlists'}, response => nico_expansion_ready = Boolean(response));
 
 
 /* --- IDリストを最高効率に変換する --- */
@@ -398,15 +404,35 @@ button_open.addEventListener('click', () => {
 		current_area.value += ids.join(' ');
 	});
 	document.getElementById('ista-open-sidebar-bookmarks').addEventListener('click', openSidebarBookmarks);
+	if (nico_expansion_ready) {
+		document.getElementById('ista-open-sidebar-exlists').addEventListener('click', openSidebarExLists);
+	} else {
+		document.getElementById('ista-open-sidebar-exlists').classList.add('hidden');
+	}
 });
 
 
-/* --- [サイドバー] サイドバーを開く --- */
+/* --- [ニコニコ・ブックマーク] サイドバーを開く --- */
 const openSidebarBookmarks = () => {
 	/* ブックマーク内の作品一覧を取得 */
 	browser.runtime.sendMessage({request:'get-bookmarks'}, response => {
 		const current_text = document.getElementById('ista-textarea-id-list');
 		openSidebar('ニコニコ・ブックマーク', current_text, response, id => {
+			const area_list  = document.getElementById('ista-textarea-id-list');
+			let current_text = area_list.value;
+			if (current_text.length > 0 && current_text.slice(-1) !== ' ' && current_text.slice(-1) !== '\n') current_text += ' ';
+			area_list.value = current_text + id;
+		});
+	});
+};
+
+
+/* --- [nicoExpansion] サイドバーを開く --- */
+const openSidebarExLists = () => {
+	/* 拡張マイリストを取得 */
+	browser.runtime.sendMessage({request:'get-exlists'}, response => {
+		const current_text = document.getElementById('ista-textarea-id-list');
+		openSidebar('拡張マイリスト', current_text, response, id => {
 			const area_list  = document.getElementById('ista-textarea-id-list');
 			let current_text = area_list.value;
 			if (current_text.length > 0 && current_text.slice(-1) !== ' ' && current_text.slice(-1) !== '\n') current_text += ' ';

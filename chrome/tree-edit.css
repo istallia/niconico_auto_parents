@@ -53,6 +53,7 @@ button.ista-button-reg {
 .ista-auto-modal > p { text-align : left; }
 #Column01 > div.tree-edit-area.editbox.round5-t > p.helpimg { cursor : pointer; }
 label { user-select : none; }
+.hidden { display : none; }
 
 /* --- 候補作品のスタイル --- */
 div > div.dsc {
