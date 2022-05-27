@@ -2,6 +2,13 @@
 if (typeof browser === 'undefined') browser = chrome;
 
 
+/* --- [nicoExpansion] 拡張機能のIDをセット --- */
+let nico_expansion_id = 'llmdcigljaahgnofnphhpfdlmbjcjail';
+if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+	nico_expansion_id = '{f8b8bf33-a4ef-4fd0-9ab1-3a6a6cbcd2eb}';
+}
+
+
 /* --- 各種情報のリクエストを処理 --- */
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	/* [ニコニコ・ブックマーク] ブックマーク内の作品一覧を取得 */
@@ -97,7 +104,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	}
 	/* [nicoExpansion] 拡張マイリストの取得 */
 	if (message.request === 'get-exlists') {
-		browser.runtime.sendMessage('lkgnmcenpioadnmkfemdlagimojbkgbk', {type:'get-exlists'}, response => {
+		browser.runtime.sendMessage(nico_expansion_id, {type:'get-exlists'}, response => {
 			if (response) {
 				response.forEach(folder => {
 					folder.list = folder.list.filter(item => checkSupportedURL(item.id));
