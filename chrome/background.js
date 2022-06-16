@@ -131,6 +131,56 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		});
 		return true;
 	}
+	/* IDリストからツリー登録ページのHTMLを取得 */
+	if (message.request.startsWith('get-tree-')) {
+		const id_list      = [[]];
+		message.ids.forEach((id, index) => {
+			if (id_list[id_list.length-1].length < 10) {
+				id_list[id_list.length-1].push(id);
+			} else {
+				id_list.push([id]);
+			}
+		});
+		const promise_list = id_list.map(id10 => {
+			return fetch('https://commons.nicovideo.jp/cpp/ajax/item/search', {
+			  'headers': {
+			    'content-type'     : 'application/x-www-form-urlencoded',
+			    'x-requested-with' : 'XMLHttpRequest'
+			  },
+		 	  'referrer'       : 'https://commons.nicovideo.jp/tree/',
+			  'referrerPolicy' : 'strict-origin-when-cross-origin',
+			  'body'           : 'id=' + id10.join('+'),
+			  'method'         : 'POST',
+			  'mode'           : 'cors',
+			  'credentials'    : 'include'
+			});
+		});
+		Promise.all(promise_list)
+		.then(responses => {
+			const textArray = responses.map(res => res.text());
+			return Promise.all(textArray);
+		})
+		.then(texts => {
+			if (message.request === 'get-tree-html') {
+				sendResponse({html:texts.join('\n')});
+			} else {
+				const parser   = new DOMParser();
+				const doms     = texts.map(text => [... parser.parseFromString(text, 'text/html').querySelectorAll('li[id]')]).flat();
+				const contents = doms.map(dom => {
+					let thum_url = dom.querySelector('div.thum-image > img').getAttribute('src');
+					if (thum_url.startsWith('/images/')) thum_url = 'https://commons.nicovideo.jp' + thum_url;
+					return {
+						id    : dom.id,
+						title : dom.querySelector('div.dsc').innerText,
+						thum  : thum_url,
+						type  : dom.querySelector('span[class^="status_"]').innerText
+					};
+				});
+				sendResponse(contents);
+			}
+		})
+		return true;
+	}
 	/* [予約投稿] ツリー登録予約 */
 	if (message.request === 'reserve-parents') {
 		const datetime = new Date(message.datetime);
