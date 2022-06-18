@@ -22,10 +22,15 @@ if (typeof browser === 'undefined') browser = chrome;
 /* --- [ツリー登録UI] UIのベース --- */
 const parser        = new DOMParser();
 const tree_ui_modal = parser.parseFromString(`
-	<div class="ista-tree-ui-modal">
-		<div class="ista-id-form">
+	<div class="ista-tree-ui-modal hidden" id="ista-tree-ui-modal">
+		<div class="ista-form ista-id-form">
 			<input type="text" id="ista-id-form">&nbsp;
-			<button type="button" id="ista-id-button">登録</button>
+			<button type="button" id="ista-id-button">リストに追加</button>
+			<button type="button" id="ista-close-button">登録して閉じる</button>
+		</div>
+		<div class="ista-form ista-button-group">
+			<button type="button" id="ista-open-sidebar-bookmarks-on-modal">ニコニコ・ブックマーク</button>
+			<button type="button" id="ista-open-sidebar-exlists-on-modal">拡張マイリスト</button>
 		</div>
 		<div class="ista-parents-list">
 			<div class="ista-parent-work" id="nc235560">
@@ -57,6 +62,13 @@ const addButtonBookmark = records => {
 	const exist_button = document.getElementById('ista-open-sidebar-bookmarks');
 	if (!input || exist_button) return;
 	const frame = input.parentNode.parentNode.parentNode;
+	/* [ツリー登録UI] ボタンを生成 */
+	const button_treeUI     = document.createElement('button');
+	button_treeUI.innerText = '[拡張機能] ツリー登録UI';
+	button_treeUI.id        = 'ista-open-tree-ui';
+	button_treeUI.classList.add('ista-button-garage', 'MuiButtonBase-root', 'MuiButton-root', 'MuiButton-text');
+	button_treeUI.addEventListener('click', openTreeUI);
+	frame.appendChild(button_treeUI);
 	/* [ニコニコ・ブックマーク] ボタンを生成 */
 	const button_bookmarks     = document.createElement('button');
 	button_bookmarks.innerText = '[拡張機能] ニコニコ・ブックマーク';
@@ -103,8 +115,48 @@ const addTreeUI = () => {
 	/* 既に存在したらスルー */
 	const existed_ui = document.getElementById('ista-tree-ui-modal');
 	if (existed_ui) return;
-	/* 要素を追加 */
+	/* モーダルウィンドウを追加 */
 	document.body.appendChild(tree_ui_modal);
+	/* 背景要素を追加 */
+	const background = document.createElement('div');
+	background.id    = 'ista-tree-ui-modal-background';
+	background.classList.add('ista-tree-ui-modal-background', 'hidden');
+	document.body.appendChild(background);
+	/* ボタンのイベントリスナを登録 */
+	const close_button = tree_ui_modal.querySelector('#ista-close-button');
+	close_button.addEventListener('click', closeTreeUI);
+	background.addEventListener('click', closeTreeUI);
+};
+
+
+/* --- [ツリー登録UI] UIを開く --- */
+const openTreeUI = () => {
+	/* UIの要素を取得 */
+	const modal_window = document.getElementById('ista-tree-ui-modal');
+	const background   = document.getElementById('ista-tree-ui-modal-background');
+	if (!modal_window) return;
+	/* [nicoExpansion] インストールされてなかったらボタンを非表示 */
+	const button_exlists = modal_window.querySelector('#ista-open-sidebar-exlists-on-modal');
+	if (nico_expansion_ready) {
+		button_exlists.classList.remove('hidden');
+	} else {
+		button_exlists.classList.add('hidden');
+	}
+	/* UIを表示 */
+	modal_window.classList.remove('hidden');
+	background.classList.remove('hidden');
+};
+
+
+/* --- [ツリー登録UI] UIを閉じて反映 --- */
+const closeTreeUI = () => {
+	/* UIの要素を取得 */
+	const modal_window = document.getElementById('ista-tree-ui-modal');
+	const background   = document.getElementById('ista-tree-ui-modal-background');
+	if (!modal_window) return;
+	/* UIを非表示 */
+	modal_window.classList.add('hidden');
+	background.classList.add('hidden');
 };
 
 
