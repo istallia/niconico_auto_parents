@@ -87,7 +87,12 @@ const addIstaUIs = records => {
 	}
 	/* [サイドバー] サイドバーを生成 */
 	generateSidebar(ids => {
-		addQueue(ids);
+		const modal_window = document.getElementById('ista-tree-ui-modal');
+		if (modal_window && !modal_window.classList.contains('hidden')) {
+			addCardsToIstaUI(ids, true);
+		} else {
+			addQueue(ids);
+		}
 	});
 	/* [ファイルID抽出] D&D時の色変え */
 	frame.addEventListener('dragover' , event => {
@@ -147,7 +152,7 @@ const addTreeUI = () => {
 	background.id    = 'ista-tree-ui-modal-background';
 	background.classList.add('ista-tree-ui-modal-background', 'hidden');
 	document.body.appendChild(background);
-	/* ボタンのイベントリスナを登録 */
+	/* 閉じるボタンのイベントリスナを登録 */
 	const close_button = tree_ui_modal.querySelector('#ista-close-button');
 	close_button.addEventListener('click', closeTreeUI);
 	background.addEventListener('click', closeTreeUI);
@@ -167,6 +172,16 @@ const addTreeUI = () => {
 			add_works();
 		}
 	});
+	/* サイドバーを開くためのイベントリスナを登録 */
+	const button_bookmarks = tree_ui_modal.querySelector('#ista-open-sidebar-bookmarks-on-modal');
+	const button_exlists   = tree_ui_modal.querySelector('#ista-open-sidebar-exlists-on-modal');
+	button_bookmarks.addEventListener('click', openSidebarBookmarks);
+	button_exlists.addEventListener('click', openSidebarExLists);
+	if (nico_expansion_ready) {
+		button_exlists.classList.remove('hidden');
+	} else {
+		button_exlists.classList.add('hidden');
+	}
 };
 
 
@@ -292,7 +307,7 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 			});
 			if (adding_official) {
 				const added_ids      = response.map(info => info['id']);
-				const all_works_text = filtered_ids.filter(id => removed_ids.indexOf(id) < 0);
+				const all_works_text = filtered_ids.filter(id => removed_ids.indexOf(id) < 0).join(' ');
 				form.value = all_works_text;
 				form.setAttribute('saved-value', all_works_text);
 				form.focus();
@@ -319,6 +334,8 @@ const closeTreeUI = () => {
 	setTimeout(() => {
 		form_official.focus();
 	}, 0);
+	/* サイドバーを閉じる */
+	closeSidebar();
 	/* UIを非表示 */
 	modal_window.classList.add('hidden');
 	background.classList.add('hidden');
@@ -331,8 +348,12 @@ const openSidebarBookmarks = () => {
 	browser.runtime.sendMessage({request:'get-bookmarks'}, response => {
 		const current_text = document.getElementById('commonsContentIdInput');
 		openSidebar('ニコニコ・ブックマーク', current_text, response, id => {
-			const area_list = document.getElementById('commonsContentIdInput');
-			addQueue([id]);
+			const modal_window = document.getElementById('ista-tree-ui-modal');
+			if (modal_window && !modal_window.classList.contains('hidden')) {
+				addCardsToIstaUI([id], true);
+			} else {
+				addQueue([id]);
+			}
 		});
 	});
 };
@@ -344,8 +365,12 @@ const openSidebarExLists = () => {
 	browser.runtime.sendMessage({request:'get-exlists'}, response => {
 		const current_text = document.getElementById('commonsContentIdInput');
 		openSidebar('拡張マイリスト', current_text, response, id => {
-			const area_list = document.getElementById('commonsContentIdInput');
-			addQueue([id]);
+			const modal_window = document.getElementById('ista-tree-ui-modal');
+			if (modal_window && !modal_window.classList.contains('hidden')) {
+				addCardsToIstaUI([id], true);
+			} else {
+				addQueue([id]);
+			}
 		});
 	});
 };
