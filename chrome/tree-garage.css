@@ -123,13 +123,16 @@ div.ista-tree-ui-modal > .ista-parents-list > .ista-parent-work.template {
   display : none;
 }
 div.ista-tree-ui-modal > .ista-parents-list > .ista-parent-work > svg {
-  width  : 1.5rem;
-  height : 1.5rem;
-  margin : 0.75rem 0px;
-  float  : left;
+  width       : 1.5rem;
+  height      : 1.5rem;
+  margin      : 0.75rem 0px;
+  float       : left;
+  user-select : none;
+  cursor      : pointer;
 }
 div.ista-tree-ui-modal > .ista-parents-list > .ista-parent-work > img {
-  height : 3rem;
-  margin : 0px 0.5rem;
-  float  : left;
+  height      : 3rem;
+  margin      : 0px 0.5rem;
+  float       : left;
+  user-select : none;
 }

@@ -45,9 +45,8 @@ const tree_ui_modal = parser.parseFromString(`
 
 
 /* --- 広域変数 --- */
-const queue                 = [];
-const official_work_buttons = {};
-let nico_expansion_ready    = false;
+const queue              = [];
+let nico_expansion_ready = false;
 
 
 /* --- [nicoExpansion] インストール確認 --- */
@@ -180,19 +179,26 @@ const openTreeUI = () => {
 	work_elements.forEach(e => e.remove());
 	const official_works = [... document.querySelectorAll('div.MuiPaper-root > div[role="button"]')];
 	official_works.forEach(work_element => {
-		const work_card   = work_template.cloneNode(true);
-		const work_id     = work_element.querySelector('span').innerText;
-		const work_button = work_element.querySelector('path');
-		work_card.id      = work_id;
+		const work_card = work_template.cloneNode(true);
+		const work_id   = work_element.querySelector('span').innerText;
+		const rm_button = work_card.querySelector('svg');
+		work_card.id    = work_id;
 		work_card.classList.remove('template');
+		rm_button.setAttribute('work-id', work_id);
+		rm_button.addEventListener('click', event => {
+			const removing_id = event.currentTarget.getAttribute('work-id');
+			const official_el = [... document.querySelector('div.MuiPaper-root').children].find(el => el.querySelector('span').innerText === removing_id);
+			official_el.querySelector('svg > path').dispatchEvent(new Event('click', {bubbles:true}));
+			event.currentTarget.parentNode.remove();
+		});
 		works_area.appendChild(work_card);
 		let work_info = sessionStorage.getItem(`ista-tree-cache-${work_id}`);
 		if (work_info) {
-			work_info   = JSON.parse(work_info);
-			const img   = work_card.querySelector('img.ista-parent-img');
-			const link  = work_card.querySelector('a.ista-parent-link');
-			const title = work_card.querySelector('span.ista-parent-title');
-			const type  = work_card.querySelector('span.ista-parent-type');
+			work_info       = JSON.parse(work_info);
+			const img       = work_card.querySelector('img.ista-parent-img');
+			const link      = work_card.querySelector('a.ista-parent-link');
+			const title     = work_card.querySelector('span.ista-parent-title');
+			const type      = work_card.querySelector('span.ista-parent-type');
 			img.setAttribute('alt', work_info['id']);
 			img.src         = work_info['thum'];
 			link.href       = work_info['url'];
@@ -202,7 +208,6 @@ const openTreeUI = () => {
 			work_card.classList.add('loading');
 			unknown_works.push(work_id);
 		}
-		official_work_buttons[work_id] = work_button;
 	});
 	/* 親作品欄用のキャッシュがなければ通信で取得 */
 	if (unknown_works.length > 0) {
@@ -222,7 +227,8 @@ const openTreeUI = () => {
 				sessionStorage.setItem(`ista-tree-cache-${work_info["id"]}`, JSON.stringify(work_info));
 			});
 			[... modal_window.querySelectorAll('div.ista-parent-work.loading')].forEach(removed_work => {
-				official_work_buttons[removed_work.id].dispatchEvent(new Event('click', {bubbles:true}));
+				const official_element = [... document.querySelector('div.MuiPaper-root').children].find(el => el.querySelector('span').innerText === removed_work.id);
+				official_element.querySelector('svg > path').dispatchEvent(new Event('click', {bubbles:true}));
 				removed_work.remove();
 			});
 		});
