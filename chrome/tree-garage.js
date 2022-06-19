@@ -33,7 +33,7 @@ const tree_ui_modal = parser.parseFromString(`
 			<button type="button" id="ista-open-sidebar-exlists-on-modal">拡張マイリスト</button>
 		</div>
 		<div class="ista-parents-list">
-			<div class="ista-parent-work template" id="nc235560">
+			<div class="ista-parent-work template" id="ncXXXXXXXX">
 				<svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m12.002 2.005c5.518 0 9.998 4.48 9.998 9.997 0 5.518-4.48 9.998-9.998 9.998-5.517 0-9.997-4.48-9.997-9.998 0-5.517 4.48-9.997 9.997-9.997zm0 1.5c-4.69 0-8.497 3.807-8.497 8.497s3.807 8.498 8.497 8.498 8.498-3.808 8.498-8.498-3.808-8.497-8.498-8.497zm0 7.425 2.717-2.718c.146-.146.339-.219.531-.219.404 0 .75.325.75.75 0 .193-.073.384-.219.531l-2.717 2.717 2.727 2.728c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.384-.073-.53-.219l-2.729-2.728-2.728 2.728c-.146.146-.338.219-.53.219-.401 0-.751-.323-.751-.75 0-.192.073-.384.22-.531l2.728-2.728-2.722-2.722c-.146-.147-.219-.338-.219-.531 0-.425.346-.749.75-.749.192 0 .385.073.531.219z" fill-rule="nonzero"/></svg>
 				<img src="https://deliver.commons.nicovideo.jp/thumbnail/nc235560" alt="サムネイル" class="ista-parent-img">
 				<a href="https://commons.nicovideo.jp/material/nc235560" class="ista-parent-link"><span class="ista-parent-title">コンテンツツリー登録支援ツール</span></a>&nbsp;
@@ -156,7 +156,7 @@ const addTreeUI = () => {
 		const form = document.getElementById('ista-id-form');
 		const text = form.value;
 		if (text.length < 3) return;
-		const ids = [... text.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)];
+		const ids = [... text.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)].map(id => id[0]);
 		addCardsToIstaUI(ids, true);
 		form.value = '';
 	};
@@ -201,11 +201,14 @@ const openTreeUI = () => {
 
 /* --- [ツリー登録UI] IDリストの親作品カードを生成 --- */
 const addCardsToIstaUI = (ids, adding_official = false) => {
+	const existed_ids  = [... works_area.children].map(card => card.id);
+	const filtered_ids = ids.map(id => id.toLowerCase()).filter(id => existed_ids.indexOf(id) < 0);
+	if (filtered_ids.length < 1) return;
 	const unknown_works = [];
 	const modal_window  = document.getElementById('ista-tree-ui-modal');
 	const works_area    = modal_window.querySelector('div.ista-parents-list');
 	const work_template = modal_window.querySelector('div.ista-parent-work.template');
-	ids.forEach(work_id => {
+	filtered_ids.forEach(work_id => {
 		const work_card = work_template.cloneNode(true);
 		const rm_button = work_card.querySelector('svg');
 		work_card.id    = work_id;
@@ -214,7 +217,9 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 		rm_button.addEventListener('click', event => {
 			const removing_id = event.currentTarget.getAttribute('work-id');
 			const official_el = [... document.querySelector('div.MuiPaper-root').children].find(el => el.querySelector('span').innerText === removing_id);
-			official_el.querySelector('svg > path').dispatchEvent(new Event('click', {bubbles:true}));
+			if (official_el) {
+				official_el.querySelector('svg > path').dispatchEvent(new Event('click', {bubbles:true}));
+			}
 			event.currentTarget.parentNode.remove();
 		});
 		works_area.appendChild(work_card);
