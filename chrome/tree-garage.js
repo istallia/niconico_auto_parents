@@ -54,7 +54,7 @@ browser.runtime.sendMessage({request:'get-exlists'}, response => nico_expansion_
 
 
 /* --- フォームはオプションを開いたときのみ現れる --- */
-const addButtonBookmark = records => {
+const addIstaUIs = records => {
 	/* [ツリー登録UI] ついでにこれの要素も追加 */
 	addTreeUI();
 	/* 親を探す */
@@ -101,9 +101,33 @@ const addButtonBookmark = records => {
 	/* [ファイルID抽出] D&D監視イベント登録 */
 	frame.addEventListener('drop', extractIDsFromFiles);
 	frame.addEventListener('drop', event => event.currentTarget.classList.remove('hover'));
+	/* 入力欄のID維持のためのイベントリスナ */
+	const add_button   = input.nextElementSibling.querySelector('button');
+	const record_event = event => {
+		const target = event.currentTarget;
+		target.setAttribute('saved-value', target.value);
+	};
+	const load_event = event => {
+		const target    = event.currentTarget;
+		const lastValue = target.getAttribute('saved-value');
+		if (target.value = lastValue) {
+			setTimeout(() => {
+				target.value = lastValue;
+				target.dispatchEvent(new Event('input', {bubbles:true}));
+				target.dispatchEvent(new Event('change', {bubbles:true}));
+			}, 0);
+		}
+	};
+	add_button.addEventListener('click', event => {
+		input.setAttribute('saved-value', '');
+	});
+	input.addEventListener('input', record_event);
+	input.addEventListener('change', record_event);
+	input.addEventListener('focus', load_event);
+	input.addEventListener('blur', load_event);
 };
 const root     = document.getElementById('root');
-const observer = new MutationObserver(addButtonBookmark);
+const observer = new MutationObserver(addIstaUIs);
 observer.observe(root, {
 	childList : true,
 	subtree   : true
@@ -236,20 +260,17 @@ const addQueue = ids => {
 
 /* --- IDリストをhtmlのリストに追加 --- */
 const addIdsToList = () => {
-	/* IDリストをコピー */
-	const ids = queue[queue.length-1];
-	navigator.clipboard.writeText(' '+optimizeList(ids.join(' ')));
-	/* ちょっと後にペースト */
+	/* キューを全部取得 */
+	const processed_queue = queue.concat([]).flat();
+	queue.splice(0);
+	const ids_list = processed_queue.join(' ');
+	/* フォームにぶち込む */
+	const form = document.getElementById('commonsContentIdInput');
+	if (form.value.length > 0 && !form.value.endsWith(' ')) form.value += ' ';
+	form.value += ids_list;
+	form.setAttribute('saved-value', form.value);
+	form.focus({preventScroll:true});
 	setTimeout(() => {
-		const input = document.getElementById('commonsContentIdInput');
-		input.focus();
-		navigator.clipboard.readText().then(text => {
-			const ids = queue[queue.length-1];
-			if (text === ' '+optimizeList(ids.join(' '))) {
-				document.execCommand('paste');
-				queue.pop();
-			}
-			if (queue.length > 0) setTimeout(addIdsToList, 0);
-		});
+		form.blur();
 	}, 0);
 };
