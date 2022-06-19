@@ -199,6 +199,7 @@ const openTreeUI = () => {
 			title.innerText = work_info['title'];
 			type.innerText  = work_info['type'];
 		} else {
+			work_card.classList.add('loading');
 			unknown_works.push(work_id);
 		}
 		official_work_buttons[work_id] = work_button;
@@ -208,16 +209,21 @@ const openTreeUI = () => {
 		browser.runtime.sendMessage({request:'get-tree-list', ids:unknown_works}, response => {
 			response.forEach(work_info => {
 				const work_card = modal_window.querySelector(`div#${work_info["id"]}.ista-parent-work`);
-				const img   = work_card.querySelector('img.ista-parent-img');
-				const link  = work_card.querySelector('a.ista-parent-link');
-				const title = work_card.querySelector('span.ista-parent-title');
-				const type  = work_card.querySelector('span.ista-parent-type');
+				const img       = work_card.querySelector('img.ista-parent-img');
+				const link      = work_card.querySelector('a.ista-parent-link');
+				const title     = work_card.querySelector('span.ista-parent-title');
+				const type      = work_card.querySelector('span.ista-parent-type');
 				img.setAttribute('alt', work_info['id']);
 				img.src         = work_info['thum'];
 				link.href       = work_info['url'];
 				title.innerText = work_info['title'];
 				type.innerText  = work_info['type'];
+				work_card.classList.remove('loading');
 				sessionStorage.setItem(`ista-tree-cache-${work_info["id"]}`, JSON.stringify(work_info));
+			});
+			[... modal_window.querySelectorAll('div.ista-parent-work.loading')].forEach(removed_work => {
+				official_work_buttons[removed_work.id].dispatchEvent(new Event('click', {bubbles:true}));
+				removed_work.remove();
 			});
 		});
 	}
