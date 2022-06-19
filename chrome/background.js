@@ -172,7 +172,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 					return {
 						id    : dom.id,
 						title : dom.querySelector('div.dsc').innerText,
-						thum  : thum_url,
+						thum  : thum_url.replace('http://', 'https://'),
 						url   : generateURL(dom.id),
 						type  : dom.querySelector('span[class^="status_"]').innerText
 					};

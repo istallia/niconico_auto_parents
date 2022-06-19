@@ -188,11 +188,17 @@ const openTreeUI = () => {
 	const form_modal    = modal_window.querySelector('#ista-id-form');
 	form_modal.value    = form_official.value;
 	/* 親作品欄を同期 */
+	const works_area    = modal_window.querySelector('#ista-tree-ui-modal div.ista-parents-list');
 	const work_elements = modal_window.querySelectorAll('div.ista-parent-work:not(.template');
 	work_elements.forEach(e => e.remove());
 	const official_works = [... document.querySelectorAll('div.MuiPaper-root > div[role="button"]')];
 	const official_ids   = official_works.map(official_el => official_el.querySelector('span').innerText);
 	addCardsToIstaUI(official_ids);
+	setTimeout(() => {
+		works_area.scroll({
+			top : 0
+		});
+	}, 0);
 	/* UIを表示 */
 	modal_window.classList.remove('hidden');
 	background.classList.remove('hidden');
@@ -201,12 +207,13 @@ const openTreeUI = () => {
 
 /* --- [ツリー登録UI] IDリストの親作品カードを生成 --- */
 const addCardsToIstaUI = (ids, adding_official = false) => {
+	const modal_window = document.getElementById('ista-tree-ui-modal');
+	const works_area   = modal_window.querySelector('div.ista-parents-list');
 	const existed_ids  = [... works_area.children].map(card => card.id);
 	const filtered_ids = ids.map(id => id.toLowerCase()).filter(id => existed_ids.indexOf(id) < 0);
 	if (filtered_ids.length < 1) return;
 	const unknown_works = [];
-	const modal_window  = document.getElementById('ista-tree-ui-modal');
-	const works_area    = modal_window.querySelector('div.ista-parents-list');
+	const cached_works  = [];
 	const work_template = modal_window.querySelector('div.ista-parent-work.template');
 	filtered_ids.forEach(work_id => {
 		const work_card = work_template.cloneNode(true);
@@ -235,6 +242,7 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 			link.href       = work_info['url'];
 			title.innerText = work_info['title'];
 			type.innerText  = `(${work_info['type']})`;
+			cached_works.push(work_id);
 		} else {
 			work_card.classList.add('loading');
 			unknown_works.push(work_id);
@@ -244,6 +252,18 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 	works_area.scroll({
 		top : works_area.scrollHeight - works_area.clientHeight
 	});
+	/* 通信しないならここで公式のフォームに入れてしまう */
+	const form        = document.getElementById('commonsContentIdInput');
+	const form_button = document.getElementById('commonsContentIdInputButton');
+	if (adding_official && unknown_works.length < 1) {
+		const cached_works_text = cached_works.join(' ');
+		form.value = cached_works_text;
+		form.setAttribute('saved-value', cached_works_text);
+		form.focus();
+		setTimeout(() => {
+			form_button.dispatchEvent(new Event('click', {bubbles:true}));
+		});
+	}
 	/* 親作品欄用のキャッシュがなければ通信で取得 */
 	if (unknown_works.length > 0) {
 		browser.runtime.sendMessage({request:'get-tree-list', ids:unknown_works}, response => {
@@ -261,13 +281,25 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 				work_card.classList.remove('loading');
 				sessionStorage.setItem(`ista-tree-cache-${work_info["id"]}`, JSON.stringify(work_info));
 			});
+			const removed_ids = [];
 			[... modal_window.querySelectorAll('div.ista-parent-work.loading')].forEach(removed_work => {
+				removed_ids.push(removed_work.id);
 				const official_element = [... document.querySelector('div.MuiPaper-root').children].find(el => el.querySelector('span').innerText === removed_work.id);
 				if (official_element) {
 					official_element.querySelector('svg > path').dispatchEvent(new Event('click', {bubbles:true}));
 				}
 				removed_work.remove();
 			});
+			if (adding_official) {
+				const added_ids      = response.map(info => info['id']);
+				const all_works_text = filtered_ids.filter(id => removed_ids.indexOf(id) < 0);
+				form.value = all_works_text;
+				form.setAttribute('saved-value', all_works_text);
+				form.focus();
+				setTimeout(() => {
+					form_button.dispatchEvent(new Event('click', {bubbles:true}));
+				});
+			}
 		});
 	}
 };
