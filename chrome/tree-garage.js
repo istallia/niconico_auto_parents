@@ -151,6 +151,22 @@ const addTreeUI = () => {
 	const close_button = tree_ui_modal.querySelector('#ista-close-button');
 	close_button.addEventListener('click', closeTreeUI);
 	background.addEventListener('click', closeTreeUI);
+	/* IDリストから追加するためのイベントリスナを登録 */
+	const add_works = () => {
+		const form = document.getElementById('ista-id-form');
+		const text = form.value;
+		if (text.length < 3) return;
+		const ids = [... text.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)];
+		addCardsToIstaUI(ids, true);
+		form.value = '';
+	};
+	tree_ui_modal.querySelector('#ista-id-button').addEventListener('click', add_works);
+	tree_ui_modal.querySelector('#ista-id-form').addEventListener('keydown', event => {
+		if (event.key.toLowerCase() === 'enter') {
+			event.preventDefault();
+			add_works();
+		}
+	});
 };
 
 
@@ -172,15 +188,25 @@ const openTreeUI = () => {
 	const form_modal    = modal_window.querySelector('#ista-id-form');
 	form_modal.value    = form_official.value;
 	/* 親作品欄を同期 */
-	const unknown_works = [];
-	const works_area    = modal_window.querySelector('div.ista-parents-list');
-	const work_template = modal_window.querySelector('div.ista-parent-work.template');
 	const work_elements = modal_window.querySelectorAll('div.ista-parent-work:not(.template');
 	work_elements.forEach(e => e.remove());
 	const official_works = [... document.querySelectorAll('div.MuiPaper-root > div[role="button"]')];
-	official_works.forEach(work_element => {
+	const official_ids   = official_works.map(official_el => official_el.querySelector('span').innerText);
+	addCardsToIstaUI(official_ids);
+	/* UIを表示 */
+	modal_window.classList.remove('hidden');
+	background.classList.remove('hidden');
+};
+
+
+/* --- [ツリー登録UI] IDリストの親作品カードを生成 --- */
+const addCardsToIstaUI = (ids, adding_official = false) => {
+	const unknown_works = [];
+	const modal_window  = document.getElementById('ista-tree-ui-modal');
+	const works_area    = modal_window.querySelector('div.ista-parents-list');
+	const work_template = modal_window.querySelector('div.ista-parent-work.template');
+	ids.forEach(work_id => {
 		const work_card = work_template.cloneNode(true);
-		const work_id   = work_element.querySelector('span').innerText;
 		const rm_button = work_card.querySelector('svg');
 		work_card.id    = work_id;
 		work_card.classList.remove('template');
@@ -203,11 +229,15 @@ const openTreeUI = () => {
 			img.src         = work_info['thum'];
 			link.href       = work_info['url'];
 			title.innerText = work_info['title'];
-			type.innerText  = work_info['type'];
+			type.innerText  = `(${work_info['type']})`;
 		} else {
 			work_card.classList.add('loading');
 			unknown_works.push(work_id);
 		}
+	});
+	/* 末尾までスクロール */
+	works_area.scroll({
+		top : works_area.scrollHeight - works_area.clientHeight
 	});
 	/* 親作品欄用のキャッシュがなければ通信で取得 */
 	if (unknown_works.length > 0) {
@@ -222,20 +252,19 @@ const openTreeUI = () => {
 				img.src         = work_info['thum'];
 				link.href       = work_info['url'];
 				title.innerText = work_info['title'];
-				type.innerText  = work_info['type'];
+				type.innerText  = `(${work_info['type']})`;
 				work_card.classList.remove('loading');
 				sessionStorage.setItem(`ista-tree-cache-${work_info["id"]}`, JSON.stringify(work_info));
 			});
 			[... modal_window.querySelectorAll('div.ista-parent-work.loading')].forEach(removed_work => {
 				const official_element = [... document.querySelector('div.MuiPaper-root').children].find(el => el.querySelector('span').innerText === removed_work.id);
-				official_element.querySelector('svg > path').dispatchEvent(new Event('click', {bubbles:true}));
+				if (official_element) {
+					official_element.querySelector('svg > path').dispatchEvent(new Event('click', {bubbles:true}));
+				}
 				removed_work.remove();
 			});
 		});
 	}
-	/* UIを表示 */
-	modal_window.classList.remove('hidden');
-	background.classList.remove('hidden');
 };
 
 
@@ -245,6 +274,14 @@ const closeTreeUI = () => {
 	const modal_window = document.getElementById('ista-tree-ui-modal');
 	const background   = document.getElementById('ista-tree-ui-modal-background');
 	if (!modal_window) return;
+	/* 入力欄を同期 */
+	const form_official = document.getElementById('commonsContentIdInput');
+	const form_modal    = modal_window.querySelector('#ista-id-form');
+	form_official.value = form_modal.value;
+	form_official.setAttribute('saved-value', form_modal.value);
+	setTimeout(() => {
+		form_official.focus();
+	}, 0);
 	/* UIを非表示 */
 	modal_window.classList.add('hidden');
 	background.classList.add('hidden');
