@@ -173,6 +173,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 						id    : dom.id,
 						title : dom.querySelector('div.dsc').innerText,
 						thum  : thum_url,
+						url   : generateURL(dom.id),
 						type  : dom.querySelector('span[class^="status_"]').innerText
 					};
 				});
@@ -212,6 +213,31 @@ const extractWorkID = url => {
 	if (match_id) return match_id[0];
 	const match_mylist = url.match(/mylist\/\d{1,12}\b/);
 	if (match_mylist) return match_mylist[0];
+};
+
+
+/* --- 作品IDからページへのURLを生成 --- */
+const generateURL = id => {
+	const type = id.slice(0, 2);
+	switch (type) {
+		case 'sm':
+			return `https://www.nicovideo.jp/watch/${id}`;
+		case 'im':
+			return `https://seiga.nicovideo.jp/seiga/${id}`;
+		case 'lv':
+			return `https://live.nicovideo.jp/watch/${id}`;
+		case 'nc':
+			return `https://commons.nicovideo.jp/material/${id}`;
+		case 'td':
+			return `https://3d.nicovideo.jp/works/${id}`;
+		case 'co':
+			return `https://com.nicovideo.jp/community/${id}`;
+		case 'gm':
+			return `https://game.nicovideo.jp/atsumaru/games/${id}`;
+		case 'nq':
+			return `https://q.nicovideo.jp/watch/${id}`;
+	}
+	return null;
 };
 
 

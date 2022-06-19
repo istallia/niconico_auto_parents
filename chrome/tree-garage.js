@@ -26,17 +26,17 @@ const tree_ui_modal = parser.parseFromString(`
 		<div class="ista-form ista-id-form">
 			<input type="text" id="ista-id-form">&nbsp;
 			<button type="button" id="ista-id-button">リストに追加</button>
-			<button type="button" id="ista-close-button">登録して閉じる</button>
+			<button type="button" id="ista-close-button">閉じる</button>
 		</div>
 		<div class="ista-form ista-button-group">
 			<button type="button" id="ista-open-sidebar-bookmarks-on-modal">ニコニコ・ブックマーク</button>
 			<button type="button" id="ista-open-sidebar-exlists-on-modal">拡張マイリスト</button>
 		</div>
 		<div class="ista-parents-list">
-			<div class="ista-parent-work" id="nc235560">
+			<div class="ista-parent-work template" id="nc235560">
 				<svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m12.002 2.005c5.518 0 9.998 4.48 9.998 9.997 0 5.518-4.48 9.998-9.998 9.998-5.517 0-9.997-4.48-9.997-9.998 0-5.517 4.48-9.997 9.997-9.997zm0 1.5c-4.69 0-8.497 3.807-8.497 8.497s3.807 8.498 8.497 8.498 8.498-3.808 8.498-8.498-3.808-8.497-8.498-8.497zm0 7.425 2.717-2.718c.146-.146.339-.219.531-.219.404 0 .75.325.75.75 0 .193-.073.384-.219.531l-2.717 2.717 2.727 2.728c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.384-.073-.53-.219l-2.729-2.728-2.728 2.728c-.146.146-.338.219-.53.219-.401 0-.751-.323-.751-.75 0-.192.073-.384.22-.531l2.728-2.728-2.722-2.722c-.146-.147-.219-.338-.219-.531 0-.425.346-.749.75-.749.192 0 .385.073.531.219z" fill-rule="nonzero"/></svg>
 				<img src="https://deliver.commons.nicovideo.jp/thumbnail/nc235560" alt="サムネイル" class="ista-parent-img">
-				<a href="https://commons.nicovideo.jp/material/nc235560" class="isra-parent-link"><span class="ista-parent-title">コンテンツツリー登録支援ツール</span></a>&nbsp;
+				<a href="https://commons.nicovideo.jp/material/nc235560" class="ista-parent-link"><span class="ista-parent-title">コンテンツツリー登録支援ツール</span></a>&nbsp;
 				<span class="ista-parent-type">(ニコニ・コモンズ作品)</span>
 			</div>
 		</div>
@@ -45,8 +45,9 @@ const tree_ui_modal = parser.parseFromString(`
 
 
 /* --- 広域変数 --- */
-const queue              = [];
-let nico_expansion_ready = false;
+const queue                 = [];
+const official_work_buttons = {};
+let nico_expansion_ready    = false;
 
 
 /* --- [nicoExpansion] インストール確認 --- */
@@ -103,6 +104,7 @@ const addIstaUIs = records => {
 	frame.addEventListener('drop', event => event.currentTarget.classList.remove('hover'));
 	/* 入力欄のID維持のためのイベントリスナ */
 	const add_button   = input.nextElementSibling.querySelector('button');
+	add_button.id      = 'commonsContentIdInputButton';
 	const record_event = event => {
 		const target = event.currentTarget;
 		target.setAttribute('saved-value', target.value);
@@ -165,6 +167,59 @@ const openTreeUI = () => {
 		button_exlists.classList.remove('hidden');
 	} else {
 		button_exlists.classList.add('hidden');
+	}
+	/* 入力欄を同期 */
+	const form_official = document.getElementById('commonsContentIdInput');
+	const form_modal    = modal_window.querySelector('#ista-id-form');
+	form_modal.value    = form_official.value;
+	/* 親作品欄を同期 */
+	const unknown_works = [];
+	const works_area    = modal_window.querySelector('div.ista-parents-list');
+	const work_template = modal_window.querySelector('div.ista-parent-work.template');
+	const work_elements = modal_window.querySelectorAll('div.ista-parent-work:not(.template');
+	work_elements.forEach(e => e.remove());
+	const official_works = [... document.querySelectorAll('div.MuiPaper-root > div[role="button"]')];
+	official_works.forEach(work_element => {
+		const work_card   = work_template.cloneNode(true);
+		const work_id     = work_element.querySelector('span').innerText;
+		const work_button = work_element.querySelector('path');
+		work_card.id      = work_id;
+		work_card.classList.remove('template');
+		works_area.appendChild(work_card);
+		let work_info = sessionStorage.getItem(`ista-tree-cache-${work_id}`);
+		if (work_info) {
+			work_info   = JSON.parse(work_info);
+			const img   = work_card.querySelector('img.ista-parent-img');
+			const link  = work_card.querySelector('a.ista-parent-link');
+			const title = work_card.querySelector('span.ista-parent-title');
+			const type  = work_card.querySelector('span.ista-parent-type');
+			img.setAttribute('alt', work_info['id']);
+			img.src         = work_info['thum'];
+			link.href       = work_info['url'];
+			title.innerText = work_info['title'];
+			type.innerText  = work_info['type'];
+		} else {
+			unknown_works.push(work_id);
+		}
+		official_work_buttons[work_id] = work_button;
+	});
+	/* 親作品欄用のキャッシュがなければ通信で取得 */
+	if (unknown_works.length > 0) {
+		browser.runtime.sendMessage({request:'get-tree-list', ids:unknown_works}, response => {
+			response.forEach(work_info => {
+				const work_card = modal_window.querySelector(`div#${work_info["id"]}.ista-parent-work`);
+				const img   = work_card.querySelector('img.ista-parent-img');
+				const link  = work_card.querySelector('a.ista-parent-link');
+				const title = work_card.querySelector('span.ista-parent-title');
+				const type  = work_card.querySelector('span.ista-parent-type');
+				img.setAttribute('alt', work_info['id']);
+				img.src         = work_info['thum'];
+				link.href       = work_info['url'];
+				title.innerText = work_info['title'];
+				type.innerText  = work_info['type'];
+				sessionStorage.setItem(`ista-tree-cache-${work_info["id"]}`, JSON.stringify(work_info));
+			});
+		});
 	}
 	/* UIを表示 */
 	modal_window.classList.remove('hidden');
