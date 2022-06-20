@@ -174,7 +174,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 						title : dom.querySelector('div.dsc').innerText,
 						thum  : thum_url.replace('http://', 'https://'),
 						url   : generateURL(dom.id),
-						type  : dom.querySelector('span[class^="status_"]').innerText
+						type  : replaceWorkTypeString(dom.querySelector('span[class^="status_"]').innerText)
 					};
 				});
 				sendResponse(contents);
@@ -213,6 +213,23 @@ const extractWorkID = url => {
 	if (match_id) return match_id[0];
 	const match_mylist = url.match(/mylist\/\d{1,12}\b/);
 	if (match_mylist) return match_mylist[0];
+};
+
+
+/* --- 作品種別のテキストを整形 --- */
+const replaceWorkTypeString = text => {
+	const replace_list = [
+		['作品', ''],
+		['ニコニコ動画', '動画'],
+		['ニコニコ静画', '静画'],
+		['ニコニ立体', '立体'],
+		['ニコニコ生放送', 'ニコ生'],
+		['RPGアツマール', 'ゲーム']
+	];
+	replace_list.forEach(query => {
+		text = text.replace(query[0], query[1]);
+	});
+	return text;
 };
 
 

@@ -58,6 +58,9 @@ div.ista-tree-ui-modal {
   z-index          : 2000;
   background-color : #ccc;
 }
+div.ista-tree-ui-modal.hover {
+  background-color : #f17603;
+}
 div.ista-tree-ui-modal-background {
   position : fixed;
   top      : 56px;
@@ -135,4 +138,10 @@ div.ista-tree-ui-modal > .ista-parents-list > .ista-parent-work > img {
   margin      : 0px 0.5rem;
   float       : left;
   user-select : none;
+}
+@media screen and (min-width:1745px) {
+  /* 幅が十分広いならツリー登録UIは中央へ */
+  div.ista-tree-ui-modal {
+    left : calc(50vw - 480px);
+  }
 }

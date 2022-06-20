@@ -36,7 +36,7 @@ const tree_ui_modal = parser.parseFromString(`
 			<div class="ista-parent-work template" id="ncXXXXXXXX">
 				<svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m12.002 2.005c5.518 0 9.998 4.48 9.998 9.997 0 5.518-4.48 9.998-9.998 9.998-5.517 0-9.997-4.48-9.997-9.998 0-5.517 4.48-9.997 9.997-9.997zm0 1.5c-4.69 0-8.497 3.807-8.497 8.497s3.807 8.498 8.497 8.498 8.498-3.808 8.498-8.498-3.808-8.497-8.498-8.497zm0 7.425 2.717-2.718c.146-.146.339-.219.531-.219.404 0 .75.325.75.75 0 .193-.073.384-.219.531l-2.717 2.717 2.727 2.728c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.384-.073-.53-.219l-2.729-2.728-2.728 2.728c-.146.146-.338.219-.53.219-.401 0-.751-.323-.751-.75 0-.192.073-.384.22-.531l2.728-2.728-2.722-2.722c-.146-.147-.219-.338-.219-.531 0-.425.346-.749.75-.749.192 0 .385.073.531.219z" fill-rule="nonzero"/></svg>
 				<img src="https://deliver.commons.nicovideo.jp/thumbnail/nc235560" alt="サムネイル" class="ista-parent-img">
-				<a href="https://commons.nicovideo.jp/material/nc235560" class="ista-parent-link"><span class="ista-parent-title">コンテンツツリー登録支援ツール</span></a>&nbsp;
+				<a href="https://commons.nicovideo.jp/material/nc235560" class="ista-parent-link" target="_blank"><span class="ista-parent-title">コンテンツツリー登録支援ツール</span></a>&nbsp;
 				<span class="ista-parent-type">(ニコニ・コモンズ作品)</span>
 			</div>
 		</div>
@@ -95,7 +95,7 @@ const addIstaUIs = records => {
 		}
 	});
 	/* [ファイルID抽出] D&D時の色変え */
-	frame.addEventListener('dragover' , event => {
+	frame.addEventListener('dragenter' , event => {
 		event.preventDefault();
 		event.currentTarget.classList.add('hover');
 	});
@@ -182,6 +182,17 @@ const addTreeUI = () => {
 	} else {
 		button_exlists.classList.add('hidden');
 	}
+	/* [ファイルID抽出] D&D監視イベント登録 */
+	tree_ui_modal.addEventListener('dragover' , event => {
+		event.preventDefault();
+		event.currentTarget.classList.add('hover');
+	});
+	tree_ui_modal.addEventListener('dragleave', event => {
+		event.preventDefault();
+		event.currentTarget.classList.remove('hover');
+	});
+	tree_ui_modal.addEventListener('drop', extractIDsFromFiles);
+	tree_ui_modal.addEventListener('drop', event => event.currentTarget.classList.remove('hover'));
 };
 
 
@@ -202,6 +213,8 @@ const openTreeUI = () => {
 	const form_official = document.getElementById('commonsContentIdInput');
 	const form_modal    = modal_window.querySelector('#ista-id-form');
 	form_modal.value    = form_official.value;
+	form_official.value = '';
+	form_official.setAttribute('saved-value', '');
 	/* 親作品欄を同期 */
 	const works_area    = modal_window.querySelector('#ista-tree-ui-modal div.ista-parents-list');
 	const work_elements = modal_window.querySelectorAll('div.ista-parent-work:not(.template');
@@ -407,7 +420,12 @@ const extractIDsFromFiles = event => {
 		let dropped_ids  = [... dropped_text.matchAll(regexp)];
 		if (ids_in_name.length > 0) dropped_ids = ids_in_name;
 		for (let index in dropped_ids) dropped_ids[index] = dropped_ids[index][1];
-		addQueue(dropped_ids);
+		const modal_window = document.getElementById('ista-tree-ui-modal');
+		if (modal_window && !modal_window.classList.contains('hidden')) {
+			addCardsToIstaUI(dropped_ids);
+		} else {
+			addQueue(dropped_ids);
+		}
 	}
 	for (let file of event.dataTransfer.files) {
 		const reader = new FileReader();
