@@ -1,8 +1,12 @@
 # niconico_auto_parents
 
-ニコニコ動画のコンテンツツリーへの入力を自動化([Chrome拡張機能](https://chrome.google.com/webstore/detail/afbjcakadfpaogcpniameocokpieaaom)を目指す？)
+ニコニコ動画のコンテンツツリーへの入力を半自動化するChrome拡張機能/Firefoxアドオン  
+詳しくは[プロフページ](https://textblog.minibird.jp/twitter/#contents-tree)をご覧ください
 
 ## 機能
+
+Readme放置しすぎ＆機能増やしすぎでこっちのリストを更新するのが手間になっちゃいました、すみません  
+最新機能の説明はプロフページでご確認ください
 
 ### IDリストから自動登録
 
