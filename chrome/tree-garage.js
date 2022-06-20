@@ -347,7 +347,17 @@ const openSidebarBookmarks = () => {
 	/* ブックマーク内の作品一覧を取得 */
 	browser.runtime.sendMessage({request:'get-bookmarks'}, response => {
 		const current_text = document.getElementById('commonsContentIdInput');
-		openSidebar('ニコニコ・ブックマーク', current_text, response, id => {
+		openSidebar('ニコニコ・ブックマーク', () => {
+			const official_id_list = [... current_text.value.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)].map(id => id[0]);
+			const modal_window = document.getElementById('ista-tree-ui-modal');
+			if (modal_window && !modal_window.classList.contains('hidden')) {
+				const tree_ui_works_area = modal_window.querySelector('div.ista-parents-list');
+				const tree_ui_id_list    = [... tree_ui_works_area.children].map(el => el.id);
+				return official_id_list.concat(tree_ui_id_list);
+			} else {
+				return official_id_list;
+			}
+		}, response, id => {
 			const modal_window = document.getElementById('ista-tree-ui-modal');
 			if (modal_window && !modal_window.classList.contains('hidden')) {
 				addCardsToIstaUI([id], true);
@@ -364,7 +374,17 @@ const openSidebarExLists = () => {
 	/* 拡張マイリストを取得 */
 	browser.runtime.sendMessage({request:'get-exlists'}, response => {
 		const current_text = document.getElementById('commonsContentIdInput');
-		openSidebar('拡張マイリスト', current_text, response, id => {
+		openSidebar('拡張マイリスト', () => {
+			const official_id_list = [... current_text.value.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)].map(id => id[0]);
+			const modal_window = document.getElementById('ista-tree-ui-modal');
+			if (modal_window && !modal_window.classList.contains('hidden')) {
+				const tree_ui_works_area = modal_window.querySelector('div.ista-parents-list');
+				const tree_ui_id_list    = [... tree_ui_works_area.children].map(el => el.id);
+				return official_id_list.concat(tree_ui_id_list);
+			} else {
+				return official_id_list;
+			}
+		}, response, id => {
 			const modal_window = document.getElementById('ista-tree-ui-modal');
 			if (modal_window && !modal_window.classList.contains('hidden')) {
 				addCardsToIstaUI([id], true);

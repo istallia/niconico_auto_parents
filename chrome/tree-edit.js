@@ -110,7 +110,7 @@ modal_win_bg.addEventListener('click', () => {
 	if( !ista_processing ) {
 		document.getElementById('ista-auto-modal').style.display    = 'none';
 		document.getElementById('ista-auto-modal-bg').style.display = 'none';
-		document.getElementById('ista-sidebar-bookmarks').classList.remove('visible');
+		closeSidebar();
 	}
 });
 /* 「一括登録」ボタンの追加 */
@@ -207,11 +207,11 @@ const createPromiseCandidates = id10 => {
 					alert_alt('合計親作品数が300件を超えるため、候補を自動登録することができません。');
 					document.getElementById('ista-auto-modal').style.display    = 'none';
 					document.getElementById('ista-auto-modal-bg').style.display = 'none';
-					document.getElementById('ista-textarea-id-list').value             = '';
+					document.getElementById('ista-textarea-id-list').value      = '';
 					document.getElementById('checkbox').style.display           = 'none';
 					document.getElementById('parents').style.backgroundImage    = 'url("")';
-					ista_processing                                             = false;
-					document.getElementById('ista-sidebar-bookmarks').classList.remove('visible');
+					ista_processing = false;
+					closeSidebar();
 					throw new Error('limit-300');
 					return;
 				}
@@ -276,9 +276,9 @@ const addMaterialsByIdList = () => {
 			/* すべてのIDが正常に登録された場合 */
 			document.getElementById('ista-auto-modal').style.display    = 'none';
 			document.getElementById('ista-auto-modal-bg').style.display = 'none';
-			document.getElementById('ista-textarea-id-list').value             = '';
-			ista_processing                                             = false;
-			document.getElementById('ista-sidebar-bookmarks').classList.remove('visible');
+			document.getElementById('ista-textarea-id-list').value      = '';
+			ista_processing = false;
+			closeSidebar();
 		}
 	});
 };
@@ -434,7 +434,9 @@ const openSidebarBookmarks = () => {
 	/* ブックマーク内の作品一覧を取得 */
 	browser.runtime.sendMessage({request:'get-bookmarks'}, response => {
 		const current_text = document.getElementById('ista-textarea-id-list');
-		openSidebar('ニコニコ・ブックマーク', current_text, response, id => {
+		openSidebar('ニコニコ・ブックマーク', () => {
+			return [... current_text.value.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)].map(id => id[0]);
+		}, response, id => {
 			const area_list  = document.getElementById('ista-textarea-id-list');
 			let current_text = area_list.value;
 			if (current_text.length > 0 && current_text.slice(-1) !== ' ' && current_text.slice(-1) !== '\n') current_text += ' ';
@@ -449,7 +451,9 @@ const openSidebarExLists = () => {
 	/* 拡張マイリストを取得 */
 	browser.runtime.sendMessage({request:'get-exlists'}, response => {
 		const current_text = document.getElementById('ista-textarea-id-list');
-		openSidebar('拡張マイリスト', current_text, response, id => {
+		openSidebar('拡張マイリスト', () => {
+			return [... current_text.value.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)].map(id => id[0]);
+		}, response, id => {
 			const area_list  = document.getElementById('ista-textarea-id-list');
 			let current_text = area_list.value;
 			if (current_text.length > 0 && current_text.slice(-1) !== ' ' && current_text.slice(-1) !== '\n') current_text += ' ';
