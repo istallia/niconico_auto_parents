@@ -54,6 +54,9 @@
 	font          : inherit;
 	border-radius : 0.3rem;
 }
+#ista-textarea-id-list.ista-dragover {
+	background-color: #fc6;
+}
 button.ista-button-reg {
 	cursor        : pointer;
 	background    : #595959 url(/images/tree/edit/bg_candidateselect.jpg) repeat-x  left bottom;
@@ -63,9 +66,6 @@ button.ista-button-reg {
 	margin        : 0px;
 	margin-left   : 0.3rem;
 	outline       : none;
-}
-.ista-dragover {
-	background-color: #fc6;
 }
 .ista-auto-modal > p { text-align : left; }
 #Column01 > div.tree-edit-area.editbox.round5-t > p.helpimg { cursor : pointer; }

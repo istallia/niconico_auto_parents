@@ -16,6 +16,9 @@
  */
 
 /* --- 追加UI関係 --- */
+:root {
+  --header-height : 56px;
+}
 button.ista-button-garage {
 	color            : white;
 	background-color : #0075c2;
@@ -34,8 +37,114 @@ div.css-ow1ier.hover {
 
 /* --- サイドバー --- */
 div.ista-sidebar {
-	top : 108px;
+	top     : var(--header-height);
+  z-index : 2000;
 }
 div.ista-sidebar-title {
 	height : 2.4rem;
+}
+
+
+/* --- ツリー登録UI --- */
+div.ista-tree-ui-modal {
+  position         : fixed;
+  top              : var(--header-height);
+  left             : 0px;
+  width            : 100vw;
+  height           : calc(100vh - var(--header-height));
+  max-width        : 960px;
+  margin           : 0px;
+  padding          : 0px;
+  z-index          : 2000;
+  background-color : #ccc;
+}
+div.ista-tree-ui-modal.hover {
+  background-color : #f17603;
+}
+div.ista-tree-ui-modal-background {
+  position : fixed;
+  top      : 56px;
+  left     : 0px;
+  width    : 100vw;
+  height   : calc(100vh - 56px);
+  margin   : 0px;
+  padding  : 0px;
+  z-index  : 1950;
+  background-color : #0008;
+}
+div.ista-tree-ui-modal.hidden, div.ista-tree-ui-modal-background.hidden {
+  display : none;
+}
+div.ista-tree-ui-modal > .ista-form {
+  width       : 100%;
+  height      : 3rem;
+  display     : flex;
+  align-items : center;
+}
+div.ista-tree-ui-modal > .ista-form > input[type="text"] {
+  width            : calc(100% - 12rem - (0.5rem + 1px) * 2);
+  height           : 2rem;
+  margin           : 0.2rem 0.5rem;
+  padding          : 0.3rem;
+  border           : solid 1px #666;
+  border-radius    : 0.25rem;
+  background-color : #eee;
+}
+div.ista-tree-ui-modal > .ista-form > button[type="button"] {
+  height           : 2rem;
+  margin           : 0px 0.5rem;
+  border           : solid 1px #666;
+  border-radius    : 0.25rem;
+  background-color : #0075c2;
+  color            : #eee;
+}
+div.ista-tree-ui-modal > .ista-form > button[type="button"]:hover {
+  background-color : #0088ee;
+}
+div.ista-tree-ui-modal > .ista-form > button[type="button"].hidden {
+  display : none;
+}
+div.ista-tree-ui-modal span.ista-list-info {
+  margin : 0px 0.5rem;
+}
+
+div.ista-tree-ui-modal > .ista-parents-list {
+  margin     : 0px;
+  padding    : 0px;
+  height     : calc(100vh - 56px - 3rem * 2);
+  overflow-y : scroll;
+}
+div.ista-tree-ui-modal > .ista-parents-list > .ista-parent-work {
+  margin           : 0.2rem;
+  padding          : calc(0.3rem - 1px);
+  border           : solid 1px #aaa;
+  border-radius    : 0.5rem;
+  width            : calc(100% - 0.2rem * 2 - 16px);
+  height           : 3.6rem;
+  display          : flex;
+  align-items      : center;
+  background-color : #eee;
+}
+div.ista-tree-ui-modal > .ista-parents-list > .ista-parent-work.template {
+  display : none;
+}
+div.ista-tree-ui-modal > .ista-parents-list > .ista-parent-work > svg {
+  width       : 1.5rem;
+  height      : 1.5rem;
+  margin      : 0.75rem 0px;
+  float       : left;
+  user-select : none;
+  cursor      : pointer;
+}
+div.ista-tree-ui-modal > .ista-parents-list > .ista-parent-work > img {
+  height      : 3rem;
+  margin      : 0px 0.5rem;
+  float       : left;
+  user-select : none;
+}
+@media screen and (min-width:1745px) {
+  /* 幅が十分広いならツリー登録UIは中央へ */
+  div.ista-tree-ui-modal {
+    left : calc(50vw - 480px);
+  }
 }
