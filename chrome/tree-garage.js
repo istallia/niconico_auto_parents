@@ -239,6 +239,7 @@ const openTreeUI = () => {
 
 /* --- [ツリー登録UI] IDリストの親作品カードを生成 --- */
 const addCardsToIstaUI = (ids, adding_official = false) => {
+	ids                = Array.from(new Set(ids));
 	const modal_window = document.getElementById('ista-tree-ui-modal');
 	const works_area   = modal_window.querySelector('div.ista-parents-list');
 	const existed_ids  = [... works_area.children].map(card => card.id);
@@ -465,6 +466,7 @@ const optimizeList = (id_list) => {
 
 /* --- キューを追加 --- */
 const addQueue = ids => {
+	ids = Array.from(new Set(ids));
 	queue.unshift(ids);
 	if (queue.length === 1) addIdsToList();
 };
