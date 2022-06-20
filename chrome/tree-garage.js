@@ -24,13 +24,14 @@ const parser        = new DOMParser();
 const tree_ui_modal = parser.parseFromString(`
 	<div class="ista-tree-ui-modal hidden" id="ista-tree-ui-modal">
 		<div class="ista-form ista-id-form">
-			<input type="text" id="ista-id-form">&nbsp;
+			<input type="text" id="ista-id-form" placeholder="作品ID(nc○○など)を入力してください (300件まで) / スペースで複数入力">&nbsp;
 			<button type="button" id="ista-id-button">リストに追加</button>
 			<button type="button" id="ista-close-button">閉じる</button>
 		</div>
 		<div class="ista-form ista-button-group">
 			<button type="button" id="ista-open-sidebar-bookmarks-on-modal">ニコニコ・ブックマーク</button>
 			<button type="button" id="ista-open-sidebar-exlists-on-modal">拡張マイリスト</button>
+			<span class="ista-list-info" id="ista-parent-list-count">(0 / 300 件)</span>
 		</div>
 		<div class="ista-parents-list">
 			<div class="ista-parent-work template" id="ncXXXXXXXX">
@@ -47,6 +48,7 @@ tree_ui_loading_img.src   = browser.runtime.getURL(tree_ui_loading_img.getAttrib
 
 
 /* --- 広域変数 --- */
+const MAX_WORKS          = 300;
 const queue              = [];
 let nico_expansion_ready = false;
 
@@ -240,7 +242,7 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 	const modal_window = document.getElementById('ista-tree-ui-modal');
 	const works_area   = modal_window.querySelector('div.ista-parents-list');
 	const existed_ids  = [... works_area.children].map(card => card.id);
-	const filtered_ids = ids.map(id => id.toLowerCase()).filter(id => existed_ids.indexOf(id) < 0);
+	const filtered_ids = ids.map(id => id.toLowerCase()).filter(id => existed_ids.indexOf(id) < 0).slice(0, MAX_WORKS-existed_ids.length);
 	if (filtered_ids.length < 1) return;
 	const unknown_works = [];
 	const cached_works  = [];
@@ -258,6 +260,7 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 				official_el.querySelector('svg > path').dispatchEvent(new Event('click', {bubbles:true}));
 			}
 			event.currentTarget.parentNode.remove();
+			modal_window.querySelector('span#ista-parent-list-count').innerText = `(${works_area.children.length-1} / ${MAX_WORKS} 件)`;
 		});
 		works_area.appendChild(work_card);
 		let work_info = sessionStorage.getItem(`ista-tree-cache-${work_id}`);
@@ -330,7 +333,10 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 					form_button.dispatchEvent(new Event('click', {bubbles:true}));
 				});
 			}
+			modal_window.querySelector('span#ista-parent-list-count').innerText = `(${works_area.children.length-1} / ${MAX_WORKS} 件)`;
 		});
+	} else {
+		modal_window.querySelector('span#ista-parent-list-count').innerText = `(${works_area.children.length-1} / ${MAX_WORKS} 件)`;
 	}
 };
 

@@ -104,6 +104,9 @@ div.ista-tree-ui-modal > .ista-form > button[type="button"]:hover {
 div.ista-tree-ui-modal > .ista-form > button[type="button"].hidden {
   display : none;
 }
+div.ista-tree-ui-modal span.ista-list-info {
+  margin : 0px 0.5rem;
+}
 
 div.ista-tree-ui-modal > .ista-parents-list {
   margin     : 0px;
