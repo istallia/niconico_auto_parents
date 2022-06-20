@@ -95,7 +95,7 @@ const addIstaUIs = records => {
 		}
 	});
 	/* [ファイルID抽出] D&D時の色変え */
-	frame.addEventListener('dragenter' , event => {
+	frame.addEventListener('dragover' , event => {
 		event.preventDefault();
 		event.currentTarget.classList.add('hover');
 	});
