@@ -61,6 +61,8 @@ browser.runtime.sendMessage({request:'get-exlists'}, response => nico_expansion_
 const addIstaUIs = records => {
 	/* [ツリー登録UI] ついでにこれの要素も追加 */
 	addTreeUI();
+	/* 動画情報引用のためのイベントリスナ登録 */
+	addQuotingEvents();
 	/* 親を探す */
 	const input        = document.getElementById('commonsContentIdInput');
 	const exist_button = document.getElementById('ista-open-sidebar-bookmarks');
@@ -361,6 +363,57 @@ const closeTreeUI = () => {
 	/* UIを非表示 */
 	modal_window.classList.add('hidden');
 	background.classList.add('hidden');
+};
+
+
+/* --- 動画情報引用のためのイベントリスナ登録 --- */
+const addQuotingEvents = () => {
+	/* 引用ボタンを押したらオプションを開いておく */
+	const quote_button = [... document.querySelectorAll('button.MuiButtonBase-root.MuiButton-root.MuiButton-text:not(.ista-event-registed)')].filter(button => button.innerText === '投稿した動画から選択')[0];
+	if (quote_button) {
+		quote_button.classList.add('ista-event-registed');
+		quote_button.addEventListener('click', event => {
+			const open_detail_button = [... document.querySelectorAll('button.MuiButtonBase-root.MuiButton-root.MuiButton-text')].filter(button => button.innerText === 'オプションを開く');
+			if (open_detail_button.length > 0) {
+				open_detail_button[0].dispatchEvent(new Event('click', {bubbles:true}));
+			}
+		});
+	}
+	/* リストの各要素にイベントを追加 */
+	const quote_parents = event => {
+		/* 動画IDを取得 */
+		const thumbnail = event.currentTarget.querySelector('div[src^="https://nicovideo.cdn.nimg.jp/thumbnails/"]');
+		const video_id  = 'sm' + thumbnail.getAttribute('src').match(/(?<=\/)\d+/)[0];
+		/* パラメータを準備 */
+		const params = new URLSearchParams({
+			_offset   : 0,
+			_limit    : 300,
+			with_meta : 0,
+			_sort     : '-id'
+		});
+		/* 送信 */
+		fetch(`https://public-api.commons.nicovideo.jp/v1/tree/${video_id}/relatives/parents?${params.toString()}`, {
+			mode        : 'cors',
+			credentials : 'include',
+			cache       : 'no-cache'
+		})
+		.catch(err => {
+			window.alert('サーバーに接続できませんでした。インターネット接続を確認してください。');
+			console.log(err);
+			return null;
+		})
+		.then(response => response.json())
+		.then(json => {
+			/* IDリストの文字列を取得 */
+			let id_list = json.data.parents.contents.map(work => work.globalId);
+			addQueue(id_list);
+		});
+	};
+	const video_divs = [... document.querySelectorAll('div[role="dialog"] ul.MuiList-root.MuiList-padding > .MuiButtonBase-root.MuiListItem-root.MuiListItem-button:not(.ista-event-registed)')];
+	video_divs.forEach(div => {
+		div.classList.add('ista-event-registed');
+		div.addEventListener('click', quote_parents);
+	});
 };
 
 
