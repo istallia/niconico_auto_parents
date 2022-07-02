@@ -200,6 +200,32 @@ const addTreeUI = () => {
 	});
 	tree_ui_modal.addEventListener('drop', extractIDsFromFiles);
 	tree_ui_modal.addEventListener('drop', event => event.currentTarget.classList.remove('hover'));
+	/* IDリストをコピーするボタンのイベントリスナを登録 */
+	const button_copy = tree_ui_modal.querySelector('#ista-copy-works');
+	button_copy.addEventListener('click', event => {
+		const card_list = tree_ui_modal.querySelector('.ista-parents-list');
+		if (card_list.children.length <= 1) {
+			window.alert('コピーできる作品が1件もありません。');
+			return;
+		}
+		const work_list     = [... card_list.children].filter(div => !div.classList.contains('template')).map(div => { return {id:div.id, title:div.querySelector('.ista-parent-title').innerText} });
+		const include_title = window.confirm('作品名付きのリストをコピーしますか？\nキャンセルを選択するとIDのみのリストをコピーします。');
+		if (include_title) {
+			document.body.focus();
+			setTimeout(() => {
+				navigator.clipboard.writeText(work_list.map(work => `${work['id']} -> ${work['title']}`).join('\n'));
+			}, 0);
+		} else {
+			const ids_text = work_list.reduce((text, work, i) => {
+				if (i % 10 === 9) return text + work['id'] + '\n';
+				return text + work['id'] + ' ';
+			}, '');
+			document.body.focus();
+			setTimeout(() => {
+				navigator.clipboard.writeText(ids_text.slice(0, -1));
+			}, 0);
+		}
+	});
 };
 
 
