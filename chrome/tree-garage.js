@@ -31,6 +31,7 @@ const tree_ui_modal = parser.parseFromString(`
 		<div class="ista-form ista-button-group">
 			<button type="button" id="ista-open-sidebar-bookmarks-on-modal">ニコニコ・ブックマーク</button>
 			<button type="button" id="ista-open-sidebar-exlists-on-modal">拡張マイリスト</button>
+			<button type="button" id="ista-copy-works">作品リストをコピー</button>
 			<span class="ista-list-info" id="ista-parent-list-count">(0 / 300 件)</span>
 		</div>
 		<div class="ista-parents-list">
@@ -379,7 +380,7 @@ const addQuotingEvents = () => {
 			}
 		});
 	}
-	/* リストの各要素にイベントを追加 */
+	/* リストの各要素にイベントを追加 (IDをフォームに入力) */
 	const quote_parents = event => {
 		/* 動画IDを取得 */
 		const thumbnail = event.currentTarget.querySelector('div[src^="https://nicovideo.cdn.nimg.jp/thumbnails/"]');
@@ -406,7 +407,7 @@ const addQuotingEvents = () => {
 		.then(json => {
 			/* IDリストの文字列を取得 */
 			let id_list = json.data.parents.contents.map(work => work.globalId);
-			addQueue(id_list);
+			addQueue(id_list, true);
 		});
 	};
 	const video_divs = [... document.querySelectorAll('div[role="dialog"] ul.MuiList-root.MuiList-padding > .MuiButtonBase-root.MuiListItem-root.MuiListItem-button:not(.ista-event-registed)')];
@@ -518,15 +519,15 @@ const optimizeList = (id_list) => {
 
 
 /* --- キューを追加 --- */
-const addQueue = ids => {
+const addQueue = (ids, exec_overwrite = false) => {
 	ids = Array.from(new Set(ids));
 	queue.unshift(ids);
-	if (queue.length === 1) addIdsToList();
+	if (queue.length === 1) addIdsToList(exec_overwrite);
 };
 
 
 /* --- IDリストをhtmlのリストに追加 --- */
-const addIdsToList = () => {
+const addIdsToList = (exec_overwrite = false) => {
 	/* キューを全部取得 */
 	const processed_queue = queue.concat([]).flat();
 	queue.splice(0);
@@ -539,5 +540,23 @@ const addIdsToList = () => {
 	form.focus({preventScroll:true});
 	setTimeout(() => {
 		form.blur();
+		if (exec_overwrite) {
+			const id_list_element = document.querySelector('div.MuiPaper-root');
+			const form_button     = document.getElementById('commonsContentIdInputButton');
+			if (id_list_element) {
+				const rm_process = [... id_list_element.children].map(div => div.querySelector('svg > path')).reduce((promise, path) => {
+					return promise.then(() => {
+						setTimeout(() => path.dispatchEvent(new Event('click', {bubbles:true})), 0);
+					});
+				}, Promise.resolve());
+				rm_process.then(() => {
+					setTimeout(() => {
+						form_button.dispatchEvent(new Event('click', {bubbles:true}));
+					}, 0);
+				});
+			} else {
+				form_button.dispatchEvent(new Event('click', {bubbles:true}));
+			}
+		}
 	}, 0);
 };
