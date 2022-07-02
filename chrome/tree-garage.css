@@ -138,6 +138,7 @@ div.ista-tree-ui-modal > .ista-parents-list > .ista-parent-work > svg {
 }
 div.ista-tree-ui-modal > .ista-parents-list > .ista-parent-work > img {
   height      : 3rem;
+  min-width   : 3rem;
   margin      : 0px 0.5rem;
   float       : left;
   user-select : none;
