@@ -571,9 +571,9 @@ const addIdsToList = (exec_overwrite = false) => {
 			const id_list_element = document.querySelector('div.MuiPaper-root');
 			const form_button     = document.getElementById('commonsContentIdInputButton');
 			if (id_list_element) {
-				const rm_process = [... id_list_element.children].map(div => div.querySelector('svg > path')).reduce((promise, path) => {
+				const rm_process = [... id_list_element.children].reverse().map(div => div.querySelector('svg > path')).reduce((promise, path) => {
 					return promise.then(() => {
-						setTimeout(() => path.dispatchEvent(new Event('click', {bubbles:true})), 0);
+						setTimeout(() => path.dispatchEvent?.(new Event('click', {bubbles:true})), 0);
 					});
 				}, Promise.resolve());
 				rm_process.then(() => {
