@@ -407,8 +407,32 @@ const addQuotingEvents = () => {
 			}
 		});
 	}
+	/* 親作品引用のオン/オフを切り替えるチェックボックスを追加 */
+	if (quote_button && !document.getElementById('ista-enable-quoting-parents')) {
+		const checkbox   = document.createElement('input');
+		const label      = document.createElement('label');
+		const div        = document.createElement('div');
+		const caption    = document.createTextNode('親作品引用機能を有効にする');
+		checkbox.id      = 'ista-enable-quoting-parents';
+		checkbox.type    = 'checkbox';
+		label.for        = 'ista-enable-quoting-parents';
+		div.classList.add('ista-checkbox-div');
+		label.appendChild(checkbox);
+		label.appendChild(caption);
+		div.appendChild(label);
+		quote_button.parentNode.appendChild(div);
+		checkbox.addEventListener('change', event => {
+			localStorage.setItem('ista-enable-quoting-parents', String(event.currentTarget.checked));
+		});
+		setTimeout(() => {
+			checkbox.checked = localStorage.getItem('ista-enable-quoting-parents') === 'true';
+		}, 0);
+	}
 	/* リストの各要素にイベントを追加 (IDをフォームに入力) */
 	const quote_parents = event => {
+		/* 無効なら帰る */
+		const enable_checkbox = document.getElementById('ista-enable-quoting-parents');
+		if (!enable_checkbox?.checked) return;
 		/* 動画IDを取得 */
 		const thumbnail = event.currentTarget.querySelector('div[src^="https://nicovideo.cdn.nimg.jp/thumbnails/"]');
 		const video_id  = 'sm' + thumbnail.getAttribute('src').match(/(?<=\/)\d+/)[0];

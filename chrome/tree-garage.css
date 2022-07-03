@@ -27,6 +27,18 @@ button.ista-button-garage {
 button.ista-button-garage:hover {
 	background-color : #0088ee;
 }
+div.ista-checkbox-div {
+  margin      : 1rem 0px;
+  user-select : none;
+}
+div.ista-checkbox-div > label > input[type="checkbox"] {
+  margin-left  : 0px;
+  margin-right : 0.5rem;
+}
+.niconico-darkmode-setting-true div.ista-checkbox-div {
+  color : white;
+}
+
 
 
 /* --- ファイルID抽出 --- */
