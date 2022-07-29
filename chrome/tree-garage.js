@@ -140,7 +140,7 @@ const addIstaUIs = records => {
 	input.addEventListener('focus', load_event);
 	input.addEventListener('blur', load_event);
 };
-const root     = document.getElementById('root');
+const root     = document.body;
 const observer = new MutationObserver(addIstaUIs);
 observer.observe(root, {
 	childList : true,
@@ -152,14 +152,15 @@ observer.observe(root, {
 const addTreeUI = () => {
 	/* 既に存在したらスルー */
 	const existed_ui = document.getElementById('ista-tree-ui-modal');
-	if (existed_ui) return;
+	const parent_el  = document.querySelector('div[role="presentation"] > div[role*="presentation"]');
+	if (existed_ui || !parent_el) return;
 	/* モーダルウィンドウを追加 */
-	document.body.appendChild(tree_ui_modal);
+	parent_el.appendChild(tree_ui_modal);
 	/* 背景要素を追加 */
 	const background = document.createElement('div');
 	background.id    = 'ista-tree-ui-modal-background';
 	background.classList.add('ista-tree-ui-modal-background', 'hidden');
-	document.body.appendChild(background);
+	parent_el.appendChild(background);
 	/* 閉じるボタンのイベントリスナを登録 */
 	const close_button = tree_ui_modal.querySelector('#ista-close-button');
 	close_button.addEventListener('click', closeTreeUI);
@@ -253,7 +254,8 @@ const openTreeUI = () => {
 	const works_area    = modal_window.querySelector('#ista-tree-ui-modal div.ista-parents-list');
 	const work_elements = modal_window.querySelectorAll('div.ista-parent-work:not(.template');
 	work_elements.forEach(e => e.remove());
-	const official_works = [... document.querySelectorAll('div.MuiPaper-root > div[role="button"]')];
+	const parent_el      = document.getElementById('commonsContentIdInput').parentNode.parentNode.parentNode;
+	const official_works = [... parent_el.querySelectorAll('div.MuiPaper-root > div[role="button"]')];
 	const official_ids   = official_works.map(official_el => official_el.querySelector('span').innerText);
 	addCardsToIstaUI(official_ids);
 	setTimeout(() => {
@@ -286,7 +288,8 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 		rm_button.setAttribute('work-id', work_id);
 		rm_button.addEventListener('click', event => {
 			const removing_id = event.currentTarget.getAttribute('work-id');
-			const official_el = [... document.querySelector('div.MuiPaper-root').children].find(el => el.querySelector('span').innerText === removing_id);
+			const parent_el   = document.getElementById('commonsContentIdInput').parentNode.parentNode.parentNode;
+			const official_el = [... parent_el.querySelector('div.MuiPaper-root').children].find(el => el.querySelector('span').innerText === removing_id);
 			if (official_el) {
 				official_el.querySelector('svg > path').dispatchEvent(new Event('click', {bubbles:true}));
 			}
@@ -348,7 +351,8 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 			const removed_ids = [];
 			[... modal_window.querySelectorAll('div.ista-parent-work.loading')].forEach(removed_work => {
 				removed_ids.push(removed_work.id);
-				const official_element = [... document.querySelector('div.MuiPaper-root').children].find(el => el.querySelector('span').innerText === removed_work.id);
+				const parent_element   = document.getElementById('commonsContentIdInput').parentNode.parentNode.parentNode;
+				const official_element = [... parent_element.querySelector('div.MuiPaper-root').children].find(el => el.querySelector('span').innerText === removed_work.id);
 				if (official_element) {
 					official_element.querySelector('svg > path').dispatchEvent(new Event('click', {bubbles:true}));
 				}
@@ -412,7 +416,7 @@ const addQuotingEvents = () => {
 		const checkbox   = document.createElement('input');
 		const label      = document.createElement('label');
 		const div        = document.createElement('div');
-		const caption    = document.createTextNode('親作品引用機能を有効にする');
+		const caption    = document.createTextNode('[拡張機能] 動画情報の引き継ぎ時に親作品も引き継ぐ');
 		checkbox.id      = 'ista-enable-quoting-parents';
 		checkbox.type    = 'checkbox';
 		label.for        = 'ista-enable-quoting-parents';
@@ -592,7 +596,8 @@ const addIdsToList = (exec_overwrite = false) => {
 	setTimeout(() => {
 		form.blur();
 		if (exec_overwrite) {
-			const id_list_element = document.querySelector('div.MuiPaper-root');
+			const parent_element  = document.getElementById('commonsContentIdInput').parentNode.parentNode.parentNode;
+			const id_list_element = parent_element.querySelector('div.MuiPaper-root');
 			const form_button     = document.getElementById('commonsContentIdInputButton');
 			if (id_list_element) {
 				const rm_process = [... id_list_element.children].reverse().map(div => div.querySelector('svg > path')).reduce((promise, path) => {

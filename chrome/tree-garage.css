@@ -49,7 +49,7 @@ div.css-ow1ier.hover {
 
 /* --- サイドバー --- */
 div.ista-sidebar {
-	top     : var(--header-height);
+	top     : 0px;
   z-index : 2000;
 }
 div.ista-sidebar-title {
@@ -60,10 +60,10 @@ div.ista-sidebar-title {
 /* --- ツリー登録UI --- */
 div.ista-tree-ui-modal {
   position         : fixed;
-  top              : var(--header-height);
+  top              : 0px;
   left             : 0px;
   width            : 100vw;
-  height           : calc(100vh - var(--header-height));
+  height           : 100vh;
   max-width        : 960px;
   margin           : 0px;
   padding          : 0px;
@@ -75,10 +75,10 @@ div.ista-tree-ui-modal.hover {
 }
 div.ista-tree-ui-modal-background {
   position : fixed;
-  top      : 56px;
+  top      : 0px;
   left     : 0px;
   width    : 100vw;
-  height   : calc(100vh - 56px);
+  height   : 100vh;
   margin   : 0px;
   padding  : 0px;
   z-index  : 1950;
