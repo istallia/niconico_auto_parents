@@ -420,6 +420,7 @@ const addQuotingEvents = () => {
 		checkbox.id      = 'ista-enable-quoting-parents';
 		checkbox.type    = 'checkbox';
 		label.for        = 'ista-enable-quoting-parents';
+		label.title      = '(v0.6.1～) 上のボタンから過去の投稿動画の情報を引き継ぐ際、親作品も一緒に引き継ぎます。';
 		div.classList.add('ista-checkbox-div');
 		label.appendChild(checkbox);
 		label.appendChild(caption);
