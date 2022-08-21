@@ -21,6 +21,17 @@
  */
 
 
+/* --- [リンク置換] 各サービスのURL --- */
+const niconico_urls = {
+	sm : 'https://www.nicovideo.jp/watch/',
+	im : 'https://seiga.nicovideo.jp/seiga/',
+	nc : 'https://commons.nicovideo.jp/material/',
+	td : 'https://3d.nicovideo.jp/works/',
+	lv : 'https://live.nicovideo.jp/watch/',
+	gm : 'https://game.nicovideo.jp/atsumaru/games/'
+};
+
+
 /* --- browserの読み込み --- */
 if (typeof browser === 'undefined') browser = chrome;
 
@@ -175,6 +186,41 @@ const registReservedParents = () => {
 	}, 500);
 };
 setTimeout(registReservedParents, 500);
+
+
+/* --- [リンク置換] リンクを置き換える処理 (監視して繰り返し処理) --- */
+const replaceCommonsLinks = () => {
+	/* 親要素を監視 */
+	const parent_el = document.querySelector('section.p-contentsTreeViewPage, section.p-treeParentsPage');
+	if (parent_el) {
+		if (parent_el.classList.contains('ista-link-replacing')) {
+			setTimeout(replaceCommonsLinks, 100);
+		} else {
+			const observer = new MutationObserver(replaceCommonsLinks);
+			observer.observe(parent_el, {childList:true, subtree:true});
+			parent_el.classList.add('ista-link-replacing');
+		}
+	}
+	/* 有効/無効確認 */
+	browser.storage.local.get({
+		replacing_commons_links : false
+	}, option_items => {
+		/* 無効なら帰る */
+		if (!option_items['replacing_commons_links']) return;
+		/* リンクを探して置換 */
+		const commons_links = document.querySelectorAll('a.parentsCardPreview:not(.ista-link-replaced), a.childrenCardPreview:not(.ista-link-replaced)');
+		[... commons_links].forEach(a => {
+			const url  = new URL(a.href);
+			const dirs = url.pathname.split('/');
+			const id   = dirs[dirs.length-1];
+			if (id.slice(0, 2) in niconico_urls) {
+				a.href = niconico_urls[id.slice(0, 2)] + id;
+				a.classList.add('ista-link-replaced');
+			}
+		});
+	});
+};
+replaceCommonsLinks();
 
 
 /* --- IDリストに含まれるIDをカウントする --- */
