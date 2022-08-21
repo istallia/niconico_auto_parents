@@ -191,23 +191,23 @@ setTimeout(registReservedParents, 500);
 
 /* --- [リンク置換] リンクを置き換える処理 (監視して繰り返し処理) --- */
 const replaceCommonsLinks = () => {
-	/* 親要素を監視 */
-	const parent_el = document.querySelector('section.p-contentsTreeViewPage, section.p-treeParentsPage');
-	if (parent_el) {
-		if (parent_el.classList.contains('ista-link-replacing')) {
-			setTimeout(replaceCommonsLinks, 100);
-		} else {
-			const observer = new MutationObserver(replaceCommonsLinks);
-			observer.observe(parent_el, {childList:true, subtree:true});
-			parent_el.classList.add('ista-link-replacing');
-		}
-	}
 	/* 有効/無効確認 */
 	browser.storage.local.get({
 		replacing_commons_links : false
 	}, option_items => {
 		/* 無効なら帰る */
 		if (!option_items['replacing_commons_links']) return;
+		/* 親要素を監視 */
+		const parent_el = document.querySelector('section.p-contentsTreeViewPage, section.p-treeParentsPage');
+		if (parent_el) {
+			if (parent_el.classList.contains('ista-link-replacing')) {
+				setTimeout(replaceCommonsLinks, 100);
+			} else {
+				const observer = new MutationObserver(replaceCommonsLinks);
+				observer.observe(parent_el, {childList:true, subtree:true});
+				parent_el.classList.add('ista-link-replacing');
+			}
+		}
 		/* リンクを探して置換 */
 		const commons_links = document.querySelectorAll('a.parentsCardPreview:not(.ista-link-replaced), a.childrenCardPreview:not(.ista-link-replaced)');
 		[... commons_links].forEach(a_view => {
