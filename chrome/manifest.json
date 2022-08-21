@@ -28,8 +28,12 @@
 		],
 		"persistent": false
 	},
+	"options_ui" : {
+		"page" : "options.html"
+	},
 	"permissions" : [
 		"bookmarks",
+		"storage",
 		"alarms",
 		"tabs",
 		"*://commons.nicovideo.jp/tree/*",
