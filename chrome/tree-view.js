@@ -22,6 +22,7 @@
 
 
 /* --- [リンク置換] 各サービスのURL --- */
+const tree_url = 'https://commons.nicovideo.jp/tree/';
 const niconico_urls = {
 	sm : 'https://www.nicovideo.jp/watch/',
 	im : 'https://seiga.nicovideo.jp/seiga/',
@@ -209,14 +210,24 @@ const replaceCommonsLinks = () => {
 		if (!option_items['replacing_commons_links']) return;
 		/* リンクを探して置換 */
 		const commons_links = document.querySelectorAll('a.parentsCardPreview:not(.ista-link-replaced), a.childrenCardPreview:not(.ista-link-replaced)');
-		[... commons_links].forEach(a => {
-			const url  = new URL(a.href);
+		[... commons_links].forEach(a_view => {
+			/* ツリー閲覧ページへのリンクは作品ページへのリンクに置換 */
+			const url  = new URL(a_view.href);
 			const dirs = url.pathname.split('/');
 			const id   = dirs[dirs.length-1];
 			if (id.slice(0, 2) in niconico_urls) {
-				a.href = niconico_urls[id.slice(0, 2)] + id;
-				a.classList.add('ista-link-replaced');
+				a_view.href = niconico_urls[id.slice(0, 2)] + id;
+				a_view.classList.add('ista-link-replaced');
 			}
+			/* 作品ページへのリンクはツリー閲覧ページへのリンクに置換 */
+			const as_work = a_view.parentNode.querySelectorAll('a:not([class])');
+			[... as_work].forEach(a_work => {
+				a_work.href = tree_url + id;
+				a_work.classList.add('ista-link-replaced');
+				if (a_work.innerText.length > 0) {
+					a_work.innerText = 'ツリーを見る';
+				}
+			});
 		});
 	});
 };
