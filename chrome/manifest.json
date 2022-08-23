@@ -34,7 +34,6 @@
 	"permissions" : [
 		"bookmarks",
 		"storage",
-		"alarms",
 		"tabs",
 		"*://commons.nicovideo.jp/tree/*",
 		"*://www.upload.nicovideo.jp/*",
