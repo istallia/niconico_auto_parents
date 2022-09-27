@@ -72,7 +72,7 @@ const replaceCommonsLinks = () => {
 			[... as_work].filter(a_work => !a_work.getAttribute('href').startsWith('javascript')).forEach(a_work => {
 				a_work.href = tree_url + id;
 				a_work.classList.add('ista-link-replaced');
-				if (a_work.innerText.length > 0) {
+				if (a_work.innerText.length > 0 && a_work.innerText.indexOf('ブロック') < 0) {
 					a_work.innerText = 'ツリーを見る';
 				}
 			});
