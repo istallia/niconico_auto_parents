@@ -71,7 +71,7 @@ const addIstaUIs = records => {
 		const caption_adding_tree = link_adding_tree.getElementsByTagName('p')[0];
 		list_adding_tree.classList.add('ista-menu-contents-tree');
 		link_adding_tree.href         = link_adding_tree.href.replace('/tree/sm', '/tree/edit/sm');
-		caption_adding_tree.innerText = 'コンテンツツリーを作る';
+		caption_adding_tree.innerText = '親作品を登録する';
 		link_to_tree.parentNode.parentNode.insertBefore(list_adding_tree, link_to_tree.parentNode.nextElementSibling);
 	}
 	/* [ツリー登録UI] ついでにこれの要素も追加 */
