@@ -554,7 +554,7 @@ const extractIDsFromFiles = event => {
 		for (let index in dropped_ids) dropped_ids[index] = dropped_ids[index][1];
 		const modal_window = document.getElementById('ista-tree-ui-modal');
 		if (modal_window && !modal_window.classList.contains('hidden')) {
-			addCardsToIstaUI(dropped_ids);
+			addCardsToIstaUI(dropped_ids, true);
 		} else {
 			addQueue(dropped_ids);
 		}
