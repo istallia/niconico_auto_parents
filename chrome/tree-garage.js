@@ -338,7 +338,7 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 	/* 通信しないならここで公式のフォームに入れてしまう */
 	const form        = document.getElementById('commonsContentIdInput');
 	const form_button = document.getElementById('commonsContentIdInputButton');
-	if (adding_official && unknown_works.length < 1) {
+	if (adding_official && cached_works.length > 0) {
 		const cached_works_text = cached_works.join(' ');
 		form.value = cached_works_text;
 		form.setAttribute('saved-value', cached_works_text);
@@ -379,10 +379,11 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 			});
 			if (adding_official) {
 				const added_ids      = response.map(info => info['id']);
-				const all_works_text = filtered_ids.filter(id => removed_ids.indexOf(id) < 0).join(' ');
+				const all_works_text = response.map(work_info => work_info['id']).join(' ');
 				form.value = all_works_text;
 				form.setAttribute('saved-value', all_works_text);
 				form.focus();
+				console.log(all_works_text);
 				setTimeout(() => {
 					form_button.dispatchEvent(new Event('click', {bubbles:true}));
 				});
