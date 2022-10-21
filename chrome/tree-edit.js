@@ -208,7 +208,6 @@ const createPromiseCandidates = id10 => {
 					document.getElementById('ista-auto-modal').style.display    = 'none';
 					document.getElementById('ista-auto-modal-bg').style.display = 'none';
 					document.getElementById('ista-textarea-id-list').value      = '';
-					document.getElementById('checkbox').style.display           = 'none';
 					document.getElementById('parents').style.backgroundImage    = 'url("")';
 					ista_processing = false;
 					closeSidebar();
@@ -247,7 +246,6 @@ const addMaterialsByIdList = () => {
 	document.getElementById('ista-textarea-id-list').value = id_list.join('\n');
 	localStorage.setItem('ista-verify-contents', String(document.getElementById('ista-verify-contents').checked));
 	if (id_list.length > 0) {
-		document.getElementById('checkbox').style.display        = 'none';
 		document.getElementById('parents').style.backgroundImage = 'url("")';
 	}
 	// let promise_list = [];
@@ -305,8 +303,7 @@ const autoRegistCandidates = () => {
 		parent_works.appendChild(item);
 	});
 	if ( p_items.length === 0 && items.length > 0 ) {
-		document.getElementById('checkbox').style.display           = 'none';
-		document.getElementById('parents').style.backgroundImage    = 'url("")';
+		document.getElementById('parents').style.backgroundImage = 'url("")';
 	}
 };
 button_regist_candidates.addEventListener('click', autoRegistCandidates);
@@ -332,8 +329,7 @@ const clickToMoveCandidate = event => {
 	const parent_works = document.getElementById('parents');
 	parent_works.appendChild(event.currentTarget);
 	if ( p_items.length === 0 ) {
-		document.getElementById('checkbox').style.display           = 'none';
-		document.getElementById('parents').style.backgroundImage    = 'url("")';
+		document.getElementById('parents').style.backgroundImage = 'url("")';
 	}
 };
 let observer_candidates = () => {
