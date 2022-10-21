@@ -302,9 +302,12 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 		rm_button.addEventListener('click', event => {
 			const removing_id = event.currentTarget.getAttribute('work-id');
 			const parent_el   = document.getElementById('commonsContentIdInput').parentNode.parentNode.parentNode;
-			const official_el = [... parent_el.querySelector('div.MuiPaper-root').children].find(el => el.querySelector('span').innerText === removing_id);
-			if (official_el) {
-				official_el.querySelector('svg > path').dispatchEvent(new Event('click', {bubbles:true}));
+			const parent_cn   = parent_el.querySelector('div.MuiPaper-root');
+			if (parent_cn) {
+				const official_el = [... parent_cn.children].find(el => el.querySelector('span').innerText === removing_id);
+				if (official_el) {
+					official_el.querySelector('svg > path').dispatchEvent(new Event('click', {bubbles:true}));
+				}
 			}
 			event.currentTarget.parentNode.remove();
 			modal_window.querySelector('span#ista-parent-list-count').innerText = `(${works_area.children.length-1} / ${MAX_WORKS} 件)`;
@@ -365,9 +368,12 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 			[... modal_window.querySelectorAll('div.ista-parent-work.loading')].forEach(removed_work => {
 				removed_ids.push(removed_work.id);
 				const parent_element   = document.getElementById('commonsContentIdInput').parentNode.parentNode.parentNode;
-				const official_element = [... parent_element.querySelector('div.MuiPaper-root').children].find(el => el.querySelector('span').innerText === removed_work.id);
-				if (official_element) {
-					official_element.querySelector('svg > path').dispatchEvent(new Event('click', {bubbles:true}));
+				const parent_container = parent_element.querySelector('div.MuiPaper-root');
+				if (parent_container) {
+					const official_element = [... parent_container.children].find(el => el.querySelector('span').innerText === removed_work.id);
+					if (official_element) {
+						official_element.querySelector('svg > path').dispatchEvent(new Event('click', {bubbles:true}));
+					}
 				}
 				removed_work.remove();
 			});
