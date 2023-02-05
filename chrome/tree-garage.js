@@ -62,17 +62,17 @@ browser.runtime.sendMessage({request:'get-exlists'}, response => nico_expansion_
 /* --- フォームはオプションを開いたときのみ現れる --- */
 const addIstaUIs = records => {
 	/* 動画のオプションのメニューに追加 */
-	const link_to_tree        = document.querySelector('li[role="menuitem"] > a[href^="https://commons.nicovideo.jp/tree/sm"]');
+	const link_to_tree        = document.querySelector('ul[role="menu"] > a[href^="https://commons.nicovideo.jp/tree/sm"]');
 	const ista_tree_menuitems = document.getElementsByClassName('ista-menu-contents-tree');
 	if (link_to_tree && ista_tree_menuitems.length < 1) {
-		link_to_tree.getElementsByTagName('p')[0].innerText = 'コンテンツツリーを見る';
-		const list_adding_tree    = link_to_tree.parentNode.cloneNode(true);
-		const link_adding_tree    = list_adding_tree.getElementsByTagName('a')[0];
-		const caption_adding_tree = link_adding_tree.getElementsByTagName('p')[0];
+		link_to_tree.querySelector('li').childNodes[1].textContent = 'コンテンツツリーを見る';
+		const link_adding_tree    = link_to_tree.cloneNode(true);
+		const list_adding_tree    = link_adding_tree.querySelector('li');
+		const caption_adding_tree = list_adding_tree.childNodes[1];
+		caption_adding_tree.textContent = '親作品を登録する';
+		link_adding_tree.href           = link_adding_tree.href.replace('/tree/sm', '/tree/edit/sm');
 		list_adding_tree.classList.add('ista-menu-contents-tree');
-		link_adding_tree.href         = link_adding_tree.href.replace('/tree/sm', '/tree/edit/sm');
-		caption_adding_tree.innerText = '親作品を登録する';
-		link_to_tree.parentNode.parentNode.insertBefore(list_adding_tree, link_to_tree.parentNode.nextElementSibling);
+		link_to_tree.parentNode.insertBefore(link_adding_tree, link_to_tree.nextElementSibling);
 	}
 	/* [ツリー登録UI] ついでにこれの要素も追加 */
 	addTreeUI();
