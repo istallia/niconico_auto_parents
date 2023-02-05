@@ -55,6 +55,12 @@ const queue              = [];
 let nico_expansion_ready = false;
 
 
+/* --- ID入力フォーム取得 --- */
+const getCommonsIdForm = () => {
+	return [... document.querySelectorAll('input[placeholder][aria-invalid]')].filter(cid => cid.placeholder.includes('ID'))[0];
+};
+
+
 /* --- [nicoExpansion] インストール確認 --- */
 browser.runtime.sendMessage({request:'get-exlists'}, response => nico_expansion_ready = Boolean(response));
 
@@ -79,9 +85,10 @@ const addIstaUIs = records => {
 	/* 動画情報引用のためのイベントリスナ登録 */
 	addQuotingEvents();
 	/* 親を探す */
-	const input        = document.getElementById('commonsContentIdInput');
+	const input        = getCommonsIdForm();
 	const exist_button = document.getElementById('ista-open-sidebar-bookmarks');
 	if (!input || exist_button) return;
+	console.log(input);
 	const frame = input.parentNode.parentNode.parentNode;
 	/* [ツリー登録UI] ボタンを生成 */
 	const button_treeUI     = document.createElement('button');
@@ -128,7 +135,7 @@ const addIstaUIs = records => {
 	frame.addEventListener('drop', extractIDsFromFiles);
 	frame.addEventListener('drop', event => event.currentTarget.classList.remove('hover'));
 	/* 入力欄のID維持のためのイベントリスナ */
-	const add_button   = input.nextElementSibling.querySelector('button');
+	const add_button   = input.parentNode.querySelector('button');
 	add_button.id      = 'commonsContentIdInputButton';
 	const record_event = event => {
 		const target = event.currentTarget;
@@ -258,7 +265,7 @@ const openTreeUI = () => {
 		button_exlists.classList.add('hidden');
 	}
 	/* 入力欄を同期 */
-	const form_official = document.getElementById('commonsContentIdInput');
+	const form_official = getCommonsIdForm();
 	const form_modal    = modal_window.querySelector('#ista-id-form');
 	form_modal.value    = form_official.value;
 	form_official.value = '';
@@ -267,7 +274,7 @@ const openTreeUI = () => {
 	const works_area    = modal_window.querySelector('#ista-tree-ui-modal div.ista-parents-list');
 	const work_elements = modal_window.querySelectorAll('div.ista-parent-work:not(.template');
 	work_elements.forEach(e => e.remove());
-	const parent_el      = document.getElementById('commonsContentIdInput').parentNode.parentNode.parentNode;
+	const parent_el      = getCommonsIdForm().parentNode.parentNode.parentNode;
 	const official_works = [... parent_el.querySelectorAll('div.MuiPaper-root > div[role="button"]')];
 	const official_ids   = official_works.map(official_el => official_el.querySelector('span').innerText);
 	addCardsToIstaUI(official_ids);
@@ -301,7 +308,7 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 		rm_button.setAttribute('work-id', work_id);
 		rm_button.addEventListener('click', event => {
 			const removing_id = event.currentTarget.getAttribute('work-id');
-			const parent_el   = document.getElementById('commonsContentIdInput').parentNode.parentNode.parentNode;
+			const parent_el   = getCommonsIdForm().parentNode.parentNode.parentNode;
 			const parent_cn   = parent_el.querySelector('div.MuiPaper-root');
 			if (parent_cn) {
 				const official_el = [... parent_cn.children].find(el => el.querySelector('span').innerText === removing_id);
@@ -336,7 +343,7 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 		top : works_area.scrollHeight - works_area.clientHeight
 	});
 	/* 通信しないならここで公式のフォームに入れてしまう */
-	const form        = document.getElementById('commonsContentIdInput');
+	const form        = getCommonsIdForm();
 	const form_button = document.getElementById('commonsContentIdInputButton');
 	if (adding_official && cached_works.length > 0) {
 		const cached_works_text = cached_works.join(' ');
@@ -367,7 +374,7 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 			const removed_ids = [];
 			[... modal_window.querySelectorAll('div.ista-parent-work.loading')].forEach(removed_work => {
 				removed_ids.push(removed_work.id);
-				const parent_element   = document.getElementById('commonsContentIdInput').parentNode.parentNode.parentNode;
+				const parent_element   = getCommonsIdForm().parentNode.parentNode.parentNode;
 				const parent_container = parent_element.querySelector('div.MuiPaper-root');
 				if (parent_container) {
 					const official_element = [... parent_container.children].find(el => el.querySelector('span').innerText === removed_work.id);
@@ -403,7 +410,7 @@ const closeTreeUI = () => {
 	const background   = document.getElementById('ista-tree-ui-modal-background');
 	if (!modal_window) return;
 	/* 入力欄を同期 */
-	const form_official = document.getElementById('commonsContentIdInput');
+	const form_official = getCommonsIdForm();
 	const form_modal    = modal_window.querySelector('#ista-id-form');
 	form_official.value = form_modal.value;
 	form_official.setAttribute('saved-value', form_modal.value);
@@ -421,7 +428,7 @@ const closeTreeUI = () => {
 /* --- 動画情報引用のためのイベントリスナ登録 --- */
 const addQuotingEvents = () => {
 	/* 引用ボタンを押したらオプションを開いておく */
-	const quote_button = [... document.querySelectorAll('button.MuiButtonBase-root.MuiButton-root.MuiButton-text:not(.ista-event-registed)')].filter(button => button.innerText === '投稿した動画から選択')[0];
+	const quote_button = [... document.querySelectorAll('button.MuiButtonBase-root:not(.ista-event-registed)')].filter(button => button.innerText === '投稿した動画から選択')[0];
 	if (quote_button) {
 		quote_button.classList.add('ista-event-registed');
 		quote_button.addEventListener('click', event => {
@@ -445,7 +452,7 @@ const addQuotingEvents = () => {
 		label.appendChild(checkbox);
 		label.appendChild(caption);
 		div.appendChild(label);
-		quote_button.parentNode.appendChild(div);
+		quote_button.parentNode.parentNode.appendChild(div);
 		checkbox.addEventListener('change', event => {
 			localStorage.setItem('ista-enable-quoting-parents', String(event.currentTarget.checked));
 		});
@@ -459,7 +466,7 @@ const addQuotingEvents = () => {
 		const enable_checkbox = document.getElementById('ista-enable-quoting-parents');
 		if (!enable_checkbox?.checked) return;
 		/* 動画IDを取得 */
-		const thumbnail = event.currentTarget.querySelector('div[src^="https://nicovideo.cdn.nimg.jp/thumbnails/"]');
+		const thumbnail = event.currentTarget.querySelector('img[src^="https://nicovideo.cdn.nimg.jp/thumbnails/"]');
 		const video_id  = 'sm' + thumbnail.getAttribute('src').match(/(?<=\/)\d+/)[0];
 		/* パラメータを準備 */
 		const params = new URLSearchParams({
@@ -486,7 +493,7 @@ const addQuotingEvents = () => {
 			addQueue(id_list, true);
 		});
 	};
-	const video_divs = [... document.querySelectorAll('div[role="dialog"] ul.MuiList-root.MuiList-padding > .MuiButtonBase-root.MuiListItem-root.MuiListItem-button:not(.ista-event-registed)')];
+	const video_divs = [... document.querySelectorAll('div[role="dialog"] ul[role="menu"] > .MuiButtonBase-root:not(.ista-event-registed)')];
 	video_divs.forEach(div => {
 		div.classList.add('ista-event-registed');
 		div.addEventListener('click', quote_parents);
@@ -498,7 +505,7 @@ const addQuotingEvents = () => {
 const openSidebarBookmarks = () => {
 	/* ブックマーク内の作品一覧を取得 */
 	browser.runtime.sendMessage({request:'get-bookmarks'}, response => {
-		const current_text = document.getElementById('commonsContentIdInput');
+		const current_text = getCommonsIdForm();
 		openSidebar('ニコニコ・ブックマーク', () => {
 			const official_id_list = [... current_text.value.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)].map(id => id[0]);
 			const modal_window = document.getElementById('ista-tree-ui-modal');
@@ -525,7 +532,7 @@ const openSidebarBookmarks = () => {
 const openSidebarExLists = () => {
 	/* 拡張マイリストを取得 */
 	browser.runtime.sendMessage({request:'get-exlists'}, response => {
-		const current_text = document.getElementById('commonsContentIdInput');
+		const current_text = getCommonsIdForm();
 		openSidebar('拡張マイリスト', () => {
 			const official_id_list = [... current_text.value.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)].map(id => id[0]);
 			const modal_window = document.getElementById('ista-tree-ui-modal');
@@ -587,7 +594,7 @@ const optimizeList = (id_list) => {
 		}
 	}
 	/* 既にリストにあるか確認する */
-	const garage_list = [... document.getElementById('commonsContentIdInput').value.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)].map(res => res[0]);
+	const garage_list = [... getCommonsIdForm().value.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)].map(res => res[0]);
 	ok_list.filter(id => !garage_list.includes(id));
 	/* 1行で返す */
 	return ok_list.join(' ');
@@ -609,15 +616,16 @@ const addIdsToList = (exec_overwrite = false) => {
 	queue.splice(0);
 	const ids_list = processed_queue.join(' ');
 	/* フォームにぶち込む */
-	const form = document.getElementById('commonsContentIdInput');
+	const form = getCommonsIdForm();
 	if (form.value.length > 0 && !form.value.endsWith(' ')) form.value += ' ';
 	form.value += ids_list;
 	form.setAttribute('saved-value', form.value);
 	form.focus({preventScroll:true});
 	setTimeout(() => {
+		form.value = form.getAttribute('saved-value');
 		form.blur();
 		if (exec_overwrite) {
-			const parent_element  = document.getElementById('commonsContentIdInput').parentNode.parentNode.parentNode;
+			const parent_element  = form.parentNode.parentNode.parentNode.parentNode;
 			const id_list_element = parent_element.querySelector('div.MuiPaper-root');
 			const form_button     = document.getElementById('commonsContentIdInputButton');
 			if (id_list_element) {
