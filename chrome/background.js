@@ -164,20 +164,8 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			if (message.request === 'get-tree-html') {
 				sendResponse({html:texts.join('\n')});
 			} else {
-				const parser   = new DOMParser();
-				const doms     = texts.map(text => [... parser.parseFromString(text, 'text/html').querySelectorAll('li[id]')]).flat();
-				const contents = doms.map(dom => {
-					let thum_url = dom.querySelector('div.thum-image > img').getAttribute('src');
-					if (thum_url.startsWith('/images/')) thum_url = 'https://commons.nicovideo.jp' + thum_url;
-					return {
-						id    : dom.id,
-						title : dom.querySelector('div.dsc').innerText,
-						thum  : thum_url.replace('http://', 'https://'),
-						url   : generateURL(dom.id),
-						type  : replaceWorkTypeString(dom.querySelector('span[class^="status_"]').innerText)
-					};
-				});
-				sendResponse(contents);
+				// やむを得ずHTMLリストをそのまま返す
+				sendResponse({list:texts});
 			}
 		})
 		return true;
@@ -213,46 +201,4 @@ const extractWorkID = url => {
 	if (match_id) return match_id[0];
 	const match_mylist = url.match(/mylist\/\d{1,12}\b/);
 	if (match_mylist) return match_mylist[0];
-};
-
-
-/* --- 作品種別のテキストを整形 --- */
-const replaceWorkTypeString = text => {
-	const replace_list = [
-		['作品', ''],
-		['ニコニコ動画', '動画'],
-		['ニコニコ静画', '静画'],
-		['ニコニ立体', '立体'],
-		['ニコニコ生放送', 'ニコ生'],
-		['RPGアツマール', 'ゲーム']
-	];
-	replace_list.forEach(query => {
-		text = text.replace(query[0], query[1]);
-	});
-	return text;
-};
-
-
-/* --- 作品IDからページへのURLを生成 --- */
-const generateURL = id => {
-	const type = id.slice(0, 2);
-	switch (type) {
-		case 'sm':
-			return `https://www.nicovideo.jp/watch/${id}`;
-		case 'im':
-			return `https://seiga.nicovideo.jp/seiga/${id}`;
-		case 'lv':
-			return `https://live.nicovideo.jp/watch/${id}`;
-		case 'nc':
-			return `https://commons.nicovideo.jp/material/${id}`;
-		case 'td':
-			return `https://3d.nicovideo.jp/works/${id}`;
-		case 'co':
-			return `https://com.nicovideo.jp/community/${id}`;
-		case 'gm':
-			return `https://game.nicovideo.jp/atsumaru/games/${id}`;
-		case 'nq':
-			return `https://q.nicovideo.jp/watch/${id}`;
-	}
-	return null;
 };

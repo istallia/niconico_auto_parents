@@ -274,7 +274,7 @@ const openTreeUI = () => {
 	const works_area    = modal_window.querySelector('#ista-tree-ui-modal div.ista-parents-list');
 	const work_elements = modal_window.querySelectorAll('div.ista-parent-work:not(.template');
 	work_elements.forEach(e => e.remove());
-	const parent_el      = getCommonsIdForm().parentNode.parentNode.parentNode;
+	const parent_el      = getCommonsIdForm().parentNode.parentNode.parentNode.parentNode;
 	const official_works = [... parent_el.querySelectorAll('div.MuiPaper-root > div[role="button"]')];
 	const official_ids   = official_works.map(official_el => official_el.querySelector('span').innerText);
 	addCardsToIstaUI(official_ids);
@@ -308,7 +308,7 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 		rm_button.setAttribute('work-id', work_id);
 		rm_button.addEventListener('click', event => {
 			const removing_id = event.currentTarget.getAttribute('work-id');
-			const parent_el   = getCommonsIdForm().parentNode.parentNode.parentNode;
+			const parent_el   = getCommonsIdForm().parentNode.parentNode.parentNode.parentNode;
 			const parent_cn   = parent_el.querySelector('div.MuiPaper-root');
 			if (parent_cn) {
 				const official_el = [... parent_cn.children].find(el => el.querySelector('span').innerText === removing_id);
@@ -357,7 +357,8 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 	/* 親作品欄用のキャッシュがなければ通信で取得 */
 	if (unknown_works.length > 0) {
 		browser.runtime.sendMessage({request:'get-tree-list', ids:unknown_works}, response => {
-			response.forEach(work_info => {
+			const responseList = convertToWorkList(response.list);
+			responseList.forEach(work_info => {
 				const work_card = modal_window.querySelector(`div#${work_info["id"]}.ista-parent-work`);
 				const img       = work_card.querySelector('img.ista-parent-img');
 				const link      = work_card.querySelector('a.ista-parent-link');
@@ -374,7 +375,7 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 			const removed_ids = [];
 			[... modal_window.querySelectorAll('div.ista-parent-work.loading')].forEach(removed_work => {
 				removed_ids.push(removed_work.id);
-				const parent_element   = getCommonsIdForm().parentNode.parentNode.parentNode;
+				const parent_element   = getCommonsIdForm().parentNode.parentNode.parentNode.parentNode;
 				const parent_container = parent_element.querySelector('div.MuiPaper-root');
 				if (parent_container) {
 					const official_element = [... parent_container.children].find(el => el.querySelector('span').innerText === removed_work.id);
@@ -385,8 +386,8 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 				removed_work.remove();
 			});
 			if (adding_official) {
-				const added_ids      = response.map(info => info['id']);
-				const all_works_text = response.map(work_info => work_info['id']).join(' ');
+				const added_ids      = responseList.map(info => info['id']);
+				const all_works_text = responseList.map(work_info => work_info['id']).join(' ');
 				form.value = all_works_text;
 				form.setAttribute('saved-value', all_works_text);
 				form.focus();
@@ -400,6 +401,64 @@ const addCardsToIstaUI = (ids, adding_official = false) => {
 	} else {
 		modal_window.querySelector('span#ista-parent-list-count').innerText = `(${works_area.children.length-1} / ${MAX_WORKS} 件)`;
 	}
+};
+
+
+/* --- [ツリー登録UI] HTML要素のリストを作品情報リストに変換 --- */
+const convertToWorkList = htmlArray => {
+	// 元々はbackgroundでやってたのに使えなくなったので渋々
+	const parser   = new DOMParser();
+	const doms     = htmlArray.map(text => [... parser.parseFromString(text, 'text/html').querySelectorAll('li[id]')]).flat();
+	const contents = doms.map(dom => {
+		let thum_url = dom.querySelector('div.thum-image > img').getAttribute('src');
+		if (thum_url.startsWith('/images/')) thum_url = 'https://commons.nicovideo.jp' + thum_url;
+		return {
+			id    : dom.id,
+			title : dom.querySelector('div.dsc').innerText,
+			thum  : thum_url.replace('http://', 'https://'),
+			url   : generateURL(dom.id),
+			type  : replaceWorkTypeString(dom.querySelector('span[class^="status_"]').innerText)
+		};
+	});
+	return contents;
+};
+/* --- 作品種別のテキストを整形 --- */
+const replaceWorkTypeString = text => {
+	const replace_list = [
+		['作品', ''],
+		['ニコニコ動画', '動画'],
+		['ニコニコ静画', '静画'],
+		['ニコニ立体', '立体'],
+		['ニコニコ生放送', 'ニコ生'],
+		['RPGアツマール', 'ゲーム']
+	];
+	replace_list.forEach(query => {
+		text = text.replace(query[0], query[1]);
+	});
+	return text;
+};
+/* --- 作品IDからページへのURLを生成 --- */
+const generateURL = id => {
+	const type = id.slice(0, 2);
+	switch (type) {
+		case 'sm':
+			return `https://www.nicovideo.jp/watch/${id}`;
+		case 'im':
+			return `https://seiga.nicovideo.jp/seiga/${id}`;
+		case 'lv':
+			return `https://live.nicovideo.jp/watch/${id}`;
+		case 'nc':
+			return `https://commons.nicovideo.jp/material/${id}`;
+		case 'td':
+			return `https://3d.nicovideo.jp/works/${id}`;
+		case 'co':
+			return `https://com.nicovideo.jp/community/${id}`;
+		case 'gm':
+			return `https://game.nicovideo.jp/atsumaru/games/${id}`;
+		case 'nq':
+			return `https://q.nicovideo.jp/watch/${id}`;
+	}
+	return null;
 };
 
 
