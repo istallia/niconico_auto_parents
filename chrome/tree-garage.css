@@ -22,7 +22,11 @@
 button.ista-button-garage {
 	color            : white;
 	background-color : #0075c2;
+  border           : none;
+  padding          : 6px 16px;
+  margin-top       : 0.5rem;
 	margin-right     : 0.5rem;
+  border-radius    : 4px;
 }
 button.ista-button-garage:hover {
 	background-color : #0088ee;
