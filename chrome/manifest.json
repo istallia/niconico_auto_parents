@@ -30,8 +30,7 @@
 	},
 	"permissions" : [
 		"bookmarks",
-		"storage",
-		"tabs"
+		"storage"
 	],
 	"host_permissions" : [
 		"*://commons.nicovideo.jp/tree/*",
