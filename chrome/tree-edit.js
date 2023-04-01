@@ -26,10 +26,11 @@ if (typeof browser === 'undefined') browser = chrome;
 
 
 /* --- 状態を保存する --- */
-const MAX_WORKS          = 300;
-const queue              = [];
-let is_adding_ids        = false;
-let nico_expansion_ready = false;
+const MAX_WORKS            = 300;
+const queue                = [];
+let is_adding_ids          = false;
+let nico_expansion_ready   = false;
+let nico_expansion_checked = false;
 
 
 /* --- セットアップフェーズ --- */
@@ -41,7 +42,10 @@ let setup_phase             = PHASE_EXTRACTOR;
 
 
 /* --- [nicoExpansion] インストール確認 --- */
-browser.runtime.sendMessage({request:'get-exlists'}, response => nico_expansion_ready = Boolean(response));
+browser.runtime.sendMessage({request:'get-exlists'}, response => {
+	nico_expansion_ready   = Boolean(response);
+	nico_expansion_checked = true;
+});
 
 
 /* --- ページに要素を追加する (なければ再実行) --- */
@@ -72,6 +76,7 @@ const setupToolFunctions = () => {
 		setup_phase++;
 	}
 	/* [サイドバー] 開くためのボタンを用意する */
+	if (!nico_expansion_checked) setTimeout(setupToolFunctions, 100);
 	const dock_area   = document.querySelector('div.addDockFormArea');
 	const parent_area = dock_area.parentNode;
 	if (!parent_area) setTimeout(setupToolFunctions, 100);
