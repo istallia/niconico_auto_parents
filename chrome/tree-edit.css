@@ -20,4 +20,7 @@
  * ボタンなどの装飾を行う
  */
 
-/* --- ボタン --- */
+/* --- [ファイルID抽出] ドロップエリア --- */
+div.addDockFormArea.hover, div.addDockFormArea.hover input[name="keywords"] {
+  background-color : #89b8ff;
+}

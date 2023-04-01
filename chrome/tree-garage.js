@@ -132,7 +132,7 @@ const addIstaUIs = records => {
 		event.currentTarget.classList.remove('hover');
 	});
 	/* [ファイルID抽出] D&D監視イベント登録 */
-	frame.addEventListener('drop', extractIDsFromFiles);
+	frame.addEventListener('drop', extractIdsFromFiles);
 	frame.addEventListener('drop', event => event.currentTarget.classList.remove('hover'));
 	/* 入力欄のID維持のためのイベントリスナ */
 	const add_button   = input.parentNode.querySelector('button');
@@ -220,7 +220,7 @@ const addTreeUI = () => {
 		event.preventDefault();
 		event.currentTarget.classList.remove('hover');
 	});
-	tree_ui_modal.addEventListener('drop', extractIDsFromFiles);
+	tree_ui_modal.addEventListener('drop', extractIdsFromFiles);
 	tree_ui_modal.addEventListener('drop', event => event.currentTarget.classList.remove('hover'));
 	/* IDリストをコピーするボタンのイベントリスナを登録 */
 	const button_copy = tree_ui_modal.querySelector('#ista-copy-works');
@@ -615,7 +615,7 @@ const openSidebarExLists = () => {
 
 
 /* --- [ファイルID抽出] D&DでファイルからID抽出 --- */
-const extractIDsFromFiles = event => {
+const extractIdsFromFiles = event => {
 	if (event.dataTransfer.files.length <= 0) return;
 	event.preventDefault();
 	const extract_func = (name, event) => {
