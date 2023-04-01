@@ -39,40 +39,22 @@ browser.runtime.sendMessage({request:'get-exlists'}, response => nico_expansion_
 
 
 /* --- IDリストを最高効率に変換する --- */
-const optimizeList = (id_list, check_parents = true) => {
+const optimizeList = (id_list) => {
 	/* IDを1つずつバラバラの配列にする */
 	let p_list = [... id_list.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)];
 	p_list = p_list.map(res => res[0]);
-	/* 既に登録済みのリストを取得する */
-	const parent_works_ul = document.getElementById('parents');
-	let ng_list = [];
-	if (parent_works_ul && check_parents) {
-		let items   = [... parent_works_ul.children];
-		for (let item of items) ng_list.push(item.id);
-	}
 	/* IDの形式であり、かつ重複のないリストを作成する */
 	let ok_list = [];
 	for (i in p_list) {
-		if( ok_list.indexOf(p_list[i]) < 0 && ng_list.indexOf(p_list[i]) < 0 ) {
+		if( ok_list.indexOf(p_list[i]) < 0 ) {
 			ok_list.push(p_list[i]);
 		}
 	}
-	/* 10件ごとのリストに変換する */
-	let res_list = [];
-	for (i in ok_list) {
-		i = Number(i);
-		if( i % 10 === 0 ) res_list.push('');
-		res_list[Math.floor(i/10)] += ok_list[i];
-		if( i % 10 < 9 ) {
-			res_list[Math.floor(i/10)] += ' ';
-		} else {
-			res_list[Math.floor(i/10)] += '\n';
-		}
-	}
-	for (i in res_list) {
-		res_list[i] = res_list[i].slice(0, -1);
-	}
-	return res_list;
+	/* 既にリストにあるか確認する */
+	const garage_list = [... getCommonsIdForm().value.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)].map(res => res[0]);
+	ok_list.filter(id => !garage_list.includes(id));
+	/* 1行で返す */
+	return ok_list.join(' ');
 };
 
 
