@@ -682,6 +682,8 @@ const addIdsToList = (exec_overwrite = false) => {
 	form.focus({preventScroll:true});
 	setTimeout(() => {
 		form.value = form.getAttribute('saved-value');
+		form.dispatchEvent(new Event('input' , {bubbles:true}));
+		form.dispatchEvent(new Event('change', {bubbles:true}));
 		form.blur();
 		if (exec_overwrite) {
 			const parent_element  = form.parentNode.parentNode.parentNode.parentNode;

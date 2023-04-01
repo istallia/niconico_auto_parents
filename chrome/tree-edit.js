@@ -26,9 +26,8 @@ if (typeof browser === 'undefined') browser = chrome;
 
 
 /* --- 状態を保存する --- */
-const MAX_WORKS        = 300;
-const queue            = [];
-let nicoExpansionReady = false;
+const MAX_WORKS          = 300;
+let nico_expansion_ready = false;
 
 
 /* --- ページに要素を追加する --- */
@@ -52,7 +51,7 @@ const optimizeList = (id_list) => {
 	}
 	/* 既にリストにあるか確認する */
 	const garage_list = [... getCommonsIdForm().value.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)].map(res => res[0]);
-	ok_list.filter(id => !garage_list.includes(id));
+	ok_list           = ok_list.filter(id => !garage_list.includes(id));
 	/* 1行で返す */
 	return ok_list.join(' ');
 };
@@ -121,3 +120,20 @@ const optimizeList = (id_list) => {
 // 		textarea.value = current_text + id_text;
 // 	});
 // };
+
+
+/* --- IDリストを公式のID入力欄に追加 --- */
+const addIdsToForm = ids => {
+	/* フォームに入れる */
+	const form = document.querySelector('input[name="keywords"]');
+	if (form.value.length > 0 && !form.value.endsWith(' ')) form.value += ' ';
+	form.value += ids;
+	form.setAttribute('saved-value', form.value);
+	form.focus({preventScroll:true});
+	setTimeout(() => {
+		form.value = form.getAttribute('saved-value');
+		form.dispatchEvent(new Event('input' , {bubbles:true}));
+		form.dispatchEvent(new Event('change', {bubbles:true}));
+		form.blur();
+	}, 0);
+};
