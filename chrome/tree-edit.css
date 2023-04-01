@@ -17,63 +17,7 @@
 
 /*
  * ページに作用するCSS
- * ボタンやモーダルウィンドウの装飾を行う
+ * ボタンなどの装飾を行う
  */
 
-/* --- モーダルウィンドウの装飾 --- */
-.ista-auto-modal {
-	display          : none;
-	position         : fixed;
-	z-index          : 200;
-	top              : 36vh;
-	left             : 25vw;
-	height           : 28vh;
-	width            : calc(50vw - 2rem);
-	padding          : 1rem 1rem 2rem;
-	overflow-y       : scroll;
-	background-color : #eee;
-	border           : 2px solid #F17603;
-	border-radius    : 0.1rem;
-}
-.ista-auto-modal-bg {
-	display          : none;
-	position         : fixed;
-	z-index          : 100;
-	top              : 0px;
-	left             : 0px;
-	height           : 100vh;
-	width            : 100vw;
-	margin           : 0px;
-	padding          : 0px;
-	background-color : #000a;
-}
-#ista-textarea-id-list {
-	width         : 100%;
-	height        : 6rem;
-	margin        : 1em 0px;
-	font          : inherit;
-	border-radius : 0.3rem;
-}
-#ista-textarea-id-list.ista-dragover {
-	background-color: #fc6;
-}
-button.ista-button-reg {
-	cursor        : pointer;
-	background    : #595959 url(/images/tree/edit/bg_candidateselect.jpg) repeat-x  left bottom;
-	color         : white;
-	border-radius : 2rem;
-	padding       : 0.05rem 0.5rem;
-	margin        : 0px;
-	margin-left   : 0.3rem;
-	outline       : none;
-}
-.ista-auto-modal > p { text-align : left; }
-#Column01 > div.tree-edit-area.editbox.round5-t > p.helpimg { cursor : pointer; }
-label { user-select : none; }
-.hidden { display : none; }
-
-/* --- 候補作品のスタイル --- */
-div > div.dsc {
-	user-select : none;
-	cursor      : default;
-}
+/* --- ボタン --- */
