@@ -20,7 +20,21 @@
  * ボタンなどの装飾を行う
  */
 
+/* --- ボタンエリア・ボタン --- */
+button.ista-button {
+	margin           : 0 0.3em;
+	padding          : 0.6em 1.2em;
+	border           : none;
+	border-radius    : 4px;
+	background-color : #4990e2;
+	color            : white;
+}
+button.ista-button:hover {
+	background-color : #7fb1eb;
+	color            : white;
+}
+
 /* --- [ファイルID抽出] ドロップエリア --- */
 div.addDockFormArea.hover, div.addDockFormArea.hover input[name="keywords"] {
-  background-color : #89b8ff;
+	background-color : #89b8ff;
 }

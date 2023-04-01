@@ -34,7 +34,7 @@ let nico_expansion_ready = false;
 
 /* --- セットアップフェーズ --- */
 const PHASE_EXTRACTOR       = 0;
-const PHASE_SIDEBAR_BODY    = 1;
+const PHASE_SIDEBAR_BASE    = 1;
 const PHASE_SIDEBAR_BUTTONS = 2;
 const PHASE_COMPLETE        = 3;
 let setup_phase             = PHASE_EXTRACTOR;
@@ -65,10 +65,36 @@ const setupToolFunctions = () => {
 		setup_phase++;
 	}
 	/* [サイドバー] 本体を用意する */
-	if (setup_phase <= PHASE_SIDEBAR_BODY) {
+	if (setup_phase <= PHASE_SIDEBAR_BASE) {
 		generateSidebar(ids => {
 			addIdsToForm(ids.join(' '));
 		});
+		setup_phase++;
+	}
+	/* [サイドバー] 開くためのボタンを用意する */
+	const dock_area   = document.querySelector('div.addDockFormArea');
+	const parent_area = dock_area.parentNode;
+	if (!parent_area) setTimeout(setupToolFunctions, 100);
+	const buttons_area = document.createElement('div');
+	parent_area.insertBefore(buttons_area, dock_area.nextSibling);
+	if (setup_phase <= PHASE_SIDEBAR_BUTTONS) {
+		// ニコニコ・ブックマーク
+		const button_bookmarks     = document.createElement('button');
+		button_bookmarks.innerText = '[拡張機能] ニコニコ・ブックマーク';
+		button_bookmarks.id        = 'ista-open-sidebar-bookmarks';
+		button_bookmarks.classList.add('ista-button');
+		button_bookmarks.addEventListener('click', openSidebarBookmarks);
+		buttons_area.appendChild(button_bookmarks);
+		// 拡張マイリスト (nicoExpansion)
+		if (nico_expansion_ready) {
+			const button_exlists     = document.createElement('button');
+			button_exlists.innerText = '[拡張機能] 拡張マイリスト';
+			button_exlists.id        = 'ista-open-sidebar-exlists';
+			button_exlists.classList.add('ista-button');
+			button_exlists.addEventListener('click', openSidebarExLists);
+			buttons_area.appendChild(button_exlists);
+		}
+		setup_phase++;
 	}
 };
 setTimeout(setupToolFunctions, 100);
@@ -118,6 +144,36 @@ const extractIdsFromFiles = event => {
 		reader.addEventListener('load', extract_func.bind(this, file.name));
 		reader.readAsText(file);
 	}
+};
+
+
+/* --- [サイドバー] ニコニコ・ブックマークのサイドバーを開く --- */
+const openSidebarBookmarks = () => {
+	/* ブックマーク内の作品一覧を取得 */
+	browser.runtime.sendMessage({request:'get-bookmarks'}, response => {
+		const form = document.querySelector('input[name="keywords"]');
+		openSidebar('ニコニコ・ブックマーク', () => {
+			const ids_in_form = [... form.value.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)].map(id => id[0]);
+			return ids_in_form;
+		}, response, id => {
+			addIdsToForm(id);
+		});
+	});
+};
+
+
+/* --- [サイドバー] nicoExpansionの拡張マイリストのサイドバーを開く --- */
+const openSidebarExLists = () => {
+	/* 拡張マイリストを取得 */
+	browser.runtime.sendMessage({request:'get-exlists'}, response => {
+		const form = document.querySelector('input[name="keywords"]');
+		openSidebar('拡張マイリスト', () => {
+			const ids_in_form = [... form.value.matchAll(/\b[a-zA-Z]{2}\d{1,12}\b/g)].map(id => id[0]);
+			return ids_in_form;
+		}, response, id => {
+			addIdsToForm(id);
+		});
+	});
 };
 
 
