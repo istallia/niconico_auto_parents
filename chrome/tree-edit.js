@@ -34,11 +34,12 @@ let nico_expansion_checked = false;
 
 
 /* --- セットアップフェーズ --- */
-const PHASE_EXTRACTOR       = 0;
-const PHASE_SIDEBAR_BASE    = 1;
-const PHASE_SIDEBAR_BUTTONS = 2;
-const PHASE_COMPLETE        = 3;
-let setup_phase             = PHASE_EXTRACTOR;
+const PHASE_RE_SETUP        = 0;
+const PHASE_EXTRACTOR       = 1;
+const PHASE_SIDEBAR_BASE    = 2;
+const PHASE_SIDEBAR_BUTTONS = 3;
+const PHASE_COMPLETE        = 4;
+let setup_phase             = PHASE_RE_SETUP;
 
 
 /* --- [nicoExpansion] インストール確認 --- */
@@ -50,6 +51,19 @@ browser.runtime.sendMessage({request:'get-exlists'}, response => {
 
 /* --- ページに要素を追加する (なければ再実行) --- */
 const setupToolFunctions = () => {
+	/* 要素が消えた場合は再セットアップ */
+	if (setup_phase <= PHASE_RE_SETUP) {
+		setInterval(() => {
+			const area    = document.querySelector('div.addDockFormArea');
+			let condition = !area || !area.classList.contains('ista-event-registed');
+			condition    |= !document.getElementById('ista-open-sidebar-bookmarks');
+			if (condition) {
+				setup_phase = PHASE_RE_SETUP + 1;
+				setupToolFunctions();
+			}
+		}, 2500);
+		setup_phase++;
+	}
 	/* [ファイルID抽出] ID入力欄の親にドロップイベントを設定する */
 	if (setup_phase <= PHASE_EXTRACTOR) {
 		const drop_area = document.querySelector('div.addDockFormArea');
@@ -66,6 +80,7 @@ const setupToolFunctions = () => {
 			event.preventDefault();
 			event.currentTarget.classList.remove('hover');
 		});
+		drop_area.classList.add('ista-event-registed');
 		setup_phase++;
 	}
 	/* [サイドバー] 本体を用意する */
@@ -81,6 +96,7 @@ const setupToolFunctions = () => {
 	const parent_area = dock_area.parentNode;
 	if (!parent_area) setTimeout(setupToolFunctions, 100);
 	const buttons_area = document.createElement('div');
+	buttons_area.id    = 'ista-buttons-area';
 	parent_area.insertBefore(buttons_area, dock_area.nextSibling);
 	if (setup_phase <= PHASE_SIDEBAR_BUTTONS) {
 		// ニコニコ・ブックマーク
