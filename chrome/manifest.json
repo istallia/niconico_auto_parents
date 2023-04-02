@@ -10,7 +10,7 @@
 		"128" : "icon_128.png"
 	},
 	"content_scripts" : [{
-		"matches" : ["*://commons.nicovideo.jp/tree/edit/*"],
+		"matches" : ["*://commons.nicovideo.jp/tree/parents/edit/*"],
 		"js"      : ["sidebar.js", "tree-edit.js"],
 		"css"     : ["sidebar.css", "tree-edit.css"]
 	}, {

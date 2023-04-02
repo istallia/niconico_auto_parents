@@ -25,6 +25,7 @@ button.ista-button {
   border-radius    : 0.20rem;
 }
 button.ista-button.white {
+  margin-top       : 0.25rem;
   margin-bottom    : 0.25rem;
   padding          : 0.2rem 0.75rem;
   background-color : white;
