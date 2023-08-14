@@ -44,7 +44,6 @@ const replaceCommonsLinks = () => {
 		replacing_commons_links : false
 	}, option_items => {
 		/* 無効なら帰る */
-		console.log('オプション取得: ' + option_items['replacing_commons_links']);
 		if (!option_items['replacing_commons_links']) return;
 		/* 親要素を監視 */
 		const parent_el = document.querySelector('div.p-works, section.p-treeParentsPage');
