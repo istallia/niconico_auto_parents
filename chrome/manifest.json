@@ -14,7 +14,7 @@
 		"js"      : ["sidebar.js", "tree-edit.js"],
 		"css"     : ["sidebar.css", "tree-edit.css"]
 	}, {
-		"matches" : ["*://commons.nicovideo.jp/tree/*"],
+		"matches" : ["*://commons.nicovideo.jp/works/*", "*://commons.nicovideo.jp/tree/*"],
 		"js"      : ["tree-view.js"],
 		"css"     : ["tree-view.css"]
 	}, {
